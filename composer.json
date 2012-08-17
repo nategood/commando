@@ -1,0 +1,15 @@
+{
+    "name": "nategood/commando",
+    "description": "PHP CLI Commando Style",
+    "authors": [
+        {
+            "name": "Nate Good",
+            "email": "me@nategood.com"
+        }
+    ],
+    "require": {},
+    "version": "0.0.0",
+    "autoload": {
+        "psr-0": {"Commando": "src/"}
+    }
+}
