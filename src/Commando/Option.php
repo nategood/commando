@@ -9,6 +9,7 @@ class Option
         $name, /* string optional name of argument */
         // $index, /* int */
         $description, /* string */
+        $required = false, /* bool */
         $boolean = false, /* bool */
         $type, /* int see constants */
         $rule, /* closure|regex|int */
@@ -58,12 +59,22 @@ class Option
     }
 
     /**
-     * @param closure|string $rule regex, closure
+     * @param bool $bool
      * @return Option
      */
     public function setBoolean($bool = true)
     {
         $this->boolean = $bool;
+        return $this;
+    }
+
+    /**
+     * @param bool $bool required?
+     * @return Option
+     */
+    public function setRequired($bool = true)
+    {
+        $this->required = $bool;
         return $this;
     }
 
@@ -104,6 +115,9 @@ class Option
     }
 
 
+    /**
+     * @return bool
+     */
     public function validate($value)
     {
         if (!is_callable($this->rule))
@@ -115,26 +129,50 @@ class Option
         return call_user_func($this->rule, $value);
     }
 
+    /**
+     * @return string|int name of the option
+     */
     public function getName()
     {
         return $this->name;
     }
 
+
+    /**
+     * @return mixed value of the option
+     */
     public function getValue()
     {
         return $this->value;
     }
 
+    /**
+     * @return array list of aliases
+     */
     public function getAliases()
     {
         return $this->aliases;
     }
 
+    /**
+     * @return bool is this option a boolean
+     */
     public function isBoolean()
     {
         return $this->boolean;
     }
 
+    /**
+     * @return bool is this option required?
+     */
+    public function isRequired()
+    {
+        return $this->required;
+    }
+
+    /**
+     * @param mixed value for this option (set on the command line)
+     */
     public function setValue($value)
     {
         // boolean check

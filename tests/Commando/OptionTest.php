@@ -58,7 +58,6 @@ class OptionTest extends \PHPUnit_Framework_TestCase
      */
     public function testMap($val)
     {
-
         $option = new Option('f');
         $option->setMap(function($value) {
             return $value . $value;
@@ -70,7 +69,6 @@ class OptionTest extends \PHPUnit_Framework_TestCase
 
     public function testRule()
     {
-
         $option = new Option('f');
         $option->setRule(function($value) {
             return is_numeric($value);

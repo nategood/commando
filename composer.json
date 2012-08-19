@@ -1,14 +1,19 @@
 {
     "name": "nategood/commando",
     "description": "PHP CLI Commando Style",
+    "homepage": "http://github.com/nategood/commando",
+    "license": "MIT",
+    "keywords": ["cli", "command line", "command", "command line interface", "scripting", "automation"],
     "authors": [
         {
             "name": "Nate Good",
             "email": "me@nategood.com"
         }
     ],
-    "require": {},
-    "version": "0.0.0",
+    "require": {
+        "php": ">=5.3"
+    },
+    "version": "0.0.1",
     "autoload": {
         "psr-0": {"Commando": "src/"}
     }

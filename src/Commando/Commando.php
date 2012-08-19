@@ -1,27 +1,41 @@
 <?php
+/**
+ * @author Nate Good <me@nategood.com>
+ */
 
 namespace Commando;
 
-class Commando
+class Commando implements \ArrayAccess
 {
-
     const OPTION_TYPE_ARGUMENT  = 1; // e.g. foo
     const OPTION_TYPE_SHORT     = 2; // e.g. -u
     const OPTION_TYPE_VERBOSE   = 4; // e.g. --username
     const OPTION_TYPE_MULTI     = 8; // e.g. -fbg
-    const OPTION_TYPE_OPTION    = 2 | 4; // e.g. -u or --username
 
     private
-        $current_option     = null,
-        $options            = array(),
-        $nameless_option_counter = 0;
+        $current_option             = null,
+        $options                    = array(),
+        $nameless_option_counter    = 0,
+        $tokens                     = array(),
+        $parsed                     = false;
 
-    public function __contstructor($tokens = null)
+    public function __construct($tokens = null)
     {
         if (empty($tokens)) {
-            $tokens = $argv;
+            $tokens = $_SERVER['argv'];
         }
-        $this->_parse($tokens);
+
+        $this->setTokens($tokens);
+    }
+
+    /**
+     * Factory style reads a little nicer
+     * @param array $tokens defaults to $argv
+     * @return Commando
+     */
+    public static function define($tokens = null)
+    {
+        return new Commando($tokens);
     }
 
     /**
@@ -36,19 +50,24 @@ class Commando
         'bool' => 'boolean',
         'b' => 'boolean',
 
-        'required' => 'required',
-        'r' => 'required',
+        'require' => 'require',
+        'r' => 'require',
 
         'alias' => 'alias',
+        'aka' => 'alias',
         'a' => 'alias',
 
         'describe' => 'describe',
         'd' => 'describe',
         'help' => 'describe',
         'h' => 'describe',
+        'description' => 'describe',
+        'describedAs' => 'describe',
 
         'map' => 'map',
+        'mapTo' => 'map',
         'cast' => 'map',
+        'castWith' => 'map',
 
         'must' => 'must',
 
@@ -63,42 +82,30 @@ class Commando
 
 
     /**
+     * This is the meat of Commando.  Any time we are operating on
+     * an individual option for commando (e.g. $cmd->option()->require()...)
+     * it relies on this magic method.  It allows us to handle some logic
+     * that is applicable across the board and also allows easy aliasing of
+     * methods (e.g. "o" for "option")... since it is a CLI library, such
+     * minified aliases would only be fitting :-).
+     *
      * @param string $name
      * @param array $arguments
      * @return Commando
      */
     public function __call($name, $arguments)
     {
-        if (empty($methods[$name])) {
-            throw new \Exception('Unknown function called');
+        if (empty(self::$methods[$name])) {
+            throw new \Exception(sprintf('Unknown function, %s, called', $name));
         }
 
-        $name = $methods[$name]; // use the fully quantified name, e.g. "option" when "o"
-
-        if ($name === 'option') {
-            // We've reached a new "option", wrap up the previous
-            // option in the chain
-            if (!empty($this->current_option)) {
-                // Add in alias references
-                foreach ($option->getAliases() => $key) {
-                    $this->options[$key] = $option;
-                }
-            }
-
-            // Is this a previously declared option?
-            if (!empty($this->options[$arguments[0]])) {
-                $this->current_option = $this->getOption($arguments[0]);
-            } else {
-                $this->current_option = new Option;
-            }
-        }
+        // use the fully quantified name, e.g. "option" when "o"
+        $name = self::$methods[$name];
 
         // set the option we'll be acting on
-        if (empty($this->current_option)) {
+        if (empty($this->current_option) && $name !== 'option') {
             throw new \Exception(sprintf('Invalid Option Chain: Attempting to call %s before an "option" declaration', $name));
         }
-
-        // TODO SPECIAL CASE FOR "GLOBAL" methods (or maybe just define the global methods instead of using magic)???
 
         // call method
         array_unshift($arguments, $this->current_option);
@@ -108,25 +115,42 @@ class Commando
     }
 
     /**
-     * @param Option $option
-     * @param string $name if null, it is presumed to be a nameless argument and is ID'd by an int
+     * @param Option|null $option
      * @return Option
      */
-    public function _option(Option $option, $name = null)
+    public function _option($option, $name = null)
     {
-        if (empty($name)) {
-            $name = $this->nameless_option_counter++;
+        // Is this a previously declared option?
+        if (!empty($name) && !empty($this->options[$name])) {
+            $this->current_option = $this->getOption($name);
+        } else {
+            if (empty($name)) {
+                $name = $this->nameless_option_counter++;
+            }
+            $this->current_option = $this->options[$name] = new Option($name);
         }
-        return $option->setName($name);
+
+        return $this->current_option;
+    }
+
+    // OPTION OPERATIONS
+
+    /**
+     * @param Option $option
+     * @return Option
+     */
+    public function _boolean(Option $option, $boolean = true)
+    {
+        return $option->setBoolean($boolean);
     }
 
     /**
      * @param Option $option
      * @return Option
      */
-    public function _boolean(Option $option)
+    public function _require(Option $option, $require = true)
     {
-        return $option->setBoolean();
+        return $option->setRequired($require);
     }
 
     /**
@@ -136,6 +160,7 @@ class Commando
      */
     public function _alias(Option $option, $alias)
     {
+        $this->options[$alias] = $this->current_option;
         return $option->addAlias($alias);
     }
 
@@ -150,12 +175,43 @@ class Commando
     }
 
     /**
-     * @param array $tokens command line tokens
+     * @param Option $option
+     * @param \Closure $callback (string $value) -> boolean
+     * @return Option
+     */
+    public function _must(Option $option, \Closure $callback)
+    {
+        return $option->setRule($callback);
+    }
+
+    /**
+     * @param Option $option
+     * @param \Closure $callback
+     * @return Option
+     */
+    public function _map(Option $option, \Closure $callback)
+    {
+        return $option->setMap($callback);
+    }
+
+    // END OPTION OPERATIONS
+
+    /**
+     * Rare that you would need to use this other than for testing,
+     * allows defining the cli tokens, instead of using $argv
+     * @param array $cli_tokens
+     */
+    public function setTokens(array $cli_tokens)
+    {
+        $this->tokens = $cli_tokens;
+    }
+
+    /**
      * @throws \Exception
      */
-    public function _parse($tokens)
+    public function parse()
     {
-
+        $tokens = $this->tokens;
         $filename = array_shift($tokens);
 
         $keyvals = array();
@@ -168,7 +224,16 @@ class Commando
 
             if ($type === self::OPTION_TYPE_ARGUMENT) {
                 // its an argument, use an int as the index
-                $keyvals[$count++] = $name;
+                $keyvals[$count] = $name;
+
+                // We allow for "dynamic" annonymous arguments, so we
+                // add an option for any annonymous arguments that
+                // weren't predefined
+                if (!$this->hasOption($count)) {
+                    $this->options[$count] = new Option($count);
+                }
+
+                $count++;
             } else {
                 // no combo support yet (e.g. -abc !== -a -b -c)
                 $option = $this->getOption($name);
@@ -185,23 +250,42 @@ class Commando
             }
         }
 
-        // todo, have the Options do their thing (check constraints, perform mapping, perform casting, etc.)
+        // Set values (validates and performs map when applicable)
+        foreach ($keyvals as $key => $value) {
+            $this->getOption($key)->setValue($value);
+        }
 
-        // todo implement required
-        // foreach required option, make sure a value has been set
+        // todo protect against duplicates caused by aliases
+        foreach ($this->options as $option) {
+            if (is_null($option->getValue()) && $option->isRequired()) {
+                throw new Exception(sprintf('Required option, %s, must be specified', $option->getName()));
+            }
+        }
+
+        $this->parsed = true;
     }
 
-    private function _parseOption($token) {
+    /**
+     * Has this Commando instance parsed its arguments?
+     * @return bool
+     */
+    public function isParsed()
+    {
+        return $this->parsed;
+    }
+
+    private function _parseOption($token)
+    {
         $matches = array();
 
-        if (!preg_match('/(?P<hyphen>-{1,2})?(?P<name>[a-z][a-z0-9_]+)/', $token, $matches)) {
+        if (!preg_match('/(?P<hyphen>\-{1,2})?(?P<name>[a-z][a-z0-9_]*)/i', $token, $matches)) {
             throw new \Exception(sprintf('Unable to parse option %s: Invalid syntax', $token));
         }
 
         $type = self::OPTION_TYPE_ARGUMENT;
         if (!empty($matches['hyphen'])) {
             $type = (strlen($matches['hyphen']) === 1) ?
-                self::OPTION_TYPE_SINGLE:
+                self::OPTION_TYPE_SHORT:
                 self::OPTION_TYPE_VERBOSE;
         }
 
@@ -216,6 +300,7 @@ class Commando
      */
     public function getOption($option)
     {
+        // var_dump(array_keys($this->options));
         if (!$this->hasOption($option)) {
             throw new \Exception(sprintf('Unknown option, %s, specified', $option));
         }
@@ -233,22 +318,65 @@ class Commando
     }
 
     /**
-     * @return string help page
+     * @return string dump values
      */
     public function _toString()
     {
-        // todo pretty help doc
+        // todo return values of set options as map of option name => value
     }
 
+    /**
+     * @return string help docs
+     */
+    public function helpText()
+    {
+        // todo
+        return '';
+    }
+
+    // ARRAYACCESS METHODS
+
+    /**
+     * @param string $offset
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->options[$offset]);
+    }
+
+    /**
+     * @param string $offset
+     */
+    public function offsetGet($offset)
+    {
+        // Support implicit/lazy parsing
+        if (!$this->isParsed()) {
+            $this->parse();
+        }
+        if (!isset($this->options[$offset])) {
+            return null; // bc it is PHP like... might want to throw an Exception?
+        }
+        return $this->options[$offset]->getValue();
+    }
+
+    /**
+     * @param string $offset
+     * @param string $value
+     */
+    public function offsetSet($offset, $value)
+    {
+        // todo maybe support?
+        throw new Exception('Setting an option value via array syntax is not permitted');
+    }
+
+    /**
+     * @param string $offset
+     */
+    public function offsetUnset($offset)
+    {
+        $this->options[$offset]->setValue(null);
+    }
+
+    // END ARRAYACCESS METHODS
+
 }
-
-// class Rule
-// {
-//     const INT = 1;
-//     const FLOAT = 2;
-
-//     // function anInt($val)
-//     // {
-//     //     return is_numeric($val);
-//     // }
-// }

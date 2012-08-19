@@ -1,0 +1,12 @@
+#! /usr/bin/env php
+<?php
+// Same as basic.php demoing that the library works fine as an executable as well
+// This example is Unix-ish specific
+// Usage
+// ./basic test
+
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+$cmd = new Commando\Commando();
+
+echo "Argument #1: {$cmd[0]}";
