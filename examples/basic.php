@@ -4,6 +4,6 @@
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-$cmd = new Commando\Commando();
+$cmd = new Commando\Command();
 
 echo "Argument #1: {$cmd[0]}";

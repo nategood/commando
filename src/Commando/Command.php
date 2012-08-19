@@ -5,7 +5,7 @@
 
 namespace Commando;
 
-class Commando implements \ArrayAccess
+class Command implements \ArrayAccess
 {
     const OPTION_TYPE_ARGUMENT  = 1; // e.g. foo
     const OPTION_TYPE_SHORT     = 2; // e.g. -u
@@ -14,9 +14,11 @@ class Commando implements \ArrayAccess
 
     private
         $current_option             = null,
+        $name                       = null,
         $options                    = array(),
         $nameless_option_counter    = 0,
         $tokens                     = array(),
+        $help                       = null,
         $parsed                     = false;
 
     public function __construct($tokens = null)
@@ -35,7 +37,7 @@ class Commando implements \ArrayAccess
      */
     public static function define($tokens = null)
     {
-        return new Commando($tokens);
+        return new Command($tokens);
     }
 
     /**
@@ -51,6 +53,7 @@ class Commando implements \ArrayAccess
         'b' => 'boolean',
 
         'require' => 'require',
+        'required' => 'require',
         'r' => 'require',
 
         'alias' => 'alias',
@@ -59,8 +62,6 @@ class Commando implements \ArrayAccess
 
         'describe' => 'describe',
         'd' => 'describe',
-        'help' => 'describe',
-        'h' => 'describe',
         'description' => 'describe',
         'describedAs' => 'describe',
 
@@ -70,20 +71,12 @@ class Commando implements \ArrayAccess
         'castWith' => 'map',
 
         'must' => 'must',
-
-        // Special cases of map
-        // 'castToInt' => 'map',
-        // 'castToFloat' => 'map',
-
-        // Special cases of must
-        // 'mustMatch' => 'must',
-        // 'mustBeAnInt' => 'must',
     );
 
 
     /**
-     * This is the meat of Commando.  Any time we are operating on
-     * an individual option for commando (e.g. $cmd->option()->require()...)
+     * This is the meat of Command.  Any time we are operating on
+     * an individual option for command (e.g. $cmd->option()->require()...)
      * it relies on this magic method.  It allows us to handle some logic
      * that is applicable across the board and also allows easy aliasing of
      * methods (e.g. "o" for "option")... since it is a CLI library, such
@@ -91,7 +84,7 @@ class Commando implements \ArrayAccess
      *
      * @param string $name
      * @param array $arguments
-     * @return Commando
+     * @return Command
      */
     public function __call($name, $arguments)
     {
@@ -118,13 +111,13 @@ class Commando implements \ArrayAccess
      * @param Option|null $option
      * @return Option
      */
-    public function _option($option, $name = null)
+    private function _option($option, $name = null)
     {
         // Is this a previously declared option?
-        if (!empty($name) && !empty($this->options[$name])) {
+        if (isset($name) && !empty($this->options[$name])) {
             $this->current_option = $this->getOption($name);
         } else {
-            if (empty($name)) {
+            if (!isset($name)) {
                 $name = $this->nameless_option_counter++;
             }
             $this->current_option = $this->options[$name] = new Option($name);
@@ -133,13 +126,11 @@ class Commando implements \ArrayAccess
         return $this->current_option;
     }
 
-    // OPTION OPERATIONS
-
     /**
      * @param Option $option
      * @return Option
      */
-    public function _boolean(Option $option, $boolean = true)
+    private function _boolean(Option $option, $boolean = true)
     {
         return $option->setBoolean($boolean);
     }
@@ -148,7 +139,7 @@ class Commando implements \ArrayAccess
      * @param Option $option
      * @return Option
      */
-    public function _require(Option $option, $require = true)
+    private function _require(Option $option, $require = true)
     {
         return $option->setRequired($require);
     }
@@ -158,7 +149,7 @@ class Commando implements \ArrayAccess
      * @param string $alias
      * @return Option
      */
-    public function _alias(Option $option, $alias)
+    private function _alias(Option $option, $alias)
     {
         $this->options[$alias] = $this->current_option;
         return $option->addAlias($alias);
@@ -169,7 +160,7 @@ class Commando implements \ArrayAccess
      * @param string $description
      * @return Option
      */
-    public function _describe(Option $option, $description)
+    private function _describe(Option $option, $description)
     {
         return $option->setDescription($description);
     }
@@ -179,7 +170,7 @@ class Commando implements \ArrayAccess
      * @param \Closure $callback (string $value) -> boolean
      * @return Option
      */
-    public function _must(Option $option, \Closure $callback)
+    private function _must(Option $option, \Closure $callback)
     {
         return $option->setRule($callback);
     }
@@ -189,21 +180,33 @@ class Commando implements \ArrayAccess
      * @param \Closure $callback
      * @return Option
      */
-    public function _map(Option $option, \Closure $callback)
+    private function _map(Option $option, \Closure $callback)
     {
         return $option->setMap($callback);
     }
-
-    // END OPTION OPERATIONS
 
     /**
      * Rare that you would need to use this other than for testing,
      * allows defining the cli tokens, instead of using $argv
      * @param array $cli_tokens
+     * @return Command
      */
     public function setTokens(array $cli_tokens)
     {
+        // todo also slice on "="
         $this->tokens = $cli_tokens;
+        return $this;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function parseIfNotParsed()
+    {
+        if ($this->isParsed()) {
+            return;
+        }
+        $this->parse();
     }
 
     /**
@@ -212,7 +215,8 @@ class Commando implements \ArrayAccess
     public function parse()
     {
         $tokens = $this->tokens;
-        $filename = array_shift($tokens);
+        // the executed filename
+        $this->name = array_shift($tokens);
 
         $keyvals = array();
         $count = 0; // standalone argument count
@@ -238,7 +242,6 @@ class Commando implements \ArrayAccess
                 // no combo support yet (e.g. -abc !== -a -b -c)
                 $option = $this->getOption($name);
                 if ($option->isBoolean()) {
-                    // todo implicitly set each boolean option to false to start with
                     $keyvals[$name] = true;
                 } else {
                     // the next token MUST be an "argument" and not another flag/option
@@ -258,7 +261,7 @@ class Commando implements \ArrayAccess
         // todo protect against duplicates caused by aliases
         foreach ($this->options as $option) {
             if (is_null($option->getValue()) && $option->isRequired()) {
-                throw new Exception(sprintf('Required option, %s, must be specified', $option->getName()));
+                throw new \Exception(sprintf('Required option, %s, must be specified', $option->getName()));
             }
         }
 
@@ -266,7 +269,7 @@ class Commando implements \ArrayAccess
     }
 
     /**
-     * Has this Commando instance parsed its arguments?
+     * Has this Command instance parsed its arguments?
      * @return bool
      */
     public function isParsed()
@@ -274,6 +277,10 @@ class Commando implements \ArrayAccess
         return $this->parsed;
     }
 
+    /**
+     * @param string $token
+     * @return array [option name/value, OPTION_TYPE_*]
+     */
     private function _parseOption($token)
     {
         $matches = array();
@@ -300,7 +307,7 @@ class Commando implements \ArrayAccess
      */
     public function getOption($option)
     {
-        // var_dump(array_keys($this->options));
+
         if (!$this->hasOption($option)) {
             throw new \Exception(sprintf('Unknown option, %s, specified', $option));
         }
@@ -323,18 +330,64 @@ class Commando implements \ArrayAccess
     public function _toString()
     {
         // todo return values of set options as map of option name => value
+        return $this->getHelp();
+    }
+
+    /**
+     * @return int
+     */
+    public function getSize()
+    {
+        return count($this->options);
+    }
+
+    /**
+     * @param string $help
+     */
+    public function setHelp($help)
+    {
+        $this->help = $help;
+        return $this;
     }
 
     /**
      * @return string help docs
      */
-    public function helpText()
+    public function getHelp()
     {
-        // todo
-        return '';
+
+        if (empty($this->name) && isset($tokens[0])) {
+            $this->name = $tokens[0];
+        }
+
+        $color = new \Colors\Color();
+
+        $help = '';
+
+        $help .= $color(\Commando\Util\Terminal::header(' ' . $this->name))
+            ->white()->bold()->bg('green') . PHP_EOL;
+
+        if (!empty($this->help)) {
+            $help .= PHP_EOL . \Commando\Util\Terminal::wrap($this->help) . PHP_EOL;
+        }
+
+        // todo index this better from the start
+        $seen = array();
+        foreach ($this->options as $name => $option) {
+            if (in_array($option, $seen)) {
+                continue;
+            }
+            $help .= $option->__toString() . PHP_EOL;
+            $seen[] = $option;
+        }
+
+        return $help;
     }
 
-    // ARRAYACCESS METHODS
+    public function printHelp()
+    {
+        echo $this->getHelp();
+    }
 
     /**
      * @param string $offset
@@ -362,11 +415,12 @@ class Commando implements \ArrayAccess
     /**
      * @param string $offset
      * @param string $value
+     * @throws \Exception
      */
     public function offsetSet($offset, $value)
     {
         // todo maybe support?
-        throw new Exception('Setting an option value via array syntax is not permitted');
+        throw new \Exception('Setting an option value via array syntax is not permitted');
     }
 
     /**
@@ -376,7 +430,5 @@ class Commando implements \ArrayAccess
     {
         $this->options[$offset]->setValue(null);
     }
-
-    // END ARRAYACCESS METHODS
 
 }

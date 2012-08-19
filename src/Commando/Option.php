@@ -13,6 +13,7 @@ class Option
         $boolean = false, /* bool */
         $type, /* int see constants */
         $rule, /* closure|regex|int */
+        $value = null, /* mixed */
         $map; /* closure */
 
     const TYPE_NAMED = 1;
@@ -30,12 +31,9 @@ class Option
             throw new \Exception(sprintf('Invalid option name %s: Must be exactly one character', $name));
         }
 
-        $this->type = is_int($name) ? self::TYPE_NAMED : self::TYPE_ANONYMOUS;
+        $this->type = is_int($name) ? self::TYPE_ANONYMOUS : self::TYPE_NAMED;
 
         $this->name = $name;
-
-        // the name is an alias too...
-        $this->addAlias($name);
     }
 
     /**
@@ -159,6 +157,7 @@ class Option
      */
     public function isBoolean()
     {
+        $this->value = false;
         return $this->boolean;
     }
 
@@ -177,13 +176,37 @@ class Option
     {
         // boolean check
         if ($this->isBoolean() && !is_bool($value)) {
-            throw new \Exception(sprintf('Boolean option expected, received %s value', $value));
+            throw new \Exception(sprintf('Boolean option expected for option -%s, received %s value instead', $this->name, $value));
         }
-
         if (!$this->validate($value)){
-            throw new \Exception(sprintf('Invalid value, %s, for %s', $this->name, $this->value));
+            throw new \Exception(sprintf('Invalid value, %s, for option -%s', $value, $this->name));
+        }
+        $this->value = $this->map($value);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        // Very naive for now
+        $color = new \Colors\Color();
+        $help = '';
+
+        if ($this->type === self::TYPE_NAMED) {
+            $help .=  PHP_EOL . '-' . $this->name;
+            if (!empty($this->aliases)) {
+                $help .= '/--' . implode('/--', $this->aliases);
+            }
+            if (!$this->isBoolean()) {
+                $help .= ' ' . $color('<argument>')->underline();
+            }
         }
 
-        $this->value = $this->map($value);
+        if (!empty($this->description)) {
+            $help .= PHP_EOL . \Commando\Util\Terminal::wrap($this->description, 5, 1);
+        }
+
+        return $help;
     }
 }

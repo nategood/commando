@@ -5,7 +5,7 @@ Commando is a PHP command line interface library that beautifies and simplifies 
 
 ## Why?
 
-PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, (`getopt`)[http://php.net/manual/en/function.getopt.php] isn't there yet, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling cli input, all while providing a clean and readable interface.
+PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) all that much better, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling cli input, all while providing a clean and readable interface.
 
 # Example
 
@@ -16,7 +16,7 @@ Here is a trivial example of a PHP Commando script packed with some of the cool 
 
 $salutations = array('Mister' => 'Mr', 'Misses' => 'Mrs', 'Miss' => 'Ms', 'Doctor' => 'Dr');
 
-$hello_cmd = new Commando\Commando();
+$hello_cmd = new Commando\Command();
 $hello_cmd
   // Define first option
   ->option()
@@ -66,7 +66,13 @@ Things to note:
  - We can access option values in an array via a flags name OR it's alias
  - We can use closures to perform validation and map operations right as part of our option definition
 
+## Command Definition Options
+
+These options work on the "command" level
+
 ## Option Definition Options
+
+These options work on the "option" level, even though they are chained to a `Command` instance
 
 ### `option` (mixed name = null)
 
@@ -82,7 +88,7 @@ Add a long form (e.g. --example) alias for a named option.  This method can be c
 
 ### `description` (string description)
 
-Aliases: d, describe, describedAs, h, help
+Aliases: d, describe, describedAs
 
 Text to describe this option.  This text will be used to build the "help" page and as such, it is end user facing.
 
@@ -120,12 +126,6 @@ If you're new to Composer...
 
 *Currently installing via Composer is the only option (phar build coming soon).*
 
-Notice
-
- - Commando implements ArrayAccess so it acts much like an array when you want to retrieve values for it
- - For "annonymous" (i.e. not a named flag) arguments, we access them based on their numeric index
- - We can access option values in an array via a flags name OR it's alias
-
 ## Baked in Help
 
 Commando has automatic `--help` support built in.  Calling your script with this flag will print out a pretty help page based on your option definitions and Commando settings.  If you define an option with the alias of 'help', it will override this built in support.
@@ -134,7 +134,7 @@ Commando has automatic `--help` support built in.  Calling your script with this
 
 If you, [like Martin](http://www.amazon.com/gp/product/0132350882), are of the _train_ of thought that the chaining pattern is a "trainwreck", Commando also works fine without chaining.  Commando reads much nicer with the chaining, however, chaining may require a bit more work when debugging and additional indentation diligence.
 
-```
+``` php
 <?php
 // Commando without using chaining
 $cmd = new Commando();

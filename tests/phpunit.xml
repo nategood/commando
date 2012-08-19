@@ -1,5 +1,5 @@
 <phpunit>
-    <testsuite name="Httpful">
+    <testsuite name="Commando">
         <directory>.</directory>
     </testsuite>
     <logging>
