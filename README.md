@@ -1,6 +1,8 @@
 # Commando
 ## An Elegant PHP CLI Library
 
+[![Build Status](https://secure.travis-ci.org/nategood/commando.png?branch=master)](http://travis-ci.org/nategood/commando)
+
 Commando is a PHP command line interface library that beautifies and simplifies writing PHP scripts intended for command line use.
 
 ## Why?
