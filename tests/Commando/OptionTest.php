@@ -35,11 +35,13 @@ class OptionTest extends \PHPUnit_Framework_TestCase
     {
         $name = 'f';
         $alias = 'foo';
+        $alias2 = 'foobar';
 
         $option = new Option($name);
         $option->addAlias($alias);
+        $option->addAlias($alias2);
 
-        $this->assertEquals(array($name, $alias), $option->getAliases());
+        $this->assertEquals(array($alias, $alias2), $option->getAliases());
     }
 
     /**
