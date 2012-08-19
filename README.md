@@ -20,19 +20,19 @@ $hello_cmd
   ->option()
     ->require()
     ->describedAs('A person\'s name')
-  // Define a flag "-s" a.k.a. "--salutation"
-  ->option('s')
-    ->aka('salutation')
-    ->describedAs('When set, use this salutation to address the person')
-    ->must(function($salutation) {
-        $salutations = array('Mister', 'Mr', 'Misses', 'Mrs', 'Miss', 'Ms');
-        return in_array($salutation, $salutations);
+  // Define a flag "-t" a.k.a. "--title"
+  ->option('t')
+    ->aka('title')
+    ->describedAs('When set, use this title to address the person')
+    ->must(function($title) {
+        $titles = array('Mister', 'Mr', 'Misses', 'Mrs', 'Miss', 'Ms');
+        return in_array($title, $titles);
     })
-    ->map(function($salutation) {
-        $salutations = array('Mister' => 'Mr', 'Misses' => 'Mrs', 'Miss' => 'Ms');
-        if (array_key_exists($salutation, $salutations))
-            $salutation = $salutations[$salutation];
-        return "$salutation. ";
+    ->map(function($title) {
+        $titles = array('Mister' => 'Mr', 'Misses' => 'Mrs', 'Miss' => 'Ms');
+        if (array_key_exists($title, $titles))
+            $title = $titles[$title];
+        return "$title. ";
     })
   // Define a boolean flag "-c" aka "--capitalize"
   ->option('c')
@@ -43,7 +43,7 @@ $hello_cmd
 
 $name = $hello_cmd['capitalize'] ? ucwords($hello_cmd[0]) : $hello_cmd[0];
 
-echo "Hello {$hello_cmd['salutation']}$name!", PHP_EOL;
+echo "Hello {$hello_cmd['title']}$name!", PHP_EOL;
 ```
 
 Running it:
