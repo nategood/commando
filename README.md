@@ -14,38 +14,36 @@ Here is a trivial example of a PHP Commando script packed with some of the cool 
 ``` php
 <?php
 
-$salutations = array('Mister' => 'Mr', 'Misses' => 'Mrs', 'Miss' => 'Ms', 'Doctor' => 'Dr');
-
-$hello_cmd = new Commando\Command();
+$hello_cmd = new Command();
 $hello_cmd
   // Define first option
   ->option()
-    ->required()
+    ->require()
     ->describedAs('A person\'s name')
   // Define a flag "-s" a.k.a. "--salutation"
   ->option('s')
-    ->alias('salutation')
+    ->aka('salutation')
     ->describedAs('When set, use this salutation to address the person')
     ->must(function($salutation) {
-        return array_key_exists($salutation, $salutations) || in_array($salutation, $salutations);
+        $salutations = array('Mister', 'Mr', 'Misses', 'Mrs', 'Miss', 'Ms');
+        return in_array($salutation, $salutations);
     })
     ->map(function($salutation) {
+        $salutations = array('Mister' => 'Mr', 'Misses' => 'Mrs', 'Miss' => 'Ms');
         if (array_key_exists($salutation, $salutations))
             $salutation = $salutations[$salutation];
         return "$salutation. ";
     })
   // Define a boolean flag "-c" aka "--capitalize"
   ->option('c')
-    ->alias('capitalize')
+    ->aka('capitalize')
+    ->aka('cap')
     ->describedAs('Always capitalize the words in a name')
     ->boolean();
 
-$name = $hello_cmd[0];
+$name = $hello_cmd['capitalize'] ? ucwords($hello_cmd[0]) : $hello_cmd[0];
 
-if ($hello_cmd['capitlize'])
-    $name = ucwords($hello_cmd[0]);
-
-echo "Hello, {$hello_cmd['salutation']}{$name}!";
+echo "Hello {$hello_cmd['salutation']}$name!", PHP_EOL;
 ```
 
 Running it:
