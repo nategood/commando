@@ -85,7 +85,7 @@ class OptionTest extends \PHPUnit_Framework_TestCase
         $caught = false;
         try {
             $option->setValue('abc');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $caught = true;
         }
 
