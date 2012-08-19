@@ -5,19 +5,20 @@ namespace Commando;
 class Option
 {
     private
-        $aliases = array(), /* aliases for this argument */
         $name, /* string optional name of argument */
-        // $index, /* int */
+        $aliases = array(), /* aliases for this argument */
+        $value = null, /* mixed */
         $description, /* string */
         $required = false, /* bool */
         $boolean = false, /* bool */
-        $type, /* int see constants */
-        $rule, /* closure|regex|int */
-        $value = null, /* mixed */
+        $type = 0, /* int see constants */
+        $rule, /* closure */
         $map; /* closure */
 
-    const TYPE_NAMED = 1;
-    const TYPE_ANONYMOUS = 2;
+    const TYPE_SHORT        = 1;
+    const TYPE_VERBOSE      = 2;
+    const TYPE_NAMED        = 3; // 1|2
+    const TYPE_ANONYMOUS    = 4;
 
     /**
      * @param string|int $name single char name or int index for this option
@@ -27,11 +28,14 @@ class Option
     {
         if (!is_int($name) && empty($name)) {
             throw new \Exception(sprintf('Invalid option name %s: Must be identified by a single character or an integer', $name));
-        } else if (!is_int($name) && mb_strlen($name) > 1) {
-            throw new \Exception(sprintf('Invalid option name %s: Must be exactly one character', $name));
         }
 
-        $this->type = is_int($name) ? self::TYPE_ANONYMOUS : self::TYPE_NAMED;
+        if (!is_int($name)) {
+            $this->type = mb_strlen($name, 'UTF-8') === 1 ?
+                self::TYPE_SHORT : self::TYPE_VERBOSE;
+        } else {
+            $this->type = self::TYPE_ANONYMOUS;
+        }
 
         $this->name = $name;
     }
@@ -193,10 +197,14 @@ class Option
         $color = new \Colors\Color();
         $help = '';
 
-        if ($this->type === self::TYPE_NAMED) {
-            $help .=  PHP_EOL . '-' . $this->name;
+        if ($this->type & self::TYPE_NAMED) {
+            $help .=  PHP_EOL . (mb_strlen($this->name, 'UTF-8') === 1 ?
+                '-' : '--') . $this->name;
             if (!empty($this->aliases)) {
-                $help .= '/--' . implode('/--', $this->aliases);
+                foreach($this->aliases as $alias) {
+                    $help .= (mb_strlen($alias, 'UTF-8') === 1 ?
+                        '/-' : '/--') . $alias;
+                }
             }
             if (!$this->isBoolean()) {
                 $help .= ' ' . $color('<argument>')->underline();

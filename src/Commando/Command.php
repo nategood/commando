@@ -19,7 +19,8 @@ class Command implements \ArrayAccess
         $nameless_option_counter    = 0,
         $tokens                     = array(),
         $help                       = null,
-        $parsed                     = false;
+        $parsed                     = false,
+        $use_default_help           = true;
 
     public function __construct($tokens = null)
     {
@@ -185,6 +186,12 @@ class Command implements \ArrayAccess
         return $option->setMap($callback);
     }
 
+
+    public function useDefaultHelp($help = true)
+    {
+        $this->use_default_help = $help;
+    }
+
     /**
      * Rare that you would need to use this other than for testing,
      * allows defining the cli tokens, instead of using $argv
@@ -239,7 +246,12 @@ class Command implements \ArrayAccess
 
                 $count++;
             } else {
-                // no combo support yet (e.g. -abc !== -a -b -c)
+                // Short circuit if the help flag was set and we're using default help
+                if ($this->use_default_help === true && $name === 'help') {
+                    $this->printHelp();
+                    exit;
+                }
+
                 $option = $this->getOption($name);
                 if ($option->isBoolean()) {
                     $keyvals[$name] = true;
@@ -327,7 +339,7 @@ class Command implements \ArrayAccess
     /**
      * @return string dump values
      */
-    public function _toString()
+    public function __toString()
     {
         // todo return values of set options as map of option name => value
         return $this->getHelp();
@@ -356,8 +368,10 @@ class Command implements \ArrayAccess
     public function getHelp()
     {
 
-        if (empty($this->name) && isset($tokens[0])) {
-            $this->name = $tokens[0];
+        $this->attachHelp();
+
+        if (empty($this->name) && isset($this->tokens[0])) {
+            $this->name = $this->tokens[0];
         }
 
         $color = new \Colors\Color();
@@ -387,6 +401,14 @@ class Command implements \ArrayAccess
     public function printHelp()
     {
         echo $this->getHelp();
+    }
+
+    private function attachHelp()
+    {
+        // Add in a default help method
+        $this->option('help')
+            ->describe('Show the help page for this command.')
+            ->boolean();
     }
 
     /**
