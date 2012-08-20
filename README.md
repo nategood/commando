@@ -21,7 +21,7 @@ $hello_cmd = new Command();
 // Define first option
 $hello_cmd->option()
     ->require()
-    ->describedAs('A person\'s name')
+    ->describedAs('A person\'s name');
 
 // Define a flag "-t" a.k.a. "--title"
 $hello_cmd->option('t')
@@ -84,37 +84,37 @@ Text to prepend to the help page.  Use this to describe the command at a high le
 
 These options work on the "option" level, even though they are chained to a `Command` instance
 
-### `option` (mixed name = null)
+### `option (mixed name = null)`
 
 Aliases: o
 
 Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an annonymous argument and is referenced in the future by it's position.
 
-### `alias` (string alias)
+### `alias (string alias)`
 
 Aliases: a, aka
 
 Add an alias for a named option.  This method can be called multiple times to add multiple aliases.
 
-### `description` (string description)
+### `description (string description)`
 
 Aliases: d, describe, describedAs
 
 Text to describe this option.  This text will be used to build the "help" page and as such, it is end user facing.
 
-### `require`
+### `require (bool require)`
 
 Aliases: r, required
 
 Require that this flag is specified
 
-### `must` (Closure rule)
+### `must (Closure rule)`
 
 Aliases: _N/A_
 
 Define a rule to validate input against.  Takes function that accepts a string $value and returns a boolean as to whether or not $value is valid.
 
-### `map` (Closure map)
+### `map (Closure map)`
 
 Aliases: cast, castTo
 
