@@ -193,7 +193,6 @@ class Option
      */
     public function __toString()
     {
-        // Very naive for now
         $color = new \Colors\Color();
         $help = '';
 
@@ -209,10 +208,13 @@ class Option
             if (!$this->isBoolean()) {
                 $help .= ' ' . $color('<argument>')->underline();
             }
+            $help .= PHP_EOL;
+        } else {
+            $help .= 'arg' . $this->name . PHP_EOL;
         }
 
         if (!empty($this->description)) {
-            $help .= PHP_EOL . \Commando\Util\Terminal::wrap($this->description, 5, 1);
+            $help .= \Commando\Util\Terminal::wrap($this->description, 5, 1);
         }
 
         return $help;

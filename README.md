@@ -7,7 +7,7 @@ Commando is a PHP command line interface library that beautifies and simplifies 
 
 ## Why?
 
-PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) all that much better, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling cli input, all while providing a clean and readable interface.
+PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) isn't all that much better, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling cli input, all while providing a clean and readable interface.
 
 ## Example
 
@@ -139,6 +139,8 @@ If you're new to Composer...
 ## Baked in Help
 
 Commando has automatic `--help` support built in.  Calling your script with this flag will print out a pretty help page based on your option definitions and Commando settings.  If you define an option with the alias of 'help', it will override this built in support.
+
+![help screenshot](http://cl.ly/image/1y3i2m2h220u)
 
 ## Trainwreck
 

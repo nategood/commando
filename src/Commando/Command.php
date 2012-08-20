@@ -385,6 +385,8 @@ class Command implements \ArrayAccess
             $help .= PHP_EOL . \Commando\Util\Terminal::wrap($this->help) . PHP_EOL;
         }
 
+        $help .= PHP_EOL;
+
         // todo index this better from the start
         $seen = array();
         foreach ($this->options as $name => $option) {
