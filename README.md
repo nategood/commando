@@ -11,19 +11,20 @@ PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`get
 
 # Example
 
-Here is a trivial example of a PHP Commando script packed with some of the cool stuff Commando supports.  Let's say it is in a file called `hello.php`.
+Here is an example of a PHP Commando script that gives a decent tour of Commando's features.  Let's say it is in a file called `hello.php`.
 
 ``` php
 <?php
 
 $hello_cmd = new Command();
-$hello_cmd
-  // Define first option
-  ->option()
+
+// Define first option
+$hello_cmd->option()
     ->require()
     ->describedAs('A person\'s name')
-  // Define a flag "-t" a.k.a. "--title"
-  ->option('t')
+
+// Define a flag "-t" a.k.a. "--title"
+$hello_cmd->option('t')
     ->aka('title')
     ->describedAs('When set, use this title to address the person')
     ->must(function($title) {
@@ -35,9 +36,10 @@ $hello_cmd
         if (array_key_exists($title, $titles))
             $title = $titles[$title];
         return "$title. ";
-    })
-  // Define a boolean flag "-c" aka "--capitalize"
-  ->option('c')
+    });
+
+// Define a boolean flag "-c" aka "--capitalize"
+$hello_cmd->option('c')
     ->aka('capitalize')
     ->aka('cap')
     ->describedAs('Always capitalize the words in a name')
@@ -56,7 +58,7 @@ Running it:
     > php hello.php --capitalize nate
     Hello, Nate!
 
-    > php hello.php -c -s Mr 'nate good'
+    > php hello.php -c -t Mr 'nate good'
     Hello, Mr. Nate Good!
 
 Things to note:
@@ -70,6 +72,14 @@ Things to note:
 
 These options work on the "command" level
 
+### `useDefaultHelp (bool help)`
+
+The default behavior of Commando is to provide a --help option that spits out a useful help page generated off of your option definitions.  Disable this feature by calling `useDefaultHelp(false)`
+
+### `setHelp (string help)`
+
+Text to prepend to the help page.  Use this to describe the command at a high level and maybe some examples usages of the command.
+
 ## Option Definition Options
 
 These options work on the "option" level, even though they are chained to a `Command` instance
@@ -78,13 +88,13 @@ These options work on the "option" level, even though they are chained to a `Com
 
 Aliases: o
 
-Define a new option.  When `name` is set, the option will be a named "flag" option and must only be a single char (e.g. `f` for option `-f`).  When no `name` is defined, the option is an annonymous argument and is referenced in the future by it's position.
+Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an annonymous argument and is referenced in the future by it's position.
 
 ### `alias` (string alias)
 
 Aliases: a, aka
 
-Add a long form (e.g. --example) alias for a named option.  This method can be called multiple times to add multiple aliases.
+Add an alias for a named option.  This method can be called multiple times to add multiple aliases.
 
 ### `description` (string description)
 

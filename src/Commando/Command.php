@@ -208,7 +208,7 @@ class Command implements \ArrayAccess
     /**
      * @throws \Exception
      */
-    public function parseIfNotParsed()
+    private function parseIfNotParsed()
     {
         if ($this->isParsed()) {
             return;
