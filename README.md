@@ -140,7 +140,7 @@ If you're new to Composer...
 
 Commando has automatic `--help` support built in.  Calling your script with this flag will print out a pretty help page based on your option definitions and Commando settings.  If you define an option with the alias of 'help', it will override this built in support.
 
-![help screenshot](http://cl.ly/image/1y3i2m2h220u)
+![help screenshot](http://cl.ly/image/1y3i2m2h220u/Screen%20Shot%202012-08-19%20at%208.54.49%20PM.png)
 
 ## Trainwreck
 

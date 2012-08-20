@@ -319,7 +319,6 @@ class Command implements \ArrayAccess
      */
     public function getOption($option)
     {
-
         if (!$this->hasOption($option)) {
             throw new \Exception(sprintf('Unknown option, %s, specified', $option));
         }
@@ -367,7 +366,6 @@ class Command implements \ArrayAccess
      */
     public function getHelp()
     {
-
         $this->attachHelp();
 
         if (empty($this->name) && isset($this->tokens[0])) {
@@ -431,7 +429,7 @@ class Command implements \ArrayAccess
             $this->parse();
         }
         if (!isset($this->options[$offset])) {
-            return null; // bc it is PHP like... might want to throw an Exception?
+            return null; // follows normal php convention
         }
         return $this->options[$offset]->getValue();
     }
@@ -443,7 +441,6 @@ class Command implements \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        // todo maybe support?
         throw new \Exception('Setting an option value via array syntax is not permitted');
     }
 
