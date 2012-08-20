@@ -142,6 +142,12 @@ Commando has automatic `--help` support built in.  Calling your script with this
 
 ![help screenshot](http://cl.ly/image/1y3i2m2h220u/Screen%20Shot%202012-08-19%20at%208.54.49%20PM.png)
 
+## Error Messaging
+
+By default, Commando will catch Exceptions that occur during the parsing process.  Instead print a formatted, user friendly error message to standard error and finally exits.  If you wish to have Commando through Exceptions in these cases, call the `doNotTrapErrors` method on your Command instance.
+
+![error screenshot](http://f.cl.ly/items/150H2d3x0l3O3J0s3i1G/Screen%20Shot%202012-08-19%20at%209.58.21%20PM.png)
+
 ## Trainwreck
 
 If you, [like Martin](http://www.amazon.com/gp/product/0132350882), are of the _train_ of thought that the chaining pattern is a "trainwreck", Commando can also be used without chaining.  Commando reads nicer and is more concise with the chaining.

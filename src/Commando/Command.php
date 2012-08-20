@@ -20,26 +20,8 @@ class Command implements \ArrayAccess
         $tokens                     = array(),
         $help                       = null,
         $parsed                     = false,
-        $use_default_help           = true;
-
-    public function __construct($tokens = null)
-    {
-        if (empty($tokens)) {
-            $tokens = $_SERVER['argv'];
-        }
-
-        $this->setTokens($tokens);
-    }
-
-    /**
-     * Factory style reads a little nicer
-     * @param array $tokens defaults to $argv
-     * @return Commando
-     */
-    public static function define($tokens = null)
-    {
-        return new Command($tokens);
-    }
+        $use_default_help           = true,
+        $trap_errors                = true;
 
     /**
      * @var array Valid "option" options, mapped to their aliases
@@ -74,6 +56,24 @@ class Command implements \ArrayAccess
         'must' => 'must',
     );
 
+    public function __construct($tokens = null)
+    {
+        if (empty($tokens)) {
+            $tokens = $_SERVER['argv'];
+        }
+
+        $this->setTokens($tokens);
+    }
+
+    /**
+     * Factory style reads a little nicer
+     * @param array $tokens defaults to $argv
+     * @return Commando
+     */
+    public static function define($tokens = null)
+    {
+        return new Command($tokens);
+    }
 
     /**
      * This is the meat of Command.  Any time we are operating on
@@ -101,7 +101,6 @@ class Command implements \ArrayAccess
             throw new \Exception(sprintf('Invalid Option Chain: Attempting to call %s before an "option" declaration', $name));
         }
 
-        // call method
         array_unshift($arguments, $this->current_option);
         $option = call_user_func_array(array($this, "_$name"), $arguments);
 
@@ -221,63 +220,82 @@ class Command implements \ArrayAccess
      */
     public function parse()
     {
-        $tokens = $this->tokens;
-        // the executed filename
-        $this->name = array_shift($tokens);
+        try {
+            $tokens = $this->tokens;
+            // the executed filename
+            $this->name = array_shift($tokens);
 
-        $keyvals = array();
-        $count = 0; // standalone argument count
+            $keyvals = array();
+            $count = 0; // standalone argument count
 
-        while (!empty($tokens)) {
-            $token = array_shift($tokens);
+            while (!empty($tokens)) {
+                $token = array_shift($tokens);
 
-            list($name, $type) = $this->_parseOption($token);
+                list($name, $type) = $this->_parseOption($token);
 
-            if ($type === self::OPTION_TYPE_ARGUMENT) {
-                // its an argument, use an int as the index
-                $keyvals[$count] = $name;
+                if ($type === self::OPTION_TYPE_ARGUMENT) {
+                    // its an argument, use an int as the index
+                    $keyvals[$count] = $name;
 
-                // We allow for "dynamic" annonymous arguments, so we
-                // add an option for any annonymous arguments that
-                // weren't predefined
-                if (!$this->hasOption($count)) {
-                    $this->options[$count] = new Option($count);
-                }
+                    // We allow for "dynamic" annonymous arguments, so we
+                    // add an option for any annonymous arguments that
+                    // weren't predefined
+                    if (!$this->hasOption($count)) {
+                        $this->options[$count] = new Option($count);
+                    }
 
-                $count++;
-            } else {
-                // Short circuit if the help flag was set and we're using default help
-                if ($this->use_default_help === true && $name === 'help') {
-                    $this->printHelp();
-                    exit;
-                }
-
-                $option = $this->getOption($name);
-                if ($option->isBoolean()) {
-                    $keyvals[$name] = true;
+                    $count++;
                 } else {
-                    // the next token MUST be an "argument" and not another flag/option
-                    list($val, $type) = $this->_parseOption(array_shift($tokens));
-                    if ($type !== self::OPTION_TYPE_ARGUMENT)
-                        throw new \Exception(sprintf('Unable to parse option %s: Expected an argument', $token));
-                    $keyvals[$name] = $val;
+                    // Short circuit if the help flag was set and we're using default help
+                    if ($this->use_default_help === true && $name === 'help') {
+                        $this->printHelp();
+                        exit;
+                    }
+
+                    $option = $this->getOption($name);
+                    if ($option->isBoolean()) {
+                        $keyvals[$name] = true;
+                    } else {
+                        // the next token MUST be an "argument" and not another flag/option
+                        list($val, $type) = $this->_parseOption(array_shift($tokens));
+                        if ($type !== self::OPTION_TYPE_ARGUMENT)
+                            throw new \Exception(sprintf('Unable to parse option %s: Expected an argument', $token));
+                        $keyvals[$name] = $val;
+                    }
                 }
             }
-        }
 
-        // Set values (validates and performs map when applicable)
-        foreach ($keyvals as $key => $value) {
-            $this->getOption($key)->setValue($value);
-        }
-
-        // todo protect against duplicates caused by aliases
-        foreach ($this->options as $option) {
-            if (is_null($option->getValue()) && $option->isRequired()) {
-                throw new \Exception(sprintf('Required option, %s, must be specified', $option->getName()));
+            // Set values (validates and performs map when applicable)
+            foreach ($keyvals as $key => $value) {
+                $this->getOption($key)->setValue($value);
             }
+
+            // todo protect against duplicates caused by aliases
+            foreach ($this->options as $option) {
+                if (is_null($option->getValue()) && $option->isRequired()) {
+                    throw new \Exception(sprintf('Required %s %s must be specified',
+                        $option->getType() & Option::TYPE_NAMED ?
+                            'option' : 'argument', $option->getName()));
+                }
+            }
+
+            $this->parsed = true;
+
+        } catch(\Exception $e) {
+            $this->error($e);
+        }
+    }
+
+    public function error(\Exception $e)
+    {
+        if ($this->trap_errors !== true) {
+            throw $e;
         }
 
-        $this->parsed = true;
+        $color = new \Colors\Color();
+        $error = sprintf('ERROR: %s %s', $e->getMessage(), PHP_EOL);
+        echo $color($error)->bg('red')->bold()->white();
+        exit(1);
     }
 
     /**
@@ -362,6 +380,25 @@ class Command implements \ArrayAccess
     }
 
     /**
+     * @param bool $trap when true, exceptions will be caught by Commando and
+     *    printed cleanly to standard error.
+     * @return Commando
+     */
+    public function trapErrors($trap = true)
+    {
+        $this->trap_errors = $trap;
+        return $this;
+    }
+
+    /**
+     * @return Commando
+     */
+    public function doNotTrapErrors()
+    {
+        return $this->trapErrors(false);
+    }
+
+    /**
      * @return string help docs
      */
     public function getHelp()
@@ -425,9 +462,7 @@ class Command implements \ArrayAccess
     public function offsetGet($offset)
     {
         // Support implicit/lazy parsing
-        if (!$this->isParsed()) {
-            $this->parse();
-        }
+        $this->parseIfNotParsed();
         if (!isset($this->options[$offset])) {
             return null; // follows normal php convention
         }

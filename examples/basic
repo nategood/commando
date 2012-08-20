@@ -1,6 +1,6 @@
 #! /usr/bin/env php
 <?php
-// Same as basic.php demoing that the library works fine as an executable as well
+// The library works fine as an executable as well
 // This example is Unix-ish specific
 // Usage
 // ./basic test
@@ -9,4 +9,4 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 $cmd = new Commando\Command();
 
-echo "Argument #1: {$cmd[0]}";
+echo "Argument #1: " . $cmd[0] . PHP_EOL;

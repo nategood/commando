@@ -139,6 +139,13 @@ class Option
         return $this->name;
     }
 
+    /**
+     * @return int type (see OPTION_TYPE_CONST)
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
 
     /**
      * @return mixed value of the option
