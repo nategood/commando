@@ -9,7 +9,7 @@ Commando is a PHP command line interface library that beautifies and simplifies 
 
 PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) all that much better, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling cli input, all while providing a clean and readable interface.
 
-# Example
+## Example
 
 Here is an example of a PHP Commando script that gives a decent tour of Commando's features.  Let's say it is in a file called `hello.php`.
 
@@ -142,18 +142,22 @@ Commando has automatic `--help` support built in.  Calling your script with this
 
 ## Trainwreck
 
-If you, [like Martin](http://www.amazon.com/gp/product/0132350882), are of the _train_ of thought that the chaining pattern is a "trainwreck", Commando also works fine without chaining.  Commando reads much nicer with the chaining, however, chaining may require a bit more work when debugging and additional indentation diligence.
+If you, [like Martin](http://www.amazon.com/gp/product/0132350882), are of the _train_ of thought that the chaining pattern is a "trainwreck", Commando can also be used without chaining.  Commando reads nicer and is more concise with the chaining.
 
 ``` php
 <?php
-// Commando without using chaining
+// Commando without using chaining if that suits you better
 $cmd = new Commando();
-$option = $cmd->option('f');
-$option->alias('foo');
-$option2 = $cmd->option('g');
+$cmd->option('f');
+$optionF = $cmd->getOption('f');
+$optionF->alias('foo');
+
+$cmd->option('g');
+$optionG = $cmd->getOption('g');
+$optionG->boolean();
 ```
 
-# Contributing
+## Contributing
 
 Commando highly encourages sending in pull requests.  When submitting a pull request please:
 
