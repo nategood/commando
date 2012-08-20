@@ -122,7 +122,7 @@ Perform a map operation on the value for this option.  Takes function that accep
 
 ## Installation
 
-Httpful is [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) compliant and can be installed using [Composer](http://getcomposer.org/).  Add `nategood/commando` to your `composer.json`
+Commando is [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) compliant and can be installed using [Composer](http://getcomposer.org/).  Add `nategood/commando` to your `composer.json`
 
     "require": {
         "nategood/commando": "*"
