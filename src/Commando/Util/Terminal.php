@@ -6,16 +6,16 @@ class Terminal
 {
     /**
      * Width of current terminal window
-     * On Unixy systems, relies on tput.  Falls back to a default value of
-     * $default
+     * On Linux/Mac flavor systems, will use tput.  Falls back to a
+     * default value of $default.  On Windows, will always fall back
+     * to default.
      *
      * @param int $default
      * @return int
      */
     public static function getWidth($default = 80)
     {
-        $cols = @exec('tputs cols 2>/dev/null');
-        return !empty($cols) ? $cols : $default;
+        return self::tput($default, 'cols');
     }
 
     /**
@@ -26,8 +26,25 @@ class Terminal
      */
     public static function getHeight($default = 32)
     {
-        $lines = @exec('tputs lines 2>/dev/null');
-        return !empty($lines) ? $lines : $default;
+        return self::tput($default, 'lines');
+    }
+
+    /**
+     * Sadly if you attempt to redirect stderr, e.g. "tput cols 2>/dev/null"
+     * tput does not return the expected values.  As a result, to prevent tput
+     * from writing to stderr, we first check the exit code and call it again
+     * to get the value :-(.
+     * @param int $default
+     * @param string $param
+     * @return int
+     */
+    private static function tput($default, $param = 'cols')
+    {
+        $test = exec('tput ' . $param . ' 2>/dev/null');
+        if (empty($test))
+            return $default;
+        $result = intval(exec('tput ' . $param));
+        return empty($result) ? $default : $result;
     }
 
     /**

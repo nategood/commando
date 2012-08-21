@@ -68,6 +68,34 @@ Things to note:
  - We can access option values in an array via a flags name OR it's alias
  - We can use closures to perform validation and map operations right as part of our option definition
 
+## Installation
+
+Commando is [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) compliant and can be installed using [Composer](http://getcomposer.org/).  Add `nategood/commando` to your `composer.json`
+
+    "require": {
+        "nategood/commando": "*"
+    }
+
+If you're new to Composer...
+
+ - [Download and build Composer](http://getcomposer.org/download/)
+ - Make it [globally accessible](http://getcomposer.org/doc/00-intro.md#globally)
+ - `cd` to your the directory where you'll be writing your Commando script and run `composer install`
+
+*Currently installing via Composer is the only option (phar build coming soon).*
+
+## Baked in Help
+
+Commando has automatic `--help` support built in.  Calling your script with this flag will print out a pretty help page based on your option definitions and Commando settings.  If you define an option with the alias of 'help', it will override this built in support.
+
+![help screenshot](http://cl.ly/image/1y3i2m2h220u/Screen%20Shot%202012-08-19%20at%208.54.49%20PM.png)
+
+## Error Messaging
+
+By default, Commando will catch Exceptions that occur during the parsing process.  Instead print a formatted, user friendly error message to standard error and finally exits.  If you wish to have Commando through Exceptions in these cases, call the `doNotTrapErrors` method on your Command instance.
+
+![error screenshot](http://f.cl.ly/items/150H2d3x0l3O3J0s3i1G/Screen%20Shot%202012-08-19%20at%209.58.21%20PM.png)
+
 ## Command Definition Options
 
 These options work on the "command" level
@@ -120,37 +148,9 @@ Aliases: cast, castTo
 
 Perform a map operation on the value for this option.  Takes function that accepts a string $value and return mixed (you can map to whatever you wish).
 
-## Installation
-
-Commando is [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) compliant and can be installed using [Composer](http://getcomposer.org/).  Add `nategood/commando` to your `composer.json`
-
-    "require": {
-        "nategood/commando": "*"
-    }
-
-If you're new to Composer...
-
- - [Download and build Composer](http://getcomposer.org/download/)
- - Make it [globally accessible](http://getcomposer.org/doc/00-intro.md#globally)
- - `cd` to your the directory where you'll be writing your Commando script and run `composer install`
-
-*Currently installing via Composer is the only option (phar build coming soon).*
-
-## Baked in Help
-
-Commando has automatic `--help` support built in.  Calling your script with this flag will print out a pretty help page based on your option definitions and Commando settings.  If you define an option with the alias of 'help', it will override this built in support.
-
-![help screenshot](http://cl.ly/image/1y3i2m2h220u/Screen%20Shot%202012-08-19%20at%208.54.49%20PM.png)
-
-## Error Messaging
-
-By default, Commando will catch Exceptions that occur during the parsing process.  Instead print a formatted, user friendly error message to standard error and finally exits.  If you wish to have Commando through Exceptions in these cases, call the `doNotTrapErrors` method on your Command instance.
-
-![error screenshot](http://f.cl.ly/items/150H2d3x0l3O3J0s3i1G/Screen%20Shot%202012-08-19%20at%209.58.21%20PM.png)
-
 ## Trainwreck
 
-If you, [like Martin](http://www.amazon.com/gp/product/0132350882), are of the _train_ of thought that the chaining pattern is a "trainwreck", Commando can also be used without chaining.  Commando reads nicer and is more concise with the chaining.
+If you, [like Martin](http://www.amazon.com/gp/product/0132350882), are of the _train_ of thought that the chaining pattern is a "trainwreck", Commando can also be used without chaining.  Commando reads nicer and is more concise when using chaining.
 
 ``` php
 <?php
