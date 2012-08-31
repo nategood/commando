@@ -114,25 +114,25 @@ These options work on the "option" level, even though they are chained to a `Com
 
 ### `option (mixed name = null)`
 
-Aliases: o
+Aliases: `o`
 
 Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an annonymous argument and is referenced in the future by it's position.
 
 ### `alias (string alias)`
 
-Aliases: a, aka
+Aliases: `a`, `aka`
 
 Add an alias for a named option.  This method can be called multiple times to add multiple aliases.
 
 ### `description (string description)`
 
-Aliases: d, describe, describedAs
+Aliases: `d`, `describe`, `describedAs`
 
 Text to describe this option.  This text will be used to build the "help" page and as such, it is end user facing.
 
 ### `require (bool require)`
 
-Aliases: r, required
+Aliases: `r`, `required`
 
 Require that this flag is specified
 
@@ -144,7 +144,7 @@ Define a rule to validate input against.  Takes function that accepts a string $
 
 ### `map (Closure map)`
 
-Aliases: cast, castTo
+Aliases: `cast`, `castTo`
 
 Perform a map operation on the value for this option.  Takes function that accepts a string $value and return mixed (you can map to whatever you wish).
 
@@ -156,12 +156,10 @@ If you, [like Martin](http://www.amazon.com/gp/product/0132350882), are of the _
 <?php
 // Commando without using chaining if that suits you better
 $cmd = new Commando();
-$cmd->option('f');
-$optionF = $cmd->getOption('f');
+$optionF = $cmd->option('f')->getOption();
 $optionF->alias('foo');
 
-$cmd->option('g');
-$optionG = $cmd->getOption('g');
+$optionG = $cmd->option('g')->getOption();
 $optionG->boolean();
 ```
 
