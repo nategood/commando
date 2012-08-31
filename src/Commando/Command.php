@@ -21,7 +21,8 @@ class Command implements \ArrayAccess
         $help                       = null,
         $parsed                     = false,
         $use_default_help           = true,
-        $trap_errors                = true;
+        $trap_errors                = true,
+        $beep_on_error              = true;
 
     /**
      * @var array Valid "option" options, mapped to their aliases
@@ -288,6 +289,10 @@ class Command implements \ArrayAccess
 
     public function error(\Exception $e)
     {
+        if ($this->beep_on_error === true) {
+            \Commando\Util\Terminal::beep();
+        }
+
         if ($this->trap_errors !== true) {
             throw $e;
         }
@@ -396,6 +401,14 @@ class Command implements \ArrayAccess
     public function doNotTrapErrors()
     {
         return $this->trapErrors(false);
+    }
+
+    /**
+     * Terminal beep on error
+     */
+    public function beepOnError($beep = true)
+    {
+        $this->beep_on_error = $beep;
     }
 
     /**

@@ -30,6 +30,16 @@ class Terminal
     }
 
     /**
+     * Make that terminal beep
+     * Ask and ye shall receive
+     * https://twitter.com/philsturgeon/status/240825183487791104
+     */
+    public static function beep()
+    {
+        echo "\x7";
+    }
+
+    /**
      * Sadly if you attempt to redirect stderr, e.g. "tput cols 2>/dev/null"
      * tput does not return the expected values.  As a result, to prevent tput
      * from writing to stderr, we first check the exit code and call it again
