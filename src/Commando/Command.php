@@ -298,8 +298,8 @@ class Command implements \ArrayAccess
         }
 
         $color = new \Colors\Color();
-        $error = sprintf('ERROR: %s %s', $e->getMessage(), PHP_EOL);
-        echo $color($error)->bg('red')->bold()->white();
+        $error = sprintf('ERROR: %s ', $e->getMessage());
+        echo $color($error)->bg('red')->bold()->white() . PHP_EOL;
         exit(1);
     }
 
