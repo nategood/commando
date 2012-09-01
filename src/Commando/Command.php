@@ -409,6 +409,7 @@ class Command implements \ArrayAccess
     public function beepOnError($beep = true)
     {
         $this->beep_on_error = $beep;
+        return $this;
     }
 
     /**
