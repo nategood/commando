@@ -258,7 +258,8 @@ class Command implements \ArrayAccess
                         $keyvals[$name] = true;
                     } else {
                         // the next token MUST be an "argument" and not another flag/option
-                        list($val, $type) = $this->_parseOption(array_shift($tokens));
+                        $token = array_shift($tokens);
+                        list($val, $type) = $this->_parseOption($token);
                         if ($type !== self::OPTION_TYPE_ARGUMENT)
                             throw new \Exception(sprintf('Unable to parse option %s: Expected an argument', $token));
                         $keyvals[$name] = $val;
@@ -324,14 +325,14 @@ class Command implements \ArrayAccess
             throw new \Exception(sprintf('Unable to parse option %s: Invalid syntax', $token));
         }
 
-        $type = self::OPTION_TYPE_ARGUMENT;
         if (!empty($matches['hyphen'])) {
             $type = (strlen($matches['hyphen']) === 1) ?
                 self::OPTION_TYPE_SHORT:
                 self::OPTION_TYPE_VERBOSE;
+            return array($matches['name'], $type);
         }
 
-        return array($matches['name'], $type);
+        return array($token, self::OPTION_TYPE_ARGUMENT);
     }
 
 
