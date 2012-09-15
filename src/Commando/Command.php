@@ -346,7 +346,7 @@ class Command implements \ArrayAccess, \Iterator
 
             // Used in the \Iterator implementation
             $this->sorted_keys = array_keys($this->options);
-            sort($this->sorted_keys, SORT_NATURAL);
+            natsort($this->sorted_keys);
 
             $this->parsed = true;
 
