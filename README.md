@@ -92,7 +92,7 @@ Commando has automatic `--help` support built in.  Calling your script with this
 
 ## Error Messaging
 
-By default, Commando will catch Exceptions that occur during the parsing process.  Instead print a formatted, user friendly error message to standard error and finally exits.  If you wish to have Commando through Exceptions in these cases, call the `doNotTrapErrors` method on your Command instance.
+By default, Commando will catch Exceptions that occur during the parsing process.  Instead Commando prints a formatted, user-friendly error message to standard error and exits with a code of 1.  If you wish to have Commando throw Exceptions in these cases, call the `doNotTrapErrors` method on your Command instance.
 
 ![error screenshot](http://f.cl.ly/items/150H2d3x0l3O3J0s3i1G/Screen%20Shot%202012-08-19%20at%209.58.21%20PM.png)
 
@@ -199,6 +199,9 @@ php command.php -f value1 --long value2 value3 value4 value5
  - Added ability to add a "title" to refer to arguments by, making the help docs a little cleaner (run help.php example)
  - Cleaned up the generated help docs
  - Bug fix for additional colorized red line when an error is displayed
+
+### v0.1.4
+ - Bug fix for options values with multiple words
 
 ### v0.1.3
  - Beep support added to Terminal
