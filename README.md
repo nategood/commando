@@ -92,7 +92,7 @@ Commando has automatic `--help` support built in.  Calling your script with this
 
 ## Error Messaging
 
-By default, Commando will catch Exceptions that occur during the parsing process.  Instead print a formatted, user friendly error message to standard error and finally exits.  If you wish to have Commando through Exceptions in these cases, call the `doNotTrapErrors` method on your Command instance.
+By default, Commando will catch Exceptions that occur during the parsing process.  Instead Commando prints a formatted, user-friendly error message to standard error and exits with a code of 1.  If you wish to have Commando throw Exceptions in these cases, call the `doNotTrapErrors` method on your Command instance.
 
 ![error screenshot](http://f.cl.ly/items/150H2d3x0l3O3J0s3i1G/Screen%20Shot%202012-08-19%20at%209.58.21%20PM.png)
 
