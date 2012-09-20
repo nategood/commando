@@ -14,7 +14,10 @@ class Option
         $boolean = false, /* bool */
         $type = 0, /* int see constants */
         $rule, /* closure */
-        $map; /* closure */
+        $map, /* closure */
+        $file = false, /* bool */
+        $file_require_exists, /* bool require that the file path is valid */
+        $file_allow_globbing; /* bool allow globbing for files */
 
     const TYPE_SHORT        = 1;
     const TYPE_VERBOSE      = 2;
@@ -69,6 +72,26 @@ class Option
     {
         $this->boolean = $bool;
         return $this;
+    }
+
+    /**
+     * Require that the argument is a file.  This will
+     * make sure the argument is a valid file, will expand
+     * the file path provided to a full path (e.g. map relative
+     * paths), and in the case where $allow_globbing is set,
+     * supports file globbing and returns an array of matching
+     * files.
+     *
+     * @return string|array of full file path|paths
+     * @param bool $require_exists
+     * @param bool $allow_globbing
+     * @throws \Exception if the file does not exists
+     */
+    public function setFile($require_exists = true, $allow_globbing = true)
+    {
+        $this->file = true;
+        $this->file_require_exists = $require_exists;
+        $this->file_allow_globbing = $allow_globbing;
     }
 
     /**
@@ -143,6 +166,25 @@ class Option
     }
 
     /**
+     * @param string $filepath
+     * @return string|array full file path or an array of file paths in the
+     *     case of "globbing" if supported
+     */
+    public function parseFile($filepath)
+    {
+        $pwd = dirname($_SERVER['SCRIPT_NAME']);
+        $path = realpath($pwd . $path);
+        if ($this->file_require_exists && $path === false) {
+            throw new \Exception('Argument must be a valid file'); // todo include argument/flag name
+        }
+        if ($this->file_support_globbing) {
+            // glob();
+            // todo
+        }
+        return $path;
+    }
+
+    /**
      * @return string|int name of the option
      */
     public function getName()
@@ -202,6 +244,9 @@ class Option
         }
         if (!$this->validate($value)){
             throw new \Exception(sprintf('Invalid value, %s, for option -%s', $value, $this->name));
+        }
+        if ($this->requireFile()) {
+            $this->value = $this->parseFileString($value);
         }
         $this->value = $this->map($value);
     }
