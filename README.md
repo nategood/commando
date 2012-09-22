@@ -193,7 +193,7 @@ php command.php -f value1 --long value2 value3 value4 value5
 ```
 
  - Added Command::getArguments() to return an array of `Option` that are of the "argument" type (see argumentsVsFlags.php example)
- - Added Command::getFlag() to return an array of `Option` that are of the "flag" type  (see argumentsVsFlags.php example)
+ - Added Command::getFlags() to return an array of `Option` that are of the "flag" type  (see argumentsVsFlags.php example)
  - Command now implements Iterator interface and will iterator over all options, starting with arguments and continuing with flags in alphabetical order
  - Can now define options with Command::flag($name) and Command::argument(), in addition to Command::option($name)
  - Added ability to add a "title" to refer to arguments by, making the help docs a little cleaner (run help.php example)
