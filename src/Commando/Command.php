@@ -5,24 +5,27 @@
 
 namespace Commando;
 
-class Command implements \ArrayAccess
+class Command implements \ArrayAccess, \Iterator
 {
     const OPTION_TYPE_ARGUMENT  = 1; // e.g. foo
     const OPTION_TYPE_SHORT     = 2; // e.g. -u
     const OPTION_TYPE_VERBOSE   = 4; // e.g. --username
-    const OPTION_TYPE_MULTI     = 8; // e.g. -fbg
 
     private
         $current_option             = null,
         $name                       = null,
         $options                    = array(),
+        $arguments                  = array(),
+        $flags                      = array(),
         $nameless_option_counter    = 0,
         $tokens                     = array(),
         $help                       = null,
         $parsed                     = false,
         $use_default_help           = true,
         $trap_errors                = true,
-        $beep_on_error              = true;
+        $beep_on_error              = true,
+        $position                   = 0,
+        $sorted_keys                = array();
 
     /**
      * @var array Valid "option" options, mapped to their aliases
@@ -31,6 +34,9 @@ class Command implements \ArrayAccess
 
         'option' => 'option',
         'o' => 'option',
+
+        'flag' => 'flag',
+        'argument' => 'argument',
 
         'boolean' => 'boolean',
         'bool' => 'boolean',
@@ -44,8 +50,13 @@ class Command implements \ArrayAccess
         'aka' => 'alias',
         'a' => 'alias',
 
+        'title' => 'title',
+        'referToAs' => 'title',
+        'referredToAs' => 'title',
+
         'describe' => 'describe',
         'd' => 'describe',
+        'describeAs' => 'describe',
         'description' => 'describe',
         'describedAs' => 'describe',
 
@@ -98,7 +109,8 @@ class Command implements \ArrayAccess
         $name = self::$methods[$name];
 
         // set the option we'll be acting on
-        if (empty($this->current_option) && $name !== 'option') {
+        if (empty($this->current_option) && $name !== 'option' &&
+                $name !== 'flag' && $name !== 'argument') {
             throw new \Exception(sprintf('Invalid Option Chain: Attempting to call %s before an "option" declaration', $name));
         }
 
@@ -110,6 +122,7 @@ class Command implements \ArrayAccess
 
     /**
      * @param Option|null $option
+     * @param string|int name
      * @return Option
      */
     private function _option($option, $name = null)
@@ -125,6 +138,34 @@ class Command implements \ArrayAccess
         }
 
         return $this->current_option;
+    }
+
+    /**
+     * @param Option|null $option
+     * @param string name
+     * @return Option
+     *
+     * Like _option but only for named flags
+     */
+    private function _flag($option, $name)
+    {
+        if (isset($name) && is_numeric($name))
+            throw new \Exception('Attempted to reference flag with a numeric index');
+        return $this->_option($option, $name);
+    }
+
+    /**
+     * @param Option|null $option
+     * @param int $index [optional] only used when referencing an existing option
+     * @return Option
+     *
+     * Like _option but only for annonymous arguments
+     */
+    private function _argument($option, $index = null)
+    {
+        if (isset($index) && !is_numeric($index))
+            throw new \Exception('Attempted to reference argument with a string name');
+        return $this->_option($option, $index);
     }
 
     /**
@@ -168,6 +209,16 @@ class Command implements \ArrayAccess
 
     /**
      * @param Option $option
+     * @param string $title
+     * @return Option
+     */
+    private function _title(Option $option, $title)
+    {
+        return $option->setTitle($title);
+    }
+
+    /**
+     * @param Option $option
      * @param \Closure $callback (string $value) -> boolean
      * @return Option
      */
@@ -200,7 +251,7 @@ class Command implements \ArrayAccess
      */
     public function setTokens(array $cli_tokens)
     {
-        // todo also slice on "="
+        // todo also slice on "=" or other delimiters
         $this->tokens = $cli_tokens;
         return $this;
     }
@@ -281,6 +332,22 @@ class Command implements \ArrayAccess
                 }
             }
 
+            // keep track of our argument vs. flag keys
+            // done here to allow for flags/arguments added
+            // at run time.  okay because option values are
+            // not mutable after parsing.
+            foreach($this->options as $k => $v) {
+                if (is_numeric($k)) {
+                    $this->arguments[$k] = $v;
+                } else {
+                    $this->flags[$k] = $v;
+                }
+            }
+
+            // Used in the \Iterator implementation
+            $this->sorted_keys = array_keys($this->options);
+            natsort($this->sorted_keys);
+
             $this->parsed = true;
 
         } catch(\Exception $e) {
@@ -351,6 +418,68 @@ class Command implements \ArrayAccess
     }
 
     /**
+     * @return array of argument `Option` only
+     */
+    public function getArguments()
+    {
+        $this->parseIfNotParsed();
+        return $this->arguments;
+    }
+
+    /**
+     * @return array of flag `Option` only
+     */
+    public function getFlags()
+    {
+        $this->parseIfNotParsed();
+        return $this->flags;
+    }
+
+    /**
+     * @return array of argument values only
+     *
+     * If your command was `php filename -f flagvalue argument1 argument2`
+     * `getArguments` would return array("argument1", "argument2");
+     */
+    public function getArgumentValues()
+    {
+        $this->parseIfNotParsed();
+        return array_map(function(Option $argument) {
+            return $argument->getValue();
+        }, $this->arguments);
+    }
+
+    /**
+     * @return array of flag values only
+     *
+     * If your command was `php filename -f flagvalue argument1 argument2`
+     * `getFlags` would return array("-f" => "flagvalue");
+     */
+    public function getFlagValues()
+    {
+        $this->parseIfNotParsed();
+        return array_map(function(Option $flag) {
+            return $flag->getValue();
+        }, $this->dedupeFlags());
+    }
+
+    /**
+     * @return array of deduped flag Options.  Needed because of
+     *    how the flags are mapped internally to make alias lookup
+     *    simpler/faster.
+     */
+    private function dedupeFlags()
+    {
+        $seen = array();
+        foreach ($this->flags as $flag) {
+            if (empty($flags[$flag->getName()])) {
+                $seen[$flag->getName()] = $flag;
+            }
+        }
+        return $seen;
+    }
+
+    /**
      * @param string $option name (named option) or index (annonymous option)
      * @return boolean
      */
@@ -378,6 +507,7 @@ class Command implements \ArrayAccess
 
     /**
      * @param string $help
+     * @return Command
      */
     public function setHelp($help)
     {
@@ -388,7 +518,7 @@ class Command implements \ArrayAccess
     /**
      * @param bool $trap when true, exceptions will be caught by Commando and
      *    printed cleanly to standard error.
-     * @return Commando
+     * @return Command
      */
     public function trapErrors($trap = true)
     {
@@ -397,7 +527,7 @@ class Command implements \ArrayAccess
     }
 
     /**
-     * @return Commando
+     * @return Command
      */
     public function doNotTrapErrors()
     {
@@ -406,6 +536,8 @@ class Command implements \ArrayAccess
 
     /**
      * Terminal beep on error
+     * @param bool $beep
+     * @return Command
      */
     public function beepOnError($beep = true)
     {
@@ -429,21 +561,24 @@ class Command implements \ArrayAccess
         $help = '';
 
         $help .= $color(\Commando\Util\Terminal::header(' ' . $this->name))
-            ->white()->bold()->bg('green') . PHP_EOL;
+            ->white()->bg('green')->bold() . PHP_EOL;
 
         if (!empty($this->help)) {
-            $help .= PHP_EOL . \Commando\Util\Terminal::wrap($this->help) . PHP_EOL;
+            $help .= PHP_EOL . \Commando\Util\Terminal::wrap($this->help)
+                . PHP_EOL;
         }
 
         $help .= PHP_EOL;
 
-        // todo index this better from the start
         $seen = array();
-        foreach ($this->options as $name => $option) {
+        $keys = array_keys($this->options);
+        sort($keys, SORT_NATURAL);
+        foreach ($keys as $key) {
+            $option = $this->getOption($key);
             if (in_array($option, $seen)) {
                 continue;
             }
-            $help .= $option->__toString() . PHP_EOL;
+            $help .= $option->getHelp() . PHP_EOL;
             $seen[] = $option;
         }
 
@@ -465,6 +600,7 @@ class Command implements \ArrayAccess
 
     /**
      * @param string $offset
+     * @see \ArrayAccess
      */
     public function offsetExists($offset)
     {
@@ -473,6 +609,7 @@ class Command implements \ArrayAccess
 
     /**
      * @param string $offset
+     * @see \ArrayAccess
      */
     public function offsetGet($offset)
     {
@@ -488,6 +625,7 @@ class Command implements \ArrayAccess
      * @param string $offset
      * @param string $value
      * @throws \Exception
+     * @see \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
@@ -496,10 +634,53 @@ class Command implements \ArrayAccess
 
     /**
      * @param string $offset
+     * @see \ArrayAccess
      */
     public function offsetUnset($offset)
     {
         $this->options[$offset]->setValue(null);
     }
 
+    /**
+     * @see \Iterator
+     */
+    public function rewind()
+    {
+        $this->position = 0;
+    }
+
+    /**
+     * @return mixed value of current option
+     * @see \Iterator
+     */
+    public function current()
+    {
+        return $this->options[$this->sorted_keys[$this->position]]->getValue();
+    }
+
+    /**
+     * @return int
+     * @see \Iterator
+     */
+    public function key()
+    {
+        return $this->position;
+    }
+
+    /**
+     * @see \Iterator
+     */
+    public function next()
+    {
+        ++$this->position;
+    }
+
+    /**
+     * @return bool
+     * @see \Iterator
+     */
+    public function valid()
+    {
+        return isset($this->sorted_keys[$this->position]);
+    }
 }

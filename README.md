@@ -96,7 +96,7 @@ By default, Commando will catch Exceptions that occur during the parsing process
 
 ![error screenshot](http://f.cl.ly/items/150H2d3x0l3O3J0s3i1G/Screen%20Shot%202012-08-19%20at%209.58.21%20PM.png)
 
-## Command Definition Options
+## Command Methods
 
 These options work on the "command" level
 
@@ -108,7 +108,32 @@ The default behavior of Commando is to provide a --help option that spits out a 
 
 Text to prepend to the help page.  Use this to describe the command at a high level and maybe some examples usages of the command.
 
-## Option Definition Options
+
+### `beepOnError (bool beep=true)`
+
+When an error occurs, print character to make the terminal "beep".
+
+### `getOptions`
+
+Return an array of `Option`s for each options provided to the command.
+
+### `getFlags`
+
+Return an array of `Option`s for only the flags provided to the command.
+
+### `getArguments`
+
+Return an array of `Options` for only the arguments provided to the command.  The order of the array is the same as the order of the arguments.
+
+### `getFlagValues`
+
+Return associative array of values for arguments provided to the command.  E.g. `array('f' => 'value1')`.
+
+### `getArgumentValues`
+
+Return array of values for arguments provided to the command. E.g. `array('value1', 'value2')`.
+
+## Command Option Definition Methods
 
 These options work on the "option" level, even though they are chained to a `Command` instance
 
@@ -117,6 +142,14 @@ These options work on the "option" level, even though they are chained to a `Com
 Aliases: `o`
 
 Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an annonymous argument and is referenced in the future by it's position.
+
+### `flag (mixed name = null)`
+
+Same as `option` except that it can only be used to define "flag" type options (a.k.a. those options that must be specified with a -flag on the command line).
+
+### `argument`
+
+Same as `option` except that it can only be used to define "argument" type options (a.k.a those options that are specified WITHOUT a -flag on the command line).
 
 ### `alias (string alias)`
 
@@ -148,20 +181,11 @@ Aliases: `cast`, `castTo`
 
 Perform a map operation on the value for this option.  Takes function that accepts a string $value and return mixed (you can map to whatever you wish).
 
-## Trainwreck
+### `referToAs (string name)`
 
-If you, [like Martin](http://www.amazon.com/gp/product/0132350882), are of the _train_ of thought that the chaining pattern is a "trainwreck", Commando can also be used without chaining.  Commando reads nicer and is more concise when using chaining.
+Aliases: `title`, `referredToAs`
 
-``` php
-<?php
-// Commando without using chaining if that suits you better
-$cmd = new Commando();
-$optionF = $cmd->option('f')->getOption();
-$optionF->alias('foo');
-
-$optionG = $cmd->option('g')->getOption();
-$optionG->boolean();
-```
+Add a name to refer to an argument option by.  Makes the help docs a little cleaner for annonymous "argument" options.
 
 ## Contributing
 
@@ -179,3 +203,31 @@ Commando highly encourages sending in pull requests.  When submitting a pull req
  - [Optimist](https://github.com/substack/node-optimist)
 
 Released under MIT license.
+
+## Change Log
+
+### v0.2.0
+
+The primary goal of this update was to better delineate between flag options and argument options.  In Commando, flags are options that we define that require a name when they are being specified on the command line.  Arguments are options that are not named in this way.  In the example below, '-f' and '--long' are described as "flags" type options in Commando terms with the values 'value1' and 'value2' respectively, whereas value3, value4, and value5 are described as "argument" type options.
+
+```
+php command.php -f value1 --long value2 value3 value4 value5
+```
+
+ - Added Command::getArguments() to return an array of `Option` that are of the "argument" type (see argumentsVsFlags.php example)
+ - Added Command::getFlags() to return an array of `Option` that are of the "flag" type  (see argumentsVsFlags.php example)
+ - Command now implements Iterator interface and will iterator over all options, starting with arguments and continuing with flags in alphabetical order
+ - Can now define options with Command::flag($name) and Command::argument(), in addition to Command::option($name)
+ - Added ability to add a "title" to refer to arguments by, making the help docs a little cleaner (run help.php example)
+ - Cleaned up the generated help docs
+ - Bug fix for additional colorized red line when an error is displayed
+
+### v0.1.4
+ - Bug fix for options values with multiple words
+
+### v0.1.3
+ - Beep support added to Terminal
+ - Commando::beepOnError() added
+
+### v0.1.2
+ - Terminal updated to use tput correctly

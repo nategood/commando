@@ -6,6 +6,7 @@ class Option
 {
     private
         $name, /* string optional name of argument */
+        $title, /* a formal way to reference this argument */
         $aliases = array(), /* aliases for this argument */
         $value = null, /* mixed */
         $description, /* string */
@@ -51,7 +52,7 @@ class Option
     }
 
     /**
-     * @param closure|string $rule regex, closure
+     * @param string $description
      * @return Option
      */
     public function setDescription($description)
@@ -67,6 +68,16 @@ class Option
     public function setBoolean($bool = true)
     {
         $this->boolean = $bool;
+        return $this;
+    }
+
+    /**
+     * @param string $title
+     * @return Option
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
         return $this;
     }
 
@@ -198,7 +209,7 @@ class Option
     /**
      * @return string
      */
-    public function __toString()
+    public function getHelp()
     {
         $color = new \Colors\Color();
         $help = '';
@@ -217,13 +228,27 @@ class Option
             }
             $help .= PHP_EOL;
         } else {
-            $help .= 'arg' . $this->name . PHP_EOL;
+            $help .= (empty($this->title) ? "arg {$this->name}" : $this->title) . PHP_EOL;
         }
 
-        if (!empty($this->description)) {
-            $help .= \Commando\Util\Terminal::wrap($this->description, 5, 1);
+        $description = $this->description;
+        if ($this->isRequired()) {
+            $description = 'Required.  ' . $description;
+        }
+
+        if (!empty($description)) {
+            $help .= \Commando\Util\Terminal::wrap(
+                $this->title . $description, 5, 1);
         }
 
         return $help;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getHelp();
     }
 }

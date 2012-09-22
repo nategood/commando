@@ -12,10 +12,10 @@ use Commando\Command;
 $tokens = array('mycmd');
 $cmd = new Command($tokens);
 $cmd
-    ->setHelp('This is a great command it.  It can be used by calling mycmd <argument>.')
-    ->option()->describe('mycmd takes an optional single argument. e.g. mycmd argument0')
+    ->setHelp('This is a great command it.  It can be used by calling `mycmd <argument>`.')
+    ->option()->referToAs('the first arg')->describeAs('mycmd takes an optional single argument. e.g. mycmd argument0')
     ->option('a')->description("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.")
-    ->option('b')->boolean()->description("A boolean option.")
-    ->option('c')->aka('foo')->description("Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt.");
+    ->option('b')->boolean()->describeAs("A boolean option.")
+    ->option('c')->aka('foo')->describeAs("Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt.")->required();
 
 $cmd->printHelp();
