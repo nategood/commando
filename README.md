@@ -115,15 +115,23 @@ When an error occurs, print character to make the terminal "beep".
 
 ### `getOptions`
 
-Return an array of the values for each options provided to the command.
+Return an array of `Option`s for each options provided to the command.
 
 ### `getFlags`
 
-Return an array of the values for only the flags provided to the command.
+Return an array of `Option`s for only the flags provided to the command.
 
 ### `getArguments`
 
-Return an array of the values for only the arguments provided to the command.  The order of the array is the same as the order of the arguments.
+Return an array of `Options` for only the arguments provided to the command.  The order of the array is the same as the order of the arguments.
+
+### `getFlagValues`
+
+Return associative array of values for arguments provided to the command.  E.g. `array('f' => 'value1')`.
+
+### `getArgumentValues`
+
+Return array of values for arguments provided to the command. E.g. `array('value1', 'value2')`.
 
 ## Command Option Definition Methods
 
@@ -134,6 +142,14 @@ These options work on the "option" level, even though they are chained to a `Com
 Aliases: `o`
 
 Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an annonymous argument and is referenced in the future by it's position.
+
+### `flag (mixed name = null)`
+
+Same as `option` except that it can only be used to define "flag" type options (a.k.a. those options that must be specified with a -flag on the command line).
+
+### `argument`
+
+Same as `option` except that it can only be used to define "argument" type options (a.k.a those options that are specified WITHOUT a -flag on the command line).
 
 ### `alias (string alias)`
 
@@ -164,6 +180,12 @@ Define a rule to validate input against.  Takes function that accepts a string $
 Aliases: `cast`, `castTo`
 
 Perform a map operation on the value for this option.  Takes function that accepts a string $value and return mixed (you can map to whatever you wish).
+
+### `referToAs (string name)`
+
+Aliases: `title`, `referredToAs`
+
+Add a name to refer to an argument option by.  Makes the help docs a little cleaner for annonymous "argument" options.
 
 ## Contributing
 

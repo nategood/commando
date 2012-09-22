@@ -418,10 +418,7 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
-     * @return array of arguments only
-     *
-     * If your command was `php filename -f flagvalue argument1 argument2`
-     * `getArguments` would return array("argument1", "argument2");
+     * @return array of argument `Option` only
      */
     public function getArguments()
     {
@@ -430,15 +427,56 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
-     * @return array of flags only
-     *
-     * If your command was `php filename -f flagvalue argument1 argument2`
-     * `getFlags` would return array("-f" => "flagvalue");
+     * @return array of flag `Option` only
      */
     public function getFlags()
     {
         $this->parseIfNotParsed();
         return $this->flags;
+    }
+
+    /**
+     * @return array of argument values only
+     *
+     * If your command was `php filename -f flagvalue argument1 argument2`
+     * `getArguments` would return array("argument1", "argument2");
+     */
+    public function getArgumentValues()
+    {
+        $this->parseIfNotParsed();
+        return array_map(function(Option $argument) {
+            return $argument->getValue();
+        }, $this->arguments);
+    }
+
+    /**
+     * @return array of flag values only
+     *
+     * If your command was `php filename -f flagvalue argument1 argument2`
+     * `getFlags` would return array("-f" => "flagvalue");
+     */
+    public function getFlagValues()
+    {
+        $this->parseIfNotParsed();
+        return array_map(function(Option $flag) {
+            return $flag->getValue();
+        }, $this->dedupeFlags());
+    }
+
+    /**
+     * @return array of deduped flag Options.  Needed because of
+     *    how the flags are mapped internally to make alias lookup
+     *    simpler/faster.
+     */
+    private function dedupeFlags()
+    {
+        $seen = array();
+        foreach ($this->flags as $flag) {
+            if (empty($flags[$flag->getName()])) {
+                $seen[$flag->getName()] = $flag;
+            }
+        }
+        return $seen;
     }
 
     /**

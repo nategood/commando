@@ -108,4 +108,16 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $cmd->getSize());
     }
 
+    public function testGetValues()
+    {
+        $tokens = array('filename', '-a', 'v1', '-b', 'v2', 'v3', 'v4', 'v5');
+        $cmd = new Command($tokens);
+        $cmd
+            ->flag('a')
+            ->flag('b')->aka('boo');
+
+        $this->assertEquals(array('v3', 'v4', 'v5'), $cmd->getArgumentValues());
+        $this->assertEquals(array('a' => 'v1', 'b' => 'v2'), $cmd->getFlagValues());
+    }
+
 }
