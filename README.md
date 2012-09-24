@@ -143,7 +143,7 @@ Aliases: `o`
 
 Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an annonymous argument and is referenced in the future by it's position.
 
-### `flag (mixed name = null)`
+### `flag (string name)`
 
 Same as `option` except that it can only be used to define "flag" type options (a.k.a. those options that must be specified with a -flag on the command line).
 
@@ -216,6 +216,8 @@ php command.php -f value1 --long value2 value3 value4 value5
 
  - Added Command::getArguments() to return an array of `Option` that are of the "argument" type (see argumentsVsFlags.php example)
  - Added Command::getFlags() to return an array of `Option` that are of the "flag" type  (see argumentsVsFlags.php example)
+ - Added Command::getArgumentValues() to return an array of all the values for "arguments"
+ - Added Command::getFlagValues() to return an array of all values for "flags"
  - Command now implements Iterator interface and will iterator over all options, starting with arguments and continuing with flags in alphabetical order
  - Can now define options with Command::flag($name) and Command::argument(), in addition to Command::option($name)
  - Added ability to add a "title" to refer to arguments by, making the help docs a little cleaner (run help.php example)
