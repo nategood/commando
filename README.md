@@ -147,7 +147,7 @@ Define a new option.  When `name` is set, the option will be a named "flag" opti
 
 Same as `option` except that it can only be used to define "flag" type options (a.k.a. those options that must be specified with a -flag on the command line).
 
-### `argument`
+### `argument ()`
 
 Same as `option` except that it can only be used to define "argument" type options (a.k.a those options that are specified WITHOUT a -flag on the command line).
 
