@@ -49,7 +49,6 @@ class OptionTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetValue($val)
     {
-        // $val = 'abc';
         $option = new Option('f');
         $option->setValue($val);
         $this->assertEquals($val, $option->getValue());
@@ -92,6 +91,34 @@ class OptionTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->assertTrue($caught);
+    }
+
+    public function testFile()
+    {
+        $file = dirname(__FILE__) . '/assets/example.txt';
+        $option = new Option(0);
+        $option->setFileRequirements(true, false);
+        $option->setValue($file);
+
+        $this->assertTrue($option->isFile());
+        $this->assertEquals($file, $option->getValue());
+    }
+
+    public function testFileGlob()
+    {
+        $file = dirname(__FILE__) . '/assets/*.txt';
+        $option = new Option(0);
+        $option->setFileRequirements(true, true);
+        $option->setValue($file);
+
+        $file1 = dirname(__FILE__) . '/assets/example.txt';
+        $file2 = dirname(__FILE__) . '/assets/another.txt';
+
+        $values = $option->getValue();
+        $this->assertTrue($option->isFile());
+        $this->assertCount(2, $values);
+        $this->assertTrue(in_array($file1, $values));
+        $this->assertTrue(in_array($file2, $values));
     }
 
     // Providers

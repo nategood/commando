@@ -87,7 +87,7 @@ class Option
      * @param bool $allow_globbing
      * @throws \Exception if the file does not exists
      */
-    public function setFile($require_exists = true, $allow_globbing = true)
+    public function setFileRequirements($require_exists = true, $allow_globbing = true)
     {
         $this->file = true;
         $this->file_require_exists = $require_exists;
@@ -166,21 +166,23 @@ class Option
     }
 
     /**
-     * @param string $filepath
+     * @param string $path
      * @return string|array full file path or an array of file paths in the
-     *     case of "globbing" if supported
+     *     case where "globbing" is supported
      */
-    public function parseFile($filepath)
+    public function parseFilePath($file_path)
     {
-        $pwd = dirname($_SERVER['SCRIPT_NAME']);
-        $path = realpath($pwd . $path);
-        if ($this->file_require_exists && $path === false) {
-            throw new \Exception('Argument must be a valid file'); // todo include argument/flag name
+        $path = realpath($file_path);
+        if ($this->file_allow_globbing) {
+            $files = glob($file_path);
+            if (empty($files)) {
+                return $files;
+            }
+            return array_map(function($file) {
+                return realpath($file);
+            }, $files);
         }
-        if ($this->file_support_globbing) {
-            // glob();
-            // todo
-        }
+
         return $path;
     }
 
@@ -221,8 +223,16 @@ class Option
      */
     public function isBoolean()
     {
-        $this->value = false;
+        // $this->value = false; // ?
         return $this->boolean;
+    }
+
+    /**
+     * @return bool is this option a boolean
+     */
+    public function isFile()
+    {
+        return $this->file;
     }
 
     /**
@@ -238,15 +248,21 @@ class Option
      */
     public function setValue($value)
     {
-        // boolean check
         if ($this->isBoolean() && !is_bool($value)) {
             throw new \Exception(sprintf('Boolean option expected for option -%s, received %s value instead', $this->name, $value));
         }
-        if (!$this->validate($value)){
+        if (!$this->validate($value)) {
             throw new \Exception(sprintf('Invalid value, %s, for option -%s', $value, $this->name));
         }
-        if ($this->requireFile()) {
-            $this->value = $this->parseFileString($value);
+        if ($this->isFile()) {
+            $file_path = $this->parseFilePath($value);
+            if (empty($file_path)) {
+                if ($this->file_require_exists) {
+                    throw new \Exception(sprintf('Expected %s to be a valid file', $value, $this->name));
+                }
+            } else {
+                $value = $file_path;
+            }
         }
         $this->value = $this->map($value);
     }

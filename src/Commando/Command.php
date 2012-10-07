@@ -41,6 +41,7 @@ class Command implements \ArrayAccess, \Iterator
         'boolean' => 'boolean',
         'bool' => 'boolean',
         'b' => 'boolean',
+        // mustBeBoolean
 
         'require' => 'require',
         'required' => 'require',
@@ -66,6 +67,14 @@ class Command implements \ArrayAccess, \Iterator
         'castWith' => 'map',
 
         'must' => 'must',
+        // mustBeNumeric
+        // mustBeInt
+        // mustBeFloat
+
+        'file' => 'file',
+        'expectsFile' => 'file',
+        // 'expectsFileGlob' => 'file',
+        // 'mustBeAFile' => 'file',
     );
 
     public function __construct($tokens = null)
@@ -235,6 +244,11 @@ class Command implements \ArrayAccess, \Iterator
     private function _map(Option $option, \Closure $callback)
     {
         return $option->setMap($callback);
+    }
+
+    private function _file(Option $option, $require_exists = true, $allow_globbing = false)
+    {
+        return $option->setFileRequirements($require_exists, $allow_globbing);
     }
 
 
