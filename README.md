@@ -206,6 +206,13 @@ Released under MIT license.
 
 ## Change Log
 
+### v0.2.1
+
+ - Adds support for requiring options to be valid file paths or globs
+ - Returns a fully qualified file path name (e.g. converts relative paths)
+ - Returns an array of file paths in the case of globbing
+ - See the file.php example in the examples directory
+
 ### v0.2.0
 
 The primary goal of this update was to better delineate between flag options and argument options.  In Commando, flags are options that we define that require a name when they are being specified on the command line.  Arguments are options that are not named in this way.  In the example below, '-f' and '--long' are described as "flags" type options in Commando terms with the values 'value1' and 'value2' respectively, whereas value3, value4, and value5 are described as "argument" type options.
