@@ -115,15 +115,23 @@ When an error occurs, print character to make the terminal "beep".
 
 ### `getOptions`
 
-Return an array of the values for each options provided to the command.
+Return an array of `Option`s for each options provided to the command.
 
 ### `getFlags`
 
-Return an array of the values for only the flags provided to the command.
+Return an array of `Option`s for only the flags provided to the command.
 
 ### `getArguments`
 
-Return an array of the values for only the arguments provided to the command.  The order of the array is the same as the order of the arguments.
+Return an array of `Options` for only the arguments provided to the command.  The order of the array is the same as the order of the arguments.
+
+### `getFlagValues`
+
+Return associative array of values for arguments provided to the command.  E.g. `array('f' => 'value1')`.
+
+### `getArgumentValues`
+
+Return array of values for arguments provided to the command. E.g. `array('value1', 'value2')`.
 
 ## Command Option Definition Methods
 
@@ -134,6 +142,14 @@ These options work on the "option" level, even though they are chained to a `Com
 Aliases: `o`
 
 Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an annonymous argument and is referenced in the future by it's position.
+
+### `flag (string name)`
+
+Same as `option` except that it can only be used to define "flag" type options (a.k.a. those options that must be specified with a -flag on the command line).
+
+### `argument ()`
+
+Same as `option` except that it can only be used to define "argument" type options (a.k.a those options that are specified WITHOUT a -flag on the command line).
 
 ### `alias (string alias)`
 
@@ -165,6 +181,12 @@ Aliases: `cast`, `castTo`
 
 Perform a map operation on the value for this option.  Takes function that accepts a string $value and return mixed (you can map to whatever you wish).
 
+### `referToAs (string name)`
+
+Aliases: `title`, `referredToAs`
+
+Add a name to refer to an argument option by.  Makes the help docs a little cleaner for annonymous "argument" options.
+
 ## Contributing
 
 Commando highly encourages sending in pull requests.  When submitting a pull request please:
@@ -193,7 +215,9 @@ php command.php -f value1 --long value2 value3 value4 value5
 ```
 
  - Added Command::getArguments() to return an array of `Option` that are of the "argument" type (see argumentsVsFlags.php example)
- - Added Command::getFlag() to return an array of `Option` that are of the "flag" type  (see argumentsVsFlags.php example)
+ - Added Command::getFlags() to return an array of `Option` that are of the "flag" type  (see argumentsVsFlags.php example)
+ - Added Command::getArgumentValues() to return an array of all the values for "arguments"
+ - Added Command::getFlagValues() to return an array of all values for "flags"
  - Command now implements Iterator interface and will iterator over all options, starting with arguments and continuing with flags in alphabetical order
  - Can now define options with Command::flag($name) and Command::argument(), in addition to Command::option($name)
  - Added ability to add a "title" to refer to arguments by, making the help docs a little cleaner (run help.php example)
