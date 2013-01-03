@@ -70,6 +70,8 @@ Things to note:
 
 ## Installation
 
+*Commando requires that you are running PHP 5.3 or higher.*
+
 Commando is [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) compliant and can be installed using [Composer](http://getcomposer.org/).  Add `nategood/commando` to your `composer.json`
 
     "require": {
@@ -82,7 +84,7 @@ If you're new to Composer...
  - Make it [globally accessible](http://getcomposer.org/doc/00-intro.md#globally)
  - `cd` to your the directory where you'll be writing your Commando script and run `composer install`
 
-*Currently installing via Composer is the only option (phar build coming soon).*
+*Currently installing via Composer is the only supported option.*
 
 ## Baked in Help
 
