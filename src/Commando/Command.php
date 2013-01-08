@@ -586,7 +586,7 @@ class Command implements \ArrayAccess, \Iterator
 
         $seen = array();
         $keys = array_keys($this->options);
-        sort($keys, SORT_NATURAL);
+        natsort($keys);
         foreach ($keys as $key) {
             $option = $this->getOption($key);
             if (in_array($option, $seen)) {
