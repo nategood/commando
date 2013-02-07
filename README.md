@@ -9,6 +9,24 @@ Commando is a PHP command line interface library that beautifies and simplifies 
 
 PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) isn't all that much better, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling cli input, all while providing a clean and readable interface.
 
+## Installation
+
+*Commando requires that you are running PHP 5.3 or higher.*
+
+Commando is [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) compliant and can be installed using [Composer](http://getcomposer.org/).  Add `nategood/commando` to your `composer.json`
+
+    "require": {
+        "nategood/commando": "*"
+    }
+
+If you're new to Composer...
+
+ - [Download and build Composer](http://getcomposer.org/download/)
+ - Make it [globally accessible](http://getcomposer.org/doc/00-intro.md#globally)
+ - `cd` to your the directory where you'll be writing your Commando script and run `composer install`
+
+*Currently installing via Composer is the only supported option.*
+
 ## Example
 
 Here is an example of a PHP Commando script that gives a decent tour of Commando's features.  Let's say it is in a file called `hello.php`.
@@ -67,24 +85,6 @@ Things to note:
  - For "annonymous" (i.e. not a named flag) arguments, we access them based on their numeric index
  - We can access option values in an array via a flags name OR it's alias
  - We can use closures to perform validation and map operations right as part of our option definition
-
-## Installation
-
-*Commando requires that you are running PHP 5.3 or higher.*
-
-Commando is [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) compliant and can be installed using [Composer](http://getcomposer.org/).  Add `nategood/commando` to your `composer.json`
-
-    "require": {
-        "nategood/commando": "*"
-    }
-
-If you're new to Composer...
-
- - [Download and build Composer](http://getcomposer.org/download/)
- - Make it [globally accessible](http://getcomposer.org/doc/00-intro.md#globally)
- - `cd` to your the directory where you'll be writing your Commando script and run `composer install`
-
-*Currently installing via Composer is the only supported option.*
 
 ## Baked in Help
 
