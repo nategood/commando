@@ -2,7 +2,7 @@
 
 /**
  * Example showing several of the option definition options in use, including
- * map, must, required, alias (a.k.a. aka), desription (aka describedAs), and
+ * map, must, required, alias (a.k.a. aka), description (aka describedAs), and
  * boolean.
  *
  * Usage
