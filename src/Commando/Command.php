@@ -86,6 +86,13 @@ class Command implements \ArrayAccess, \Iterator
         $this->setTokens($tokens);
     }
 
+    public function __destruct()
+    {
+        if (!$this->parsed) {
+            $this->parse();
+        }
+    }
+
     /**
      * Factory style reads a little nicer
      * @param array $tokens defaults to $argv
