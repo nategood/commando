@@ -34,7 +34,7 @@ Here is an example of a PHP Commando script that gives a decent tour of Commando
 ``` php
 <?php
 
-$hello_cmd = new Command();
+$hello_cmd = new Commando\Command();
 
 // Define first option
 $hello_cmd->option()
