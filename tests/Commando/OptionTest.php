@@ -1,6 +1,6 @@
 <?php
 
-namespace Commano\Test;
+namespace Commando\Test;
 
 require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
