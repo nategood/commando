@@ -293,6 +293,8 @@ class Command implements \ArrayAccess, \Iterator
      */
     public function parse()
     {
+        $this->parsed = true;
+
         try {
             $tokens = $this->tokens;
             // the executed filename
@@ -368,9 +370,6 @@ class Command implements \ArrayAccess, \Iterator
             // Used in the \Iterator implementation
             $this->sorted_keys = array_keys($this->options);
             natsort($this->sorted_keys);
-
-            $this->parsed = true;
-
         } catch(\Exception $e) {
             $this->error($e);
         }
