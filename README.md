@@ -208,6 +208,10 @@ Released under MIT license.
 
 ## Change Log
 
+### v0.2.2
+
+ - Pull Request 10: Bug fix for printing double help
+
 ### v0.2.1
 
  - Adds support for requiring options to be valid file paths or globs
