@@ -1,7 +1,7 @@
 <?php
 
 namespace Commando;
-
+use \Commando\Util\Terminal;
 class Option
 {
     private
@@ -275,7 +275,9 @@ class Option
         $color = new \Colors\Color();
         $help = '';
 
-        if ($this->type & self::TYPE_NAMED) {
+        $isNamed = ($this->type & self::TYPE_NAMED);
+
+        if ($isNamed) {
             $help .=  PHP_EOL . (mb_strlen($this->name, 'UTF-8') === 1 ?
                 '-' : '--') . $this->name;
             if (!empty($this->aliases)) {
@@ -285,21 +287,38 @@ class Option
                 }
             }
             if (!$this->isBoolean()) {
-                $help .= ' ' . $color('<argument>')->underline();
+                $help .= ' ' . $color->underline('<argument>');
             }
             $help .= PHP_EOL;
         } else {
             $help .= (empty($this->title) ? "arg {$this->name}" : $this->title) . PHP_EOL;
         }
 
-        $description = $this->description;
-        if ($this->isRequired()) {
-            $description = 'Required.  ' . $description;
+        // bold what has been displayed so far
+        $help = $color->bold($help);
+
+        $titleLine = '';
+        if($isNamed && $this->title) {
+            $titleLine .= $this->title . '.';
+            if ($this->isRequired()) {
+                $titleLine .= ' ';
+            }
         }
 
+        if ($this->isRequired()) {
+            $titleLine .= $color->red('Required.');
+        }
+
+        if($titleLine){
+            $titleLine .= ' ';
+        }
+        $description = $titleLine . $this->description;
         if (!empty($description)) {
-            $help .= \Commando\Util\Terminal::wrap(
-                $this->title . $description, 5, 1);
+            $descriptionArray = explode(PHP_EOL, trim($description));
+            foreach($descriptionArray as $descriptionLine){
+                $help .= Terminal::wrap($descriptionLine, 5, 1) . PHP_EOL;
+            }
+
         }
 
         return $help;
