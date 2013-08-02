@@ -208,9 +208,13 @@ Released under MIT license.
 
 ## Change Log
 
+### v0.2.3
+
+ - Improved Help Formatting [PR #12](https://github.com/nategood/commando/pull/12)
+
 ### v0.2.2
 
- - Pull Request 10: Bug fix for printing double help
+ - Bug fix for printing double help [PR #10](https://github.com/nategood/commando/pull/10)
 
 ### v0.2.1
 
