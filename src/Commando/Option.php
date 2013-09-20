@@ -211,6 +211,14 @@ class Option
     }
 
     /**
+     * @return bool|callable
+     */
+    public function getRequired()
+    {
+        return $this->required;
+    }
+
+    /**
      * @return array list of aliases
      */
     public function getAliases()
@@ -240,7 +248,7 @@ class Option
      */
     public function isRequired()
     {
-        return $this->required;
+        return is_bool($this->required) ? $this->required : false;
     }
 
     /**

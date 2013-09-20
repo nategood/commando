@@ -120,4 +120,48 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('a' => 'v1', 'b' => 'v2'), $cmd->getFlagValues());
     }
 
+    public function testRequireBool()
+    {
+        $this->setExpectedException('\Exception');
+
+        // -a is not specified, ergo an exception should be thrown because it is required
+        $tokens = array('filename');
+        $cmd = new Command($tokens);
+        $cmd->trapErrors(false);
+        $cmd->option('a')->require(true);
+        $cmd->parse();
+    }
+
+    public function testRequireCallableTrue()
+    {
+        $this->setExpectedException('\Exception');
+
+        // -a is not specified, ergo b is required and an exception should be thrown
+        $tokens = array('filename');
+        $cmd = new Command($tokens);
+        $cmd->trapErrors(false);
+        $cmd->option('a');
+        $cmd->option('b')->require(function() use($cmd){
+            return $cmd->getOption('a')->getValue() == null;
+        });
+        $cmd->parse();
+    }
+
+    public function testRequireCallableFalse()
+    {
+        try { 
+            // -a is not specified, ergo b is required and an exception should not be thrown
+            $tokens = array('filename', '-b', '1');
+            $cmd = new Command($tokens);
+            $cmd->trapErrors(false);
+            $cmd->option('a');
+            $cmd->option('b')->require(function() use($cmd){
+                return $cmd->getOption('a')->getValue() == null;
+            });
+            $cmd->parse();
+        } catch (\Exception $e) {
+            var_dump($e->getMessage());
+            $this->fail('An unexpected exception has been raised.');
+        }
+    }
 }
