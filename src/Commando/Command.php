@@ -348,7 +348,13 @@ class Command implements \ArrayAccess, \Iterator
 
             // todo protect against duplicates caused by aliases
             foreach ($this->options as $option) {
-                if (is_null($option->getValue()) && $option->isRequired()) {
+                $required = $option->getRequired();
+
+                if (is_callable($required)) {
+                    $required = call_user_func($required);
+                }
+
+                if (is_null($option->getValue()) && $required) {
                     throw new \Exception(sprintf('Required %s %s must be specified',
                         $option->getType() & Option::TYPE_NAMED ?
                             'option' : 'argument', $option->getName()));
