@@ -34,6 +34,8 @@ Here is an example of a PHP Commando script that gives a decent tour of Commando
 ``` php
 <?php
 
+require_once 'vendor/autoload.php';
+
 $hello_cmd = new Commando\Command();
 
 // Define first option
