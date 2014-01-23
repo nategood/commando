@@ -121,6 +121,16 @@ class OptionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(in_array($file2, $values));
     }
 
+    /**
+     * @dataProvider values
+     */
+    public function testDefault($val)
+    {
+        $option = new Option('f');
+        $option->setDefault($val);
+        $this->assertEquals($val, $option->getValue());
+    }
+
     // Providers
 
     public function values()
@@ -131,6 +141,10 @@ class OptionTest extends \PHPUnit_Framework_TestCase
             array('200'),
             array(200),
             array(0),
+            array(1.5),
+            array(0.0),
+            array(true),
+            array(false),
         );
     }
 }
