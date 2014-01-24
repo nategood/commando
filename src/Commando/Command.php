@@ -14,6 +14,7 @@ class Command implements \ArrayAccess, \Iterator
     private
         $current_option             = null,
         $name                       = null,
+        $_subCommands               = array(),
         $options                    = array(),
         $arguments                  = array(),
         $flags                      = array(),
@@ -91,6 +92,20 @@ class Command implements \ArrayAccess, \Iterator
         if (!$this->parsed) {
             $this->parse();
         }
+    }
+
+
+    /**
+     * @param $commandStr Name of this sub-command
+     * @param string $description For help message
+     * @return mixed
+     */
+    public function subCommand($commandStr, $description = '')
+    {
+        $this->_subCommands[$commandStr] = new \stdClass();
+        $this->_subCommands[$commandStr]->description = $description;
+        $this->_subCommands[$commandStr]->cmd = new SubCommand($this->tokens, $commandStr);
+        return $this->_subCommands[$commandStr]->cmd;
     }
 
     /**
@@ -278,6 +293,13 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
+     * @return array
+     */
+    public function getTokens()
+    {
+        return $this->tokens;
+    }
+    /**
      * @throws \Exception
      */
     private function parseIfNotParsed()
@@ -289,25 +311,65 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
+     * @return null|string Determines which subcommand is being called from the args
+     */
+    public function calledSubCommand()
+    {
+        $tokens = $this->getTokens();
+        if(isset($tokens[1])) {
+            // find the proper one...
+            foreach($this->_subCommands as $name => $cmdDef) {
+                if($name === $tokens[1]) {
+                    // found us, so lets continue with our subs parser
+                    return $name;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retrieves the SubCommand object
+     * @param $cmdName Name of the subcommand
+     * @return null:SubCommand
+     */
+    public function getSubCommand($cmdName)
+    {
+        return isset($this->_subCommands[$cmdName]) ? $this->_subCommands[$cmdName]->cmd : null;
+    }
+
+    /**
      * @throws \Exception
      */
     public function parse()
     {
         $this->parsed = true;
-
+        $tokens = $this->tokens;
+        // a list of subcommands, lets iterate and find who we are supposed to be parsing...
+        if(count($this->_subCommands) > 0) {
+            if(count($tokens) > 1) // at least 2 required (filename, subcommand ...)
+            {
+                // find the proper one...
+                if($cmd = $this->getSubCommand($tokens[1])) {
+                    // found us, so lets continue with our subs parser
+                    return $cmd->parse();
+                }
+            }
+            // didn't find? rut roh..
+            // lets stop, with help?
+            $this->printHelp();
+            return null;
+        }
         try {
-            $tokens = $this->tokens;
             // the executed filename
             $this->name = array_shift($tokens);
 
             $keyvals = array();
             $count = 0; // standalone argument count
-
             while (!empty($tokens)) {
                 $token = array_shift($tokens);
 
                 list($name, $type) = $this->_parseOption($token);
-
                 if ($type === self::OPTION_TYPE_ARGUMENT) {
                     // its an argument, use an int as the index
                     $keyvals[$count] = $name;
@@ -360,13 +422,12 @@ class Command implements \ArrayAccess, \Iterator
             // at run time.  okay because option values are
             // not mutable after parsing.
             foreach($this->options as $k => $v) {
-                if (is_numeric($k)) {
+                if (is_int($k)) { // check for int, in case we get a -{num} option. ints are on arrays (our args), strings are on options
                     $this->arguments[$k] = $v;
                 } else {
                     $this->flags[$k] = $v;
                 }
             }
-
             // Used in the \Iterator implementation
             $this->sorted_keys = array_keys($this->options);
             natsort($this->sorted_keys);
