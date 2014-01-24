@@ -8,16 +8,25 @@ namespace Commando;
  * @package Commando
  */
 class SubCommand extends Command {
+    /**
+     * @var The subcommands name
+     */
     protected $_name;
 
-    private $cmdr;
-    public function __construct($tokens = null, $command, $cmdr)
+    /**
+     * @param $tokens
+     * @param $command
+     */
+    public function __construct($tokens, $command)
     {
         parent::__construct($tokens);
         $this->_name = $command;
-        $this->cmdr = $cmdr;
     }
-    // the main parser should handle this, lets just clean up our tokens first ..
+
+    /**
+     * // the main parser should handle this, lets just clean up our tokens first ..
+     * @return null
+     */
     public function parse()
     {
         // verify we are supposed to be running now..
@@ -34,9 +43,17 @@ class SubCommand extends Command {
         }
         return null;
     }
+
+    /**
+     * @return string Subcommand name
+     */
     public function name()
     {
         return $this->_name;
     }
+
+    /**
+     *
+     */
     public function __destruct() {} // nada ta do
 } 
