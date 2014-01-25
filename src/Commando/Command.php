@@ -96,7 +96,7 @@ class Command implements \ArrayAccess, \Iterator
 
 
     /**
-     * @param $commandStr Name of this sub-command
+     * @param $commandStr string Name of this sub-command
      * @param string $description For help message
      * @return mixed
      */
@@ -650,19 +650,31 @@ class Command implements \ArrayAccess, \Iterator
         }
 
         $help .= PHP_EOL;
-
-        $seen = array();
-        $keys = array_keys($this->options);
-        natsort($keys);
-        foreach ($keys as $key) {
-            $option = $this->getOption($key);
-            if (in_array($option, $seen)) {
-                continue;
+        // if we are the main command object, we should be handling just the description for the subcommand...
+        // ... each subcommand will handle their own options help..
+        if(count($this->_subCommands) > 0) {
+            foreach($this->_subCommands as $name => $cmd) {
+                // just get short description - don't overload user with too much...
+                $help .=
+                    $color(\Commando\Util\Terminal::header(' ' . $name))->bold() . PHP_EOL // cmd name
+                        . \Commando\Util\Terminal::wrap($cmd->description, 5, 1) . PHP_EOL // description
+                        . \Commando\Util\Terminal::wrap($color->colorize("<bold>--help</bold> For more details"), 5, 1)
+                        .PHP_EOL.PHP_EOL;
             }
-            $help .= $option->getHelp() . PHP_EOL;
-            $seen[] = $option;
+        } else {
+            // build each options help message..
+            $seen = array();
+            $keys = array_keys($this->options);
+            natsort($keys);
+            foreach ($keys as $key) {
+                $option = $this->getOption($key);
+                if (in_array($option, $seen)) {
+                    continue;
+                }
+                $help .= $option->getHelp() . PHP_EOL;
+                $seen[] = $option;
+            }
         }
-
         return $help;
     }
 
