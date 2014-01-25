@@ -80,7 +80,36 @@ Running it:
 
     > php hello.php -c -t Mr 'nate good'
     Hello, Mr. Nate Good!
+Example using sub-commands:
+``` php
+<?php
+require_once 'vendor/autoload.php';
+$cmd = new Commando\Command();
+$crSub = $cmd->subCommand("create", "Cool create feature!");
+$remSub = $cmd->subCommand("remove", "Cool remove feature!");
 
+// define subs
+$remSub->option('i')
+        ->require()
+        ->describedAs("User ID that is being removed")
+    ->option()
+        ->require()
+        ->describedAs("a random arg");
+$crSub->option('u')
+        ->aka("user")
+        ->require()
+        ->describedAs("User name")
+    ->option()
+        ->require()
+        ->describedAs("Some cool arg that does something nifty.");
+switch($cmd->calledSubCommand()) {
+    case 'create':
+        createUser($crSub['u']); ....
+    case 'remove':
+        removeUser($remSub['i']); ...
+}
+
+```
 Things to note:
 
  - Commando implements ArrayAccess so it acts much like an array when you want to retrieve values for it

@@ -358,7 +358,7 @@ class Command implements \ArrayAccess, \Iterator
             // didn't find? rut roh..
             // lets stop, with help?
             $this->printHelp();
-            return null;
+            exit;
         }
         try {
             // the executed filename
