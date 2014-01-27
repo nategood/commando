@@ -311,6 +311,7 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
+     *
      * @return null|string Determines which subcommand is being called from the args
      */
     public function calledSubCommand()
@@ -325,6 +326,7 @@ class Command implements \ArrayAccess, \Iterator
                 }
             }
         }
+        $this->parseIfNotParsed();
         return null;
     }
 
@@ -642,7 +644,7 @@ class Command implements \ArrayAccess, \Iterator
         $help = '';
 
         $help .= $color(\Commando\Util\Terminal::header(' ' . $this->name))
-            ->white()->bg('green')->bold() . PHP_EOL;
+            ->yellow()->bg('black')->bold() . PHP_EOL;
 
         if (!empty($this->help)) {
             $help .= PHP_EOL . \Commando\Util\Terminal::wrap($this->help)
