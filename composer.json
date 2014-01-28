@@ -15,7 +15,7 @@
         "kevinlebrun/colors.php": "0.2.*"
 
     },
-    "version": "0.2.3",
+    "version": "0.2.4",
     "autoload": {
         "psr-0": {"Commando": "src/"}
     }

@@ -75,6 +75,9 @@ class Command implements \ArrayAccess, \Iterator
         'expectsFile' => 'file',
         // 'expectsFileGlob' => 'file',
         // 'mustBeAFile' => 'file',
+
+        'default' => 'default',
+        'defaultsTo' => 'default',
     );
 
     public function __construct($tokens = null)
@@ -251,6 +254,16 @@ class Command implements \ArrayAccess, \Iterator
     private function _map(Option $option, \Closure $callback)
     {
         return $option->setMap($callback);
+    }
+
+    /**
+     * @return Option
+     * @param $option Option
+     * @param mixed $value
+     */
+    private function _default(Option $option, $value)
+    {
+        return $option->setDefault($value);
     }
 
     private function _file(Option $option, $require_exists = true, $allow_globbing = false)
