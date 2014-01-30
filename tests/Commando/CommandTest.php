@@ -122,6 +122,22 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         $cmd->option('b')
             ->boolean();
         $this->assertFalse($cmd['b']);
+
+        // try inverse bool default operations...
+        // with bool flag
+        $tokens = ['filename', 'arg1', '-b', 'arg2'];
+        $cmd = new Command($tokens);
+        $cmd->option('b')
+            ->default(true)
+            ->boolean();
+        $this->assertFalse($cmd['b']);
+        // without
+        $tokens = ['filename', 'arg1', 'arg2'];
+        $cmd = new Command($tokens);
+        $cmd->option('b')
+            ->default(true)
+            ->boolean();
+        $this->assertTrue($cmd['b']);
     }
 
     public function testGetValues()
