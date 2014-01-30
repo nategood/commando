@@ -15,6 +15,7 @@ class Option
         $type = 0, /* int see constants */
         $rule, /* closure */
         $map, /* closure */
+        $default, /* mixed default value for this option when no value is specified */
         $file = false, /* bool */
         $file_require_exists, /* bool require that the file path is valid */
         $file_allow_globbing; /* bool allow globbing for files */
@@ -70,6 +71,10 @@ class Option
      */
     public function setBoolean($bool = true)
     {
+        // if we didn't define a default already, set false as the default value...
+        if($this->default === null) {
+            $this->setDefault(false);
+        }
         $this->boolean = $bool;
         return $this;
     }
@@ -115,6 +120,25 @@ class Option
     }
 
     /**
+     * @param mixed $value default value
+     * @return Option
+     */
+    public function setDefault($value)
+    {
+        $this->default = $value;
+        $this->setValue($value);
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefault()
+    {
+        return $this->default;
+    }
+
+    /**
      * @param closure|string $rule regex, closure
      * @return Option
      */
@@ -133,7 +157,6 @@ class Option
         $this->map = $map;
         return $this;
     }
-
 
     /**
      * @param closure|string $rule regex, closure

@@ -76,6 +76,9 @@ class Command implements \ArrayAccess, \Iterator
         'expectsFile' => 'file',
         // 'expectsFileGlob' => 'file',
         // 'mustBeAFile' => 'file',
+
+        'default' => 'default',
+        'defaultsTo' => 'default',
     );
 
     public function __construct($tokens = null)
@@ -268,6 +271,16 @@ class Command implements \ArrayAccess, \Iterator
         return $option->setMap($callback);
     }
 
+    /**
+     * @return Option
+     * @param $option Option
+     * @param mixed $value
+     */
+    private function _default(Option $option, $value)
+    {
+        return $option->setDefault($value);
+    }
+
     private function _file(Option $option, $require_exists = true, $allow_globbing = false)
     {
         return $option->setFileRequirements($require_exists, $allow_globbing);
@@ -393,7 +406,7 @@ class Command implements \ArrayAccess, \Iterator
 
                     $option = $this->getOption($name);
                     if ($option->isBoolean()) {
-                        $keyvals[$name] = true;
+                        $keyvals[$name] = !$option->getDefault();// inverse of the default, as expected
                     } else {
                         // the next token MUST be an "argument" and not another flag/option
                         $token = array_shift($tokens);
@@ -404,8 +417,6 @@ class Command implements \ArrayAccess, \Iterator
                     }
                 }
             }
-            // @todo If we add a default feature to Commando then use that logic in here, to do inverse booleans based on default... i.e. $this->getOption($option->getName())->setValue(!$option->getDefault());
-
             // Set values (validates and performs map when applicable)
             foreach ($keyvals as $key => $value) {
 
@@ -418,13 +429,6 @@ class Command implements \ArrayAccess, \Iterator
                     throw new \Exception(sprintf('Required %s %s must be specified',
                         $option->getType() & Option::TYPE_NAMED ?
                             'option' : 'argument', $option->getName()));
-                }
-                if($option->isBoolean()) {
-                    if(isset($keyvals[$option->getName()]) === false) {
-                        // @todo default feature...
-                        // Default to false if not defined.
-                        $this->getOption($option->getName())->setValue(false);
-                    }
                 }
             }
 
