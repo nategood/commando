@@ -210,6 +210,10 @@ Released under MIT license.
 
 ## Change Log
 
+### v0.2.4
+
+ - Added abilty to define default values for options
+
 ### v0.2.3
 
  - Improved Help Formatting [PR #12](https://github.com/nategood/commando/pull/12)
