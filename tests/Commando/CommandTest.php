@@ -111,13 +111,13 @@ class CommandTest extends \PHPUnit_Framework_TestCase
     public function testBooleanOption()
     {
         // with bool flag
-        $tokens = ['filename', 'arg1', '-b', 'arg2'];
+        $tokens = array('filename', 'arg1', '-b', 'arg2');
         $cmd = new Command($tokens);
         $cmd->option('b')
             ->boolean();
         $this->assertTrue($cmd['b']);
         // without
-        $tokens = ['filename', 'arg1', 'arg2'];
+        $tokens = array('filename', 'arg1', 'arg2');
         $cmd = new Command($tokens);
         $cmd->option('b')
             ->boolean();
@@ -125,14 +125,14 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 
         // try inverse bool default operations...
         // with bool flag
-        $tokens = ['filename', 'arg1', '-b', 'arg2'];
+        $tokens = array('filename', 'arg1', '-b', 'arg2');
         $cmd = new Command($tokens);
         $cmd->option('b')
             ->default(true)
             ->boolean();
         $this->assertFalse($cmd['b']);
         // without
-        $tokens = ['filename', 'arg1', 'arg2'];
+        $tokens = array('filename', 'arg1', 'arg2');
         $cmd = new Command($tokens);
         $cmd->option('b')
             ->default(true)
