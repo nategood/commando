@@ -78,7 +78,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
     }
 
     // Test retrieving a previously defined option via option($name)
-    public function testRevtrievingOptionNamed()
+    public function testRetrievingOptionNamed()
     {
         // Short flag
         $tokens = array('filename', '-f', 'val');
@@ -94,7 +94,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
     }
 
     // Test retrieving a previously defined option via option($name)
-    public function testRevtrievingOptionAnon()
+    public function testRetrievingOptionAnon()
     {
         // Annonymous
         $tokens = array('filename', 'arg1', 'arg2', 'arg3');
@@ -106,6 +106,38 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($cmd->getOption(0)->isRequired());
 
         $this->assertEquals(1, $cmd->getSize());
+    }
+
+    public function testBooleanOption()
+    {
+        // with bool flag
+        $tokens = array('filename', 'arg1', '-b', 'arg2');
+        $cmd = new Command($tokens);
+        $cmd->option('b')
+            ->boolean();
+        $this->assertTrue($cmd['b']);
+        // without
+        $tokens = array('filename', 'arg1', 'arg2');
+        $cmd = new Command($tokens);
+        $cmd->option('b')
+            ->boolean();
+        $this->assertFalse($cmd['b']);
+
+        // try inverse bool default operations...
+        // with bool flag
+        $tokens = array('filename', 'arg1', '-b', 'arg2');
+        $cmd = new Command($tokens);
+        $cmd->option('b')
+            ->default(true)
+            ->boolean();
+        $this->assertFalse($cmd['b']);
+        // without
+        $tokens = array('filename', 'arg1', 'arg2');
+        $cmd = new Command($tokens);
+        $cmd->option('b')
+            ->default(true)
+            ->boolean();
+        $this->assertTrue($cmd['b']);
     }
 
     public function testGetValues()

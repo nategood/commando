@@ -71,6 +71,10 @@ class Option
      */
     public function setBoolean($bool = true)
     {
+        // if we didn't define a default already, set false as the default value...
+        if($this->default === null) {
+            $this->setDefault(false);
+        }
         $this->boolean = $bool;
         return $this;
     }
@@ -124,6 +128,14 @@ class Option
         $this->default = $value;
         $this->setValue($value);
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefault()
+    {
+        return $this->default;
     }
 
     /**

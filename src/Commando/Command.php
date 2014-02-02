@@ -342,7 +342,7 @@ class Command implements \ArrayAccess, \Iterator
 
                     $option = $this->getOption($name);
                     if ($option->isBoolean()) {
-                        $keyvals[$name] = true;
+                        $keyvals[$name] = !$option->getDefault();// inverse of the default, as expected
                     } else {
                         // the next token MUST be an "argument" and not another flag/option
                         $token = array_shift($tokens);
@@ -353,9 +353,9 @@ class Command implements \ArrayAccess, \Iterator
                     }
                 }
             }
-
             // Set values (validates and performs map when applicable)
             foreach ($keyvals as $key => $value) {
+
                 $this->getOption($key)->setValue($value);
             }
 
