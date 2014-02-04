@@ -10,6 +10,37 @@ use Commando\Command;
 class CommandTest extends \PHPUnit_Framework_TestCase
 {
 
+    public function testCommandoSubCommand()
+    {
+        $args = array('filename', 'create', '-u', 'bob', 'somearg');
+        $cmd = new Command($args);
+        $crSub = $cmd->subCommand("create", "Cool create feature!");
+        $remSub = $cmd->subCommand("remove", "Cool remove feature!");
+        
+        // define subs
+        $remSub->option('i')
+                ->require()
+                ->describedAs("User ID that is being removed")
+            ->option()
+                ->require()
+                ->describedAs("another arg");
+        $crSub->option('u')
+                ->aka("user")
+                ->require()
+                ->describedAs("User name")
+            ->option()
+                ->require()
+                ->describedAs("Some cool arg that does something nifty.");
+        
+        // validate which one is hit...
+        $this->assertEquals($cmd->calledSubCommand(), "create");
+        // make sure we have the proper options...
+        $this->assertEquals('bob', $crSub['u']);
+        $this->assertEquals('bob', $crSub['user']);
+        $this->assertEquals('somearg', $crSub[0]);
+        // remove has a 0 arg too, but should not be parsed at all since the "create" was specified...
+        $this->assertEquals(null, $remSub[0]);
+    }
     public function testCommandoAnon()
     {
         $tokens = array('filename', 'arg1', 'arg2', 'arg3');

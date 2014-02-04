@@ -90,7 +90,11 @@ class Terminal
     }
 
     /**
-     * A UT8 compatible string pad
+     * A UTF-8 compatible string pad
+     * @param $text
+     * @param $width
+     * @param string $pad
+     * @param int $mode
      * @return string
      */
     public static function pad($text, $width, $pad = ' ', $mode = STR_PAD_RIGHT)
