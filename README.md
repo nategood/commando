@@ -239,6 +239,10 @@ Released under MIT license.
 
 ## Change Log
 
+### v0.2.5
+
+ - Fixed up default values for boolean options, automatically default boolean options to false (unlikely, but potentially breaking change) [PR #19](https://github.com/nategood/commando/pull/19)
+
 ### v0.2.4
 
  - Added abilty to define default values for options
