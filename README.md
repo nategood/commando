@@ -260,3 +260,7 @@ php command.php -f value1 --long value2 value3 value4 value5
 
 ### v0.1.2
  - Terminal updated to use tput correctly
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/nategood/commando/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
