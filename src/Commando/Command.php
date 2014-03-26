@@ -421,7 +421,7 @@ class Command implements \ArrayAccess, \Iterator
     {
         $matches = array();
 
-        if (substr($token, 0, 1) === '-' && !preg_match('/(?P<hyphen>\-{1,2})(?P<name>[a-z][a-z0-9_]*)/i', $token, $matches)) {
+        if (substr($token, 0, 1) === '-' && !preg_match('/(?P<hyphen>\-{1,2})(?P<name>[a-z][a-z0-9_-]*)/i', $token, $matches)) {
             throw new \Exception(sprintf('Unable to parse option %s: Invalid syntax', $token));
         }
 
