@@ -46,7 +46,6 @@ class Command implements \ArrayAccess, \Iterator
         'require' => 'require',
         'required' => 'require',
         'r' => 'require',
-        'requires' => 'requires',
 
         'alias' => 'alias',
         'aka' => 'alias',
@@ -61,6 +60,7 @@ class Command implements \ArrayAccess, \Iterator
         'describeAs' => 'describe',
         'description' => 'describe',
         'describedAs' => 'describe',
+        'dependsOn' => 'dependsOn',
 
         'map' => 'map',
         'mapTo' => 'map',
@@ -213,9 +213,9 @@ class Command implements \ArrayAccess, \Iterator
      * @param string $name Name of option
      * @return \Commando\Option instance
      */
-    private function _requires(Option $option, $name)
+    private function _dependsOn(Option $option, $name)
     {
-        return $option->setRequires($name);
+        return $option->setDependsOn($name);
     }
 
     /**
@@ -369,7 +369,7 @@ class Command implements \ArrayAccess, \Iterator
 
             // See if our options have what they require
             foreach ($this->options as $option) {
-                $required = $option->hasRequirements($this->options);
+                $required = $option->hasDependsOn($this->options);
                 if ($required !== true) {
                     throw new \InvalidArgumentException(
                         'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $required)

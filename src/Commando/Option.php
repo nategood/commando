@@ -11,7 +11,7 @@ class Option
         $value = null, /* mixed */
         $description, /* string */
         $required = false, /* bool */
-        $requires = array(), /* set of other required options for this option */
+        $dependsOn = array(), /* set of other required options for this option */
         $boolean = false, /* bool */
         $type = 0, /* int see constants */
         $rule, /* closure */
@@ -125,13 +125,13 @@ class Option
      *
      * @param string $option Option name
      */
-    public function setRequires($option)
+    public function setDependsOn($option)
     {
         if (!is_array($option)) {
             $option = array($option);
         }
         foreach ($option as $opt) {
-            $this->requires[] = $opt;
+            $this->dependsOn[] = $opt;
         }
         return $this;
     }
@@ -262,9 +262,9 @@ class Option
      * Get the current set of this option's requirements
      * @return array List of required options
      */
-    public function getRequires()
+    public function getDependsOn()
     {
-        return $this->requires;
+        return $this->dependsOn;
     }
 
     /**
@@ -298,9 +298,9 @@ class Option
      * @param array $optionsList Set of current options defined
      * @return boolean|array True if requirements met, array if not found
      */
-    public function hasRequirements($optionsList)
+    public function hasDependsOn($optionsList)
     {
-        $requires = $this->getRequires();
+        $requires = $this->getDependsOn();
 
         $definedOptions = array_keys($optionsList);
         $notFound = array();
