@@ -46,6 +46,7 @@ class Command implements \ArrayAccess, \Iterator
         'require' => 'require',
         'required' => 'require',
         'r' => 'require',
+        'requires' => 'requires',
 
         'alias' => 'alias',
         'aka' => 'alias',
@@ -206,6 +207,18 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
+     * Set a requirement on an option
+     *
+     * @param \Commando\Option $option Current option
+     * @param string $name Name of option
+     * @return \Commando\Option instance
+     */
+    private function _requires(Option $option, $name)
+    {
+        return $option->setRequires($name);
+    }
+
+    /**
      * @param Option $option
      * @param string $alias
      * @return Option
@@ -353,6 +366,17 @@ class Command implements \ArrayAccess, \Iterator
                     }
                 }
             }
+
+            // See if our options have what they require
+            foreach ($this->options as $option) {
+                $required = $option->hasRequirements($this->options);
+                if ($required !== true) {
+                    throw new \InvalidArgumentException(
+                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $required)
+                    );
+                }
+            }
+
             // Set values (validates and performs map when applicable)
             foreach ($keyvals as $key => $value) {
 
