@@ -131,6 +131,31 @@ class OptionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($val, $option->getValue());
     }
 
+    /**
+     * Test that requires options are set correctly
+     */
+    public function testSetRequired()
+    {
+        $option = new Option('f');
+        $option->setRequires('foo');
+
+        $this->assertTrue(in_array('foo', $option->getRequires()));
+    }
+
+    /**
+     * Test that the needed requirements are met
+     */
+    public function testOptionRequirementsMet()
+    {
+        $option = new Option('f');
+        $option->setRequires('foo');
+        $optionSet = array(
+            'foo' => new Option('foo')
+        );
+
+        $this->assertTrue($option->hasRequirements($optionSet));
+    }
+
     // Providers
 
     public function values()
