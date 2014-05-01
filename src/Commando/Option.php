@@ -11,6 +11,7 @@ class Option
         $value = null, /* mixed */
         $description, /* string */
         $required = false, /* bool */
+        $requires = array(), /* set of other required options for this option */
         $boolean = false, /* bool */
         $type = 0, /* int see constants */
         $rule, /* closure */
@@ -116,6 +117,22 @@ class Option
     public function setRequired($bool = true)
     {
         $this->required = $bool;
+        return $this;
+    }
+
+    /**
+     * Set an option as required
+     *
+     * @param string $option Option name
+     */
+    public function setRequires($option)
+    {
+        if (!is_array($option)) {
+            $option = array($option);
+        }
+        foreach ($option as $opt) {
+            $this->requires[] = $opt;
+        }
         return $this;
     }
 
@@ -242,6 +259,15 @@ class Option
     }
 
     /**
+     * Get the current set of this option's requirements
+     * @return array List of required options
+     */
+    public function getRequires()
+    {
+        return $this->requires;
+    }
+
+    /**
      * @return bool is this option a boolean
      */
     public function isBoolean()
@@ -264,6 +290,27 @@ class Option
     public function isRequired()
     {
         return $this->required;
+    }
+
+    /**
+     * Check to see if requirements list for option are met
+     *
+     * @param array $optionsList Set of current options defined
+     * @return boolean|array True if requirements met, array if not found
+     */
+    public function hasRequirements($optionsList)
+    {
+        $requires = $this->getRequires();
+
+        $definedOptions = array_keys($optionsList);
+        $notFound = array();
+        foreach ($requires as $req) {
+            if (!in_array($req, $definedOptions)) {
+                $notFound[] = $req;
+            }
+        }
+        return (empty($notFound)) ? true : $notFound;
+
     }
 
     /**
