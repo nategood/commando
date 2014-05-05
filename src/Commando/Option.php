@@ -272,10 +272,10 @@ class Option
     public function setValue($value)
     {
         if ($this->isBoolean() && !is_bool($value)) {
-            throw new \Exception(sprintf('Boolean option expected for option -%s, received %s value instead', $this->name, $value));
+            throw new \Exception(sprintf('Boolean option expected for option %s, received %s value instead', $this->name, $value));
         }
         if (!$this->validate($value)) {
-            throw new \Exception(sprintf('Invalid value, %s, for option -%s', $value, $this->name));
+            throw new \Exception(sprintf('Invalid value, %s, for option %s', $value, $this->name));
         }
         if ($this->isFile()) {
             $file_path = $this->parseFilePath($value);
