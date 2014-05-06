@@ -137,9 +137,9 @@ class OptionTest extends \PHPUnit_Framework_TestCase
     public function testSetRequired()
     {
         $option = new Option('f');
-        $option->setDependsOn('foo');
+        $option->setNeeds('foo');
 
-        $this->assertTrue(in_array('foo', $option->getDependsOn()));
+        $this->assertTrue(in_array('foo', $option->getNeeds()));
     }
 
     /**
@@ -148,12 +148,12 @@ class OptionTest extends \PHPUnit_Framework_TestCase
     public function testOptionRequirementsMet()
     {
         $option = new Option('f');
-        $option->setDependsOn('foo');
+        $option->setNeeds('foo');
         $optionSet = array(
             'foo' => new Option('foo')
         );
 
-        $this->assertTrue($option->hasDependsOn($optionSet));
+        $this->assertTrue($option->hasNeeds($optionSet));
     }
 
     // Providers
