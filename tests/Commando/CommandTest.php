@@ -162,7 +162,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 
         $cmd->option('b');
         $cmd->option('a')
-            ->dependsOn('b');
+            ->needs('b');
 
         $this->assertEquals($cmd['a'], 'v1');
     }
@@ -179,7 +179,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         $cmd->trapErrors(false)
             ->beepOnError(false);
         $cmd->option('a')
-        ->dependsOn('b');
+        ->needs('b');
     }
 
 }
