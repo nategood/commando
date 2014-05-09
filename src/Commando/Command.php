@@ -70,6 +70,7 @@ class Command implements \ArrayAccess, \Iterator
         // mustBeNumeric
         // mustBeInt
         // mustBeFloat
+        'needs' => 'needs',
 
         'file' => 'file',
         'expectsFile' => 'file',
@@ -203,6 +204,18 @@ class Command implements \ArrayAccess, \Iterator
     private function _require(Option $option, $require = true)
     {
         return $option->setRequired($require);
+    }
+
+    /**
+     * Set a requirement on an option
+     *
+     * @param \Commando\Option $option Current option
+     * @param string $name Name of option
+     * @return \Commando\Option instance
+     */
+    private function _needs(Option $option, $name)
+    {
+        return $option->setNeeds($name);
     }
 
     /**
@@ -353,6 +366,17 @@ class Command implements \ArrayAccess, \Iterator
                     }
                 }
             }
+
+            // See if our options have what they require
+            foreach ($this->options as $option) {
+                $needs = $option->hasNeeds($this->options);
+                if ($needs !== true) {
+                    throw new \InvalidArgumentException(
+                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
+                    );
+                }
+            }
+
             // Set values (validates and performs map when applicable)
             foreach ($keyvals as $key => $value) {
 
