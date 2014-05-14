@@ -35,10 +35,12 @@ $hello_cmd
   // Define first option
   ->option()
     ->require()
+    ->title('name')
     ->describedAs('A person\'s name')
   // Define a flag "-s" a.k.a. "--title"
   ->option('t')
     ->aka('title')
+    ->aka('long-title')
     ->describedAs('When set, use this title to address the person')
     ->must(function($title) {
         $titles = array('Mister', 'Mr', 'Misses', 'Mrs', 'Miss', 'Ms');
