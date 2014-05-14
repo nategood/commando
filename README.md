@@ -209,6 +209,10 @@ Commando highly encourages sending in pull requests.  When submitting a pull req
 Released under MIT license.
 
 ## Change Log
+### v0.2.6
+
+ - Adds support for "needs" to define dependencies between options (thanks @enygma) [PR #31](https://github.com/nategood/commando/pull/31)
+ - Fixes issue with long-argument-names [Issue #30](https://github.com/nategood/commando/issues/30)
 
 ### v0.2.5
 
