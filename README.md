@@ -84,7 +84,7 @@ Running it:
 Things to note:
 
  - Commando implements ArrayAccess so it acts much like an array when you want to retrieve values for it
- - For "annonymous" (i.e. not a named flag) arguments, we access them based on their numeric index
+ - For "anonymous" (i.e. not a named flag) arguments, we access them based on their numeric index
  - We can access option values in an array via a flags name OR it's alias
  - We can use closures to perform validation and map operations right as part of our option definition
 
@@ -145,7 +145,7 @@ These options work on the "option" level, even though they are chained to a `Com
 
 Aliases: `o`
 
-Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an annonymous argument and is referenced in the future by it's position.
+Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an anonymous argument and is referenced in the future by it's position.
 
 ### `flag (string name)`
 
@@ -195,7 +195,7 @@ Perform a map operation on the value for this option.  Takes function that accep
 
 Aliases: `title`, `referredToAs`
 
-Add a name to refer to an argument option by.  Makes the help docs a little cleaner for annonymous "argument" options.
+Add a name to refer to an argument option by.  Makes the help docs a little cleaner for anonymous "argument" options.
 
 ## Contributing
 

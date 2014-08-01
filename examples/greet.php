@@ -23,7 +23,7 @@
  *
  * > php greet.php
  * # Throws an Exception because the command requires at least one
- * # annonymous option
+ * # anonymous option
  */
 
 require dirname(__DIR__) . '/vendor/autoload.php';
