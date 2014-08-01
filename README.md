@@ -225,7 +225,7 @@ Released under MIT license.
 
 ### v0.2.4
 
- - Added abilty to define default values for options
+ - Added ability to define default values for options
 
 ### v0.2.3
 
