@@ -180,7 +180,7 @@ Require that other $options be set for this option to be used.
 
 ### `must (Closure rule)`
 
-Aliases: _N/A_
+Aliases: none
 
 Define a rule to validate input against.  Takes function that accepts a string $value and returns a boolean as to whether or not $value is valid.
 
