@@ -85,7 +85,7 @@ Things to note:
 
  - Commando implements ArrayAccess so it acts much like an array when you want to retrieve values for it
  - For "anonymous" (i.e. not a named flag) arguments, we access them based on their numeric index
- - We can access option values in an array via a flags name OR it's alias
+ - We can access option values in an array via a flags name OR its alias
  - We can use closures to perform validation and map operations right as part of our option definition
 
 ## Baked in Help
@@ -111,7 +111,6 @@ The default behavior of Commando is to provide a --help option that spits out a 
 ### `setHelp (string help)`
 
 Text to prepend to the help page.  Use this to describe the command at a high level and maybe some examples usages of the command.
-
 
 ### `beepOnError (bool beep=true)`
 
@@ -145,7 +144,7 @@ These options work on the "option" level, even though they are chained to a `Com
 
 Aliases: `o`
 
-Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an anonymous argument and is referenced in the future by it's position.
+Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an anonymous argument and is referenced in the future by its position.
 
 ### `flag (string name)`
 
