@@ -475,6 +475,15 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
+     * @return array of `Option`s
+     */
+    public function getOptions()
+    {
+        $this->parseIfNotParsed();
+        return $this->options;
+    }
+
+    /**
      * @return array of argument `Option` only
      */
     public function getArguments()
