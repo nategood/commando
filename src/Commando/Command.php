@@ -367,16 +367,6 @@ class Command implements \ArrayAccess, \Iterator
                 }
             }
 
-            // See if our options have what they require
-            foreach ($this->options as $option) {
-                $needs = $option->hasNeeds($this->options);
-                if ($needs !== true) {
-                    throw new \InvalidArgumentException(
-                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
-                    );
-                }
-            }
-
             // Set values (validates and performs map when applicable)
             foreach ($keyvals as $key => $value) {
 
@@ -389,6 +379,16 @@ class Command implements \ArrayAccess, \Iterator
                     throw new \Exception(sprintf('Required %s %s must be specified',
                         $option->getType() & Option::TYPE_NAMED ?
                             'option' : 'argument', $option->getName()));
+                }
+            }
+
+            // See if our options have what they require
+            foreach ($this->options as $option) {
+                $needs = $option->hasNeeds($this->options);
+                if ($needs !== true) {
+                    throw new \InvalidArgumentException(
+                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
+                    );
                 }
             }
 
