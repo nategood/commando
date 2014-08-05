@@ -179,7 +179,7 @@ class Command implements \ArrayAccess, \Iterator
      * @param int $index [optional] only used when referencing an existing option
      * @return Option
      *
-     * Like _option but only for annonymous arguments
+     * Like _option but only for anonymous arguments
      */
     private function _argument($option, $index = null)
     {
@@ -338,8 +338,8 @@ class Command implements \ArrayAccess, \Iterator
                     // its an argument, use an int as the index
                     $keyvals[$count] = $name;
 
-                    // We allow for "dynamic" annonymous arguments, so we
-                    // add an option for any annonymous arguments that
+                    // We allow for "dynamic" anonymous arguments, so we
+                    // add an option for any anonymous arguments that
                     // weren't predefined
                     if (!$this->hasOption($count)) {
                         $this->options[$count] = new Option($count);
@@ -537,7 +537,7 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
-     * @param string $option name (named option) or index (annonymous option)
+     * @param string $option name (named option) or index (anonymous option)
      * @return boolean
      */
     public function hasOption($option)
