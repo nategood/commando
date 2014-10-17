@@ -79,6 +79,10 @@ class Command implements \ArrayAccess, \Iterator
 
         'default' => 'default',
         'defaultsTo' => 'default',
+
+        'magnitude' => 'magnitude',
+        'mag' => 'magnitude',
+        'm' => 'magnitude',
     );
 
     public function __construct($tokens = null)
@@ -277,6 +281,16 @@ class Command implements \ArrayAccess, \Iterator
     private function _default(Option $option, $value)
     {
         return $option->setDefault($value);
+    }
+
+    /**
+     * @return Option
+     * @param $option Option
+     * @param $magnitude 
+     */
+    private function _magnitude(Option $option, $value = 2)
+    {
+        return $option->setMagnitude($value);
     }
 
     private function _file(Option $option, $require_exists = true, $allow_globbing = false)
