@@ -10,6 +10,7 @@ class Command implements \ArrayAccess, \Iterator
     const OPTION_TYPE_ARGUMENT  = 1; // e.g. foo
     const OPTION_TYPE_SHORT     = 2; // e.g. -u
     const OPTION_TYPE_VERBOSE   = 4; // e.g. --username
+    const OPTION_TYPE_MAGNITUDE = 8; // e.g. -vvvvv
 
     private
         $current_option             = null,
@@ -158,7 +159,11 @@ class Command implements \ArrayAccess, \Iterator
             if (!isset($name)) {
                 $name = $this->nameless_option_counter++;
             }
-            $this->current_option = $this->options[$name] = new Option($name);
+            $newOption = new Option($name);
+            if ($newOption->isMagnitude()) {
+                $name = $name{0};
+            }
+            $this->current_option = $this->options[$name] = $newOption;
         }
 
         return $this->current_option;
@@ -367,9 +372,11 @@ class Command implements \ArrayAccess, \Iterator
                         exit;
                     }
 
-                    $option = $this->getOption($name);
+                    $option = $this->getOption(($type === self::OPTION_TYPE_MAGNITUDE) ? $name{0} : $name);
                     if ($option->isBoolean()) {
                         $keyvals[$name] = !$option->getDefault();// inverse of the default, as expected
+                    } elseif ($option->isMagnitude()) {
+                        $keyvals[$name{0}] = strlen($name);
                     } else {
                         // the next token MUST be an "argument" and not another flag/option
                         $token = array_shift($tokens);
@@ -464,9 +471,14 @@ class Command implements \ArrayAccess, \Iterator
         }
 
         if (!empty($matches['hyphen'])) {
-            $type = (strlen($matches['hyphen']) === 1) ?
-                self::OPTION_TYPE_SHORT:
-                self::OPTION_TYPE_VERBOSE;
+            $nameLen = strlen($matches['name']);
+            if (strlen($matches['hyphen']) === 1 && $nameLen > 1 && $matches['name'] == str_repeat($matches['name']{0}, $nameLen)) {
+                $type = self::OPTION_TYPE_MAGNITUDE;
+            } else {
+                $type = (strlen($matches['hyphen']) === 1) ?
+                    self::OPTION_TYPE_SHORT:
+                    self::OPTION_TYPE_VERBOSE;
+            }
             return array($matches['name'], $type);
         }
 
