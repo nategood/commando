@@ -346,9 +346,6 @@ class Option
      */
     public function setValue($value)
     {
-        if ($this->isMagnitude()) {
-            var_dump($value);exit;
-        }
         if ($this->isBoolean() && !is_bool($value)) {
             throw new \Exception(sprintf('Boolean option expected for option %s, received %s value instead', $this->name, $value));
         }
