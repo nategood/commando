@@ -207,7 +207,7 @@ Specifices that the flag is a boolean type flag.
 
 Aliases: `defaultsTo`
 
-If the value is not specified, default to `$defaultValue`. 
+If the value is not specified, default to `$defaultValue`.
 
 In the case of `boolean()` type flags, when the flag is present, the value of this option the negation of `$defaultValue`. That is to say, if you have a flag -b with a default of `true`, when -b is present as a command line flag, the value of the option will be `false`.
 
@@ -235,6 +235,11 @@ Commando highly encourages sending in pull requests.  When submitting a pull req
 Released under MIT license.
 
 ## Change Log
+
+### v0.2.7
+
+ - `getOptions` added (along with some better documentation)
+
 ### v0.2.6
 
  - Adds support for "needs" to define dependencies between options (thanks @enygma) [PR #31](https://github.com/nategood/commando/pull/31)
