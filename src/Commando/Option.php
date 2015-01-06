@@ -17,6 +17,7 @@ class Option
         $rule, /* closure */
         $map, /* closure */
         $default, /* mixed default value for this option when no value is specified */
+        $magnitude, /* magnitude allows for repeated single characters */
         $file = false, /* bool */
         $file_require_exists, /* bool require that the file path is valid */
         $file_allow_globbing; /* bool allow globbing for files */
@@ -134,6 +135,33 @@ class Option
             $this->needs[] = $opt;
         }
         return $this;
+    }
+
+    /**
+     * Set magnitude for an option
+     *
+     * @param int $value
+     */
+    public function setMagnitude($value = 1)
+    {
+        $this->magnitude = $value;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMagnitude()
+    {
+        return $this->magnitude;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMagnitude()
+    {
+        return ($this->magnitude > 1);
     }
 
     /**
@@ -348,15 +376,20 @@ class Option
         $isNamed = ($this->type & self::TYPE_NAMED);
 
         if ($isNamed) {
-            $help .=  PHP_EOL . (mb_strlen($this->name, 'UTF-8') === 1 ?
-                '-' : '--') . $this->name;
-            if (!empty($this->aliases)) {
+            if ($this->isMagnitude()) {
+                $help .= PHP_EOL . '-' . $this->name 
+                    . '[' . str_repeat($this->name, $this->getMagnitude()-1) . ']';
+            } else {
+                $help .=  PHP_EOL . (mb_strlen($this->name, 'UTF-8') === 1 ?
+                    '-' : '--') . $this->name;
+            }
+            if (!empty($this->aliases) && !$this->isMagnitude()) {
                 foreach($this->aliases as $alias) {
                     $help .= (mb_strlen($alias, 'UTF-8') === 1 ?
                         '/-' : '/--') . $alias;
                 }
             }
-            if (!$this->isBoolean()) {
+            if (!$this->isBoolean() && !$this->isMagnitude()) {
                 $help .= ' ' . $color->underline('<argument>');
             }
             $help .= PHP_EOL;
