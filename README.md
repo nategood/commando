@@ -7,7 +7,7 @@ Commando is a PHP command line interface library that beautifies and simplifies 
 
 ## Why?
 
-PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) isn't all that much better, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling cli input, all while providing a clean and readable interface.
+PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) isn't all that much better, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling CLI input, all while providing a clean and readable interface.
 
 ## Installation
 
@@ -145,7 +145,7 @@ These options work on the "option" level, even though they are chained to a `Com
 
 Aliases: `o`
 
-Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an annonymous argument and is referenced in the future by it's position.
+Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an anonymous argument and is referenced in the future by it's position.
 
 ### `flag (string $name)`
 
@@ -195,7 +195,7 @@ Perform a map operation on the value for this option.  Takes function that accep
 
 Aliases: `title`, `referredToAs`
 
-Add a name to refer to an argument option by.  Makes the help docs a little cleaner for annonymous "argument" options.
+Add a name to refer to an argument option by.  Makes the help docs a little cleaner for anonymous "argument" options.
 
 ### `boolean ()`
 
@@ -251,7 +251,7 @@ Released under MIT license.
 
 ### v0.2.4
 
- - Added abilty to define default values for options
+ - Added ability to define default values for options
 
 ### v0.2.3
 
