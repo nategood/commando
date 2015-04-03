@@ -28,7 +28,8 @@ class Option
 
     /**
      * @param string|int $name single char name or int index for this option
-     * @return Option
+     *
+     * @throws \Exception
      */
     public function __construct($name)
     {
@@ -88,9 +89,9 @@ class Option
      * supports file globbing and returns an array of matching
      * files.
      *
-     * @return string|array of full file path|paths
      * @param bool $require_exists
      * @param bool $allow_globbing
+     * @return void
      * @throws \Exception if the file does not exists
      */
     public function setFileRequirements($require_exists = true, $allow_globbing = true)
@@ -124,6 +125,8 @@ class Option
      * Set an option as required
      *
      * @param string $option Option name
+     *
+     * @return $this
      */
     public function setNeeds($option)
     {
@@ -156,7 +159,7 @@ class Option
     }
 
     /**
-     * @param closure|string $rule regex, closure
+     * @param \Closure|string $rule regex, closure
      * @return Option
      */
     public function setRule($rule)
@@ -166,7 +169,8 @@ class Option
     }
 
     /**
-     * @param closure|string $rule regex, closure
+     * @param \Closure $map
+     *
      * @return Option
      */
     public function setMap(\Closure $map)
@@ -176,7 +180,7 @@ class Option
     }
 
     /**
-     * @param closure|string $rule regex, closure
+     * @param \Closure|string $value regex, closure
      * @return Option
      */
     public function map($value)
@@ -192,7 +196,9 @@ class Option
 
 
     /**
-     * @return bool
+     * @param mixed $value
+     *
+     * @return mixed|bool
      */
     public function validate($value)
     {
@@ -206,7 +212,7 @@ class Option
     }
 
     /**
-     * @param string $path
+     * @param string $file_path
      * @return string|array full file path or an array of file paths in the
      *     case where "globbing" is supported
      */
@@ -251,7 +257,7 @@ class Option
     }
 
     /**
-     * @return array list of aliases
+     * @return string[] list of aliases
      */
     public function getAliases()
     {
@@ -260,7 +266,7 @@ class Option
 
     /**
      * Get the current set of this option's requirements
-     * @return array List of required options
+     * @return string[] List of required options
      */
     public function getNeeds()
     {
@@ -314,7 +320,9 @@ class Option
     }
 
     /**
-     * @param mixed value for this option (set on the command line)
+     * @param mixed $value for this option (set on the command line)
+     *
+     * @throws \Exception
      */
     public function setValue($value)
     {
