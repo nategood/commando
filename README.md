@@ -112,17 +112,18 @@ The default behavior of Commando is to provide a --help option that spits out a 
 
 Text to prepend to the help page.  Use this to describe the command at a high level and maybe some examples usages of the command.
 
+
 ### `beepOnError (bool beep=true)`
 
 When an error occurs, print character to make the terminal "beep".
 
 ### `getOptions`
 
-Return an array of `Option`s for each options provided to the command.
+Return an array of `Options` for each options provided to the command.
 
 ### `getFlags`
 
-Return an array of `Option`s for only the flags provided to the command.
+Return an array of `Options` for only the flags provided to the command.
 
 ### `getArguments`
 
@@ -140,13 +141,13 @@ Return array of values for arguments provided to the command. E.g. `array('value
 
 These options work on the "option" level, even though they are chained to a `Command` instance
 
-### `option (mixed name = null)`
+### `option (mixed $name = null)`
 
 Aliases: `o`
 
 Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an anonymous argument and is referenced in the future by its position.
 
-### `flag (string name)`
+### `flag (string $name)`
 
 Same as `option` except that it can only be used to define "flag" type options (a.k.a. those options that must be specified with a -flag on the command line).
 
@@ -154,19 +155,19 @@ Same as `option` except that it can only be used to define "flag" type options (
 
 Same as `option` except that it can only be used to define "argument" type options (a.k.a those options that are specified WITHOUT a -flag on the command line).
 
-### `alias (string alias)`
+### `alias (string $alias)`
 
 Aliases: `a`, `aka`
 
 Add an alias for a named option.  This method can be called multiple times to add multiple aliases.
 
-### `description (string description)`
+### `description (string $description)`
 
 Aliases: `d`, `describe`, `describedAs`
 
 Text to describe this option.  This text will be used to build the "help" page and as such, it is end user facing.
 
-### `require (bool require)`
+### `require (bool $require)`
 
 Aliases: `r`, `required`
 
@@ -178,23 +179,43 @@ Aliases: none
 
 Require that other $options be set for this option to be used.
 
-### `must (Closure rule)`
+### `must (Closure $rule)`
 
-Aliases: none
+Aliases: _N/A_
 
 Define a rule to validate input against.  Takes function that accepts a string $value and returns a boolean as to whether or not $value is valid.
 
-### `map (Closure map)`
+### `map (Closure $map)`
 
 Aliases: `cast`, `castTo`
 
 Perform a map operation on the value for this option.  Takes function that accepts a string $value and return mixed (you can map to whatever you wish).
 
-### `referToAs (string name)`
+### `referToAs (string $name)`
 
 Aliases: `title`, `referredToAs`
 
 Add a name to refer to an argument option by.  Makes the help docs a little cleaner for anonymous "argument" options.
+
+### `boolean ()`
+
+Aliases: _N/A_
+
+Specifices that the flag is a boolean type flag.
+
+### `default (mixed $defaultValue)`
+
+Aliases: `defaultsTo`
+
+If the value is not specified, default to `$defaultValue`.
+
+In the case of `boolean()` type flags, when the flag is present, the value of this option the negation of `$defaultValue`. That is to say, if you have a flag -b with a default of `true`, when -b is present as a command line flag, the value of the option will be `false`.
+
+### `file ()`
+
+Aliases: `expectsFile`
+
+The value specified for this option must be a valid file path. When used relative paths will be converted into fully quantify file paths and globbing is also optionally supported.  See the file.php example.
 
 ## Contributing
 
@@ -214,6 +235,11 @@ Commando highly encourages sending in pull requests.  When submitting a pull req
 Released under MIT license.
 
 ## Change Log
+
+### v0.2.7
+
+ - `getOptions` added (along with some better documentation)
+
 ### v0.2.6
 
  - Adds support for "needs" to define dependencies between options (thanks @enygma) [PR #31](https://github.com/nategood/commando/pull/31)
@@ -270,6 +296,4 @@ php command.php -f value1 --long value2 value3 value4 value5
 ### v0.1.2
  - Terminal updated to use tput correctly
 
-
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/nategood/commando/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
