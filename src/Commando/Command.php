@@ -5,6 +5,41 @@
 
 namespace Commando;
 
+/**
+ * Here are all the methods available through __call.  For accurate method documentation, see the actual method.
+ *
+ * This is merely for intellisense purposes!
+ *
+ * @method Option option (mixed $name = null)
+ * @method Option o (mixed $name = null)
+ * @method Option flag (string $name)
+ * @method Option argument (mixed $option = null)
+ * @method Option alias (string $alias)
+ * @method Option a (string $alias)
+ * @method Option aka (string $alias)
+ * @method Option description (string $description)
+ * @method Option d (string $description)
+ * @method Option describe (string $description)
+ * @method Option describedAs (string $description)
+ * @method Option require (bool $require = true)
+ * @method Option r (bool $require = true)
+ * @method Option required (bool $require = true)
+ * @method Option needs (mixed $options)
+ * @method Option must (\Closure $rule)
+ * @method Option map (\Closure $map)
+ * @method Option cast (\Closure $map)
+ * @method Option castTo (\Closure $map)
+ * @method Option referToAs (string $name)
+ * @method Option title (string $name)
+ * @method Option referredToAs (string $name)
+ * @method Option boolean ()
+ * @method Option default (mixed $defaultValue)
+ * @method Option defaultsTo (mixed $defaultValue)
+ * @method Option file ()
+ * @method Option expectsFile ()
+ *
+ */
+
 class Command implements \ArrayAccess, \Iterator
 {
     const OPTION_TYPE_ARGUMENT  = 1; // e.g. foo
@@ -100,7 +135,7 @@ class Command implements \ArrayAccess, \Iterator
     /**
      * Factory style reads a little nicer
      * @param array $tokens defaults to $argv
-     * @return Commando
+     * @return Command
      */
     public static function define($tokens = null)
     {
@@ -118,6 +153,7 @@ class Command implements \ArrayAccess, \Iterator
      * @param string $name
      * @param array $arguments
      * @return Command
+     * @throws \Exception
      */
     public function __call($name, $arguments)
     {
@@ -142,7 +178,7 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param Option|null $option
-     * @param string|int name
+     * @param string|int $name
      * @return Option
      */
     private function _option($option, $name = null)
@@ -162,8 +198,9 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param Option|null $option
-     * @param string name
+     * @param string $name
      * @return Option
+     * @throws \Exception
      *
      * Like _option but only for named flags
      */
@@ -178,6 +215,7 @@ class Command implements \ArrayAccess, \Iterator
      * @param Option|null $option
      * @param int $index [optional] only used when referencing an existing option
      * @return Option
+     * @throws \Exception
      *
      * Like _option but only for anonymous arguments
      */
@@ -190,6 +228,7 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param Option $option
+     * @param bool $boolean [optional]
      * @return Option
      */
     private function _boolean(Option $option, $boolean = true)
@@ -199,6 +238,7 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param Option $option
+     * @param bool $require [optional]
      * @return Option
      */
     private function _require(Option $option, $require = true)
@@ -305,6 +345,7 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @throws \Exception
+     * @return void
      */
     private function parseIfNotParsed()
     {
@@ -316,6 +357,7 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @throws \Exception
+     * @return void
      */
     public function parse()
     {
@@ -440,6 +482,7 @@ class Command implements \ArrayAccess, \Iterator
     /**
      * @param string $token
      * @return array [option name/value, OPTION_TYPE_*]
+     * @throws \Exception
      */
     private function _parseOption($token)
     {
@@ -658,6 +701,7 @@ class Command implements \ArrayAccess, \Iterator
     /**
      * @param string $offset
      * @see \ArrayAccess
+     * @return bool
      */
     public function offsetExists($offset)
     {
@@ -667,6 +711,7 @@ class Command implements \ArrayAccess, \Iterator
     /**
      * @param string $offset
      * @see \ArrayAccess
+     * @return mixed
      */
     public function offsetGet($offset)
     {

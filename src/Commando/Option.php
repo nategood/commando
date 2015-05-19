@@ -2,6 +2,41 @@
 
 namespace Commando;
 use \Commando\Util\Terminal;
+
+/**
+ * Here are all the methods available through __call.  For accurate method documentation, see the actual method.
+ *
+ * This is merely for intellisense purposes!
+ *
+ * @method Option option (mixed $name = null)
+ * @method Option o (mixed $name = null)
+ * @method Option flag (string $name)
+ * @method Option argument (mixed $option = null)
+ * @method Option alias (string $alias)
+ * @method Option a (string $alias)
+ * @method Option aka (string $alias)
+ * @method Option description (string $description)
+ * @method Option d (string $description)
+ * @method Option describe (string $description)
+ * @method Option describedAs (string $description)
+ * @method Option require (bool $require = true)
+ * @method Option r (bool $require = true)
+ * @method Option required (bool $require = true)
+ * @method Option needs (mixed $options)
+ * @method Option must (\Closure $rule)
+ * @method Option cast (\Closure $map)
+ * @method Option castTo (\Closure $map)
+ * @method Option referToAs (string $name)
+ * @method Option title (string $name)
+ * @method Option referredToAs (string $name)
+ * @method Option boolean ()
+ * @method Option default (mixed $defaultValue)
+ * @method Option defaultsTo (mixed $defaultValue)
+ * @method Option file ()
+ * @method Option expectsFile ()
+ *
+ */
+
 class Option
 {
     private
@@ -29,6 +64,7 @@ class Option
     /**
      * @param string|int $name single char name or int index for this option
      * @return Option
+     * @throws \Exception
      */
     public function __construct($name)
     {
@@ -124,6 +160,7 @@ class Option
      * Set an option as required
      *
      * @param string $option Option name
+     * @return Option
      */
     public function setNeeds($option)
     {
@@ -156,7 +193,7 @@ class Option
     }
 
     /**
-     * @param closure|string $rule regex, closure
+     * @param \Closure|string $rule regex, closure
      * @return Option
      */
     public function setRule($rule)
@@ -166,7 +203,7 @@ class Option
     }
 
     /**
-     * @param closure|string $rule regex, closure
+     * @param \Closure
      * @return Option
      */
     public function setMap(\Closure $map)
@@ -176,7 +213,7 @@ class Option
     }
 
     /**
-     * @param closure|string $rule regex, closure
+     * @param \Closure|string $value regex, closure
      * @return Option
      */
     public function map($value)
@@ -192,6 +229,7 @@ class Option
 
 
     /**
+     * @param mixed $value
      * @return bool
      */
     public function validate($value)
@@ -206,7 +244,7 @@ class Option
     }
 
     /**
-     * @param string $path
+     * @param string $file_path
      * @return string|array full file path or an array of file paths in the
      *     case where "globbing" is supported
      */
@@ -319,7 +357,8 @@ class Option
     }
 
     /**
-     * @param mixed value for this option (set on the command line)
+     * @param mixed $value for this option (set on the command line)
+     * @throws \Exception
      */
     public function setValue($value)
     {
