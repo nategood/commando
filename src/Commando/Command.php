@@ -428,7 +428,7 @@ class Command implements \ArrayAccess, \Iterator
                     if ($option->isBoolean()) {
                         $keyvals[$arg_name] = !$option->getDefault(); // inverse of the default, as expected
                     } else {
-                        if ($arg_type == self::OPTION_TYPE_VERBOSE_EQUALS) {
+                        if ($arg_type === self::OPTION_TYPE_VERBOSE_EQUALS) {
                             //If the option is of the --option=value type
                             //the option value is contained within the token - so we extract it here
                             $argument_value = $this->extractEqualsOptionValue($token);
@@ -452,16 +452,7 @@ class Command implements \ArrayAccess, \Iterator
                 }
             }
 
-            // See if our options have what they require
-            foreach ($this->options as $option) {
-                $needs = $option->hasNeeds($keyvals);
-                if ($needs !== true) {
-                    throw new \InvalidArgumentException(
-                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
-                    );
-                }
-            }
-            
+
             // Set values (validates and performs map when applicable)
             foreach ($keyvals as $key => $value) {
                 $this->getOption($key)->setValue($value);
@@ -476,6 +467,17 @@ class Command implements \ArrayAccess, \Iterator
                 }
             }
 
+            // See if our options have what they require
+            foreach ($this->options as $option) {
+                $needs = $option->hasNeeds($this->options);
+                if ($needs !== true) {
+                    throw new \InvalidArgumentException(
+                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
+                    );
+                }
+            }
+            
+            
             // keep track of our argument vs. flag keys
             // done here to allow for flags/arguments added
             // at run time.  okay because option values are

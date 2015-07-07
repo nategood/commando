@@ -1,6 +1,7 @@
 <?php
 
 namespace Commando;
+
 use \Commando\Util\Terminal;
 
 /**
@@ -36,45 +37,43 @@ use \Commando\Util\Terminal;
  * @method Option expectsFile ()
  *
  */
+class Option {
 
-class Option
-{
     private
-        $name, /* string optional name of argument */
-        $title, /* a formal way to reference this argument */
-        $aliases = array(), /* aliases for this argument */
-        $value = null, /* mixed */
-        $description, /* string */
-        $required = false, /* bool */
-        $needs = array(), /* set of other required options for this option */
-        $boolean = false, /* bool */
-        $type = 0, /* int see constants */
-        $rule, /* closure */
-        $map, /* closure */
-        $default, /* mixed default value for this option when no value is specified */
-        $file = false, /* bool */
-        $file_require_exists, /* bool require that the file path is valid */
-        $file_allow_globbing; /* bool allow globbing for files */
+            $name, /* string optional name of argument */
+            $title, /* a formal way to reference this argument */
+            $aliases = array(), /* aliases for this argument */
+            $value = null, /* mixed */
+            $description, /* string */
+            $required = false, /* bool */
+            $needs = array(), /* set of other required options for this option */
+            $boolean = false, /* bool */
+            $type = 0, /* int see constants */
+            $rule, /* closure */
+            $map, /* closure */
+            $default, /* mixed default value for this option when no value is specified */
+            $file = false, /* bool */
+            $file_require_exists, /* bool require that the file path is valid */
+            $file_allow_globbing; /* bool allow globbing for files */
 
-    const TYPE_SHORT        = 1;
-    const TYPE_VERBOSE      = 2;
-    const TYPE_NAMED        = 3; // 1|2
-    const TYPE_ANONYMOUS    = 4;
+    const TYPE_SHORT = 1;
+    const TYPE_VERBOSE = 2;
+    const TYPE_NAMED = 3; // 1|2
+    const TYPE_ANONYMOUS = 4;
 
     /**
      * @param string|int $name single char name or int index for this option
      * @return Option
      * @throws \Exception
      */
-    public function __construct($name)
-    {
+    public function __construct($name) {
         if (!is_int($name) && empty($name)) {
             throw new \Exception(sprintf('Invalid option name %s: Must be identified by a single character or an integer', $name));
         }
 
         if (!is_int($name)) {
             $this->type = mb_strlen($name, 'UTF-8') === 1 ?
-                self::TYPE_SHORT : self::TYPE_VERBOSE;
+                    self::TYPE_SHORT : self::TYPE_VERBOSE;
         } else {
             $this->type = self::TYPE_ANONYMOUS;
         }
@@ -86,8 +85,7 @@ class Option
      * @param string $alias
      * @return Option
      */
-    public function addAlias($alias)
-    {
+    public function addAlias($alias) {
         $this->aliases[] = $alias;
         return $this;
     }
@@ -96,8 +94,7 @@ class Option
      * @param string $description
      * @return Option
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
         return $this;
     }
@@ -106,10 +103,9 @@ class Option
      * @param bool $bool
      * @return Option
      */
-    public function setBoolean($bool = true)
-    {
+    public function setBoolean($bool = true) {
         // if we didn't define a default already, set false as the default value...
-        if($this->default === null) {
+        if ($this->default === null) {
             $this->setDefault(false);
         }
         $this->boolean = $bool;
@@ -129,8 +125,7 @@ class Option
      * @param bool $allow_globbing
      * @throws \Exception if the file does not exists
      */
-    public function setFileRequirements($require_exists = true, $allow_globbing = true)
-    {
+    public function setFileRequirements($require_exists = true, $allow_globbing = true) {
         $this->file = true;
         $this->file_require_exists = $require_exists;
         $this->file_allow_globbing = $allow_globbing;
@@ -140,8 +135,7 @@ class Option
      * @param string $title
      * @return Option
      */
-    public function setTitle($title)
-    {
+    public function setTitle($title) {
         $this->title = $title;
         return $this;
     }
@@ -150,8 +144,7 @@ class Option
      * @param bool $bool required?
      * @return Option
      */
-    public function setRequired($bool = true)
-    {
+    public function setRequired($bool = true) {
         $this->required = $bool;
         return $this;
     }
@@ -162,8 +155,7 @@ class Option
      * @param string $option Option name
      * @return Option
      */
-    public function setNeeds($option)
-    {
+    public function setNeeds($option) {
         if (!is_array($option)) {
             $option = array($option);
         }
@@ -177,8 +169,7 @@ class Option
      * @param mixed $value default value
      * @return Option
      */
-    public function setDefault($value)
-    {
+    public function setDefault($value) {
         $this->default = $value;
         $this->setValue($value);
         return $this;
@@ -187,8 +178,7 @@ class Option
     /**
      * @return mixed
      */
-    public function getDefault()
-    {
+    public function getDefault() {
         return $this->default;
     }
 
@@ -196,8 +186,7 @@ class Option
      * @param \Closure|string $rule regex, closure
      * @return Option
      */
-    public function setRule($rule)
-    {
+    public function setRule($rule) {
         $this->rule = $rule;
         return $this;
     }
@@ -206,8 +195,7 @@ class Option
      * @param \Closure
      * @return Option
      */
-    public function setMap(\Closure $map)
-    {
+    public function setMap(\Closure $map) {
         $this->map = $map;
         return $this;
     }
@@ -216,29 +204,24 @@ class Option
      * @param \Closure|string $value regex, closure
      * @return Option
      */
-    public function map($value)
-    {
+    public function map($value) {
         if (!is_callable($this->map))
             return $value;
 
         // todo add int, float and regex special case
-
         // todo double check syntax
         return call_user_func($this->map, $value);
     }
-
 
     /**
      * @param mixed $value
      * @return bool
      */
-    public function validate($value)
-    {
+    public function validate($value) {
         if (!is_callable($this->rule))
             return true;
 
         // todo add int, float and regex special case
-
         // todo double check syntax
         return call_user_func($this->rule, $value);
     }
@@ -248,8 +231,7 @@ class Option
      * @return string|array full file path or an array of file paths in the
      *     case where "globbing" is supported
      */
-    public function parseFilePath($file_path)
-    {
+    public function parseFilePath($file_path) {
         $path = realpath($file_path);
         if ($this->file_allow_globbing) {
             $files = glob($file_path);
@@ -267,32 +249,28 @@ class Option
     /**
      * @return string|int name of the option
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
     /**
      * @return int type (see OPTION_TYPE_CONST)
      */
-    public function getType()
-    {
+    public function getType() {
         return $this->type;
     }
 
     /**
      * @return mixed value of the option
      */
-    public function getValue()
-    {
+    public function getValue() {
         return $this->value;
     }
 
     /**
      * @return array list of aliases
      */
-    public function getAliases()
-    {
+    public function getAliases() {
         return $this->aliases;
     }
 
@@ -300,16 +278,14 @@ class Option
      * Get the current set of this option's requirements
      * @return array List of required options
      */
-    public function getNeeds()
-    {
+    public function getNeeds() {
         return $this->needs;
     }
 
     /**
      * @return bool is this option a boolean
      */
-    public function isBoolean()
-    {
+    public function isBoolean() {
         // $this->value = false; // ?
         return $this->boolean;
     }
@@ -317,16 +293,14 @@ class Option
     /**
      * @return bool is this option a boolean
      */
-    public function isFile()
-    {
+    public function isFile() {
         return $this->file;
     }
 
     /**
      * @return bool is this option required?
      */
-    public function isRequired()
-    {
+    public function isRequired() {
         return $this->required;
     }
 
@@ -336,14 +310,15 @@ class Option
      * @param array $optionsList Set of current options defined
      * @return boolean|array True if requirements met, array if not found
      */
-    public function hasNeeds($optionsList)
-    {
+    public function hasNeeds($optionsList) {
+
         $needs = $this->getNeeds();
 
         $definedOptions = array_keys($optionsList);
         $notFound = array();
         foreach ($needs as $need) {
-            if (!in_array($need, $definedOptions)) {
+//var_Dump($need,$definedOptions);
+            if (!in_array($need, $definedOptions, true)) {
                 // The needed option has not been defined as a valid flag.
                 $notFound[] = $need;
             } elseif (!$optionsList[$need]->getValue()) {
@@ -353,15 +328,13 @@ class Option
             }
         }
         return (empty($notFound)) ? true : $notFound;
-
     }
 
     /**
      * @param mixed $value for this option (set on the command line)
      * @throws \Exception
      */
-    public function setValue($value)
-    {
+    public function setValue($value) {
         if ($this->isBoolean() && !is_bool($value)) {
             throw new \Exception(sprintf('Boolean option expected for option %s, received %s value instead', $this->name, $value));
         }
@@ -384,20 +357,19 @@ class Option
     /**
      * @return string
      */
-    public function getHelp()
-    {
+    public function getHelp() {
         $color = new \Colors\Color();
         $help = '';
 
         $isNamed = ($this->type & self::TYPE_NAMED);
 
         if ($isNamed) {
-            $help .=  PHP_EOL . (mb_strlen($this->name, 'UTF-8') === 1 ?
-                '-' : '--') . $this->name;
+            $help .= PHP_EOL . (mb_strlen($this->name, 'UTF-8') === 1 ?
+                            '-' : '--') . $this->name;
             if (!empty($this->aliases)) {
-                foreach($this->aliases as $alias) {
+                foreach ($this->aliases as $alias) {
                     $help .= (mb_strlen($alias, 'UTF-8') === 1 ?
-                        '/-' : '/--') . $alias;
+                                    '/-' : '/--') . $alias;
                 }
             }
             if (!$this->isBoolean()) {
@@ -412,7 +384,7 @@ class Option
         $help = $color->bold($help);
 
         $titleLine = '';
-        if($isNamed && $this->title) {
+        if ($isNamed && $this->title) {
             $titleLine .= $this->title . '.';
             if ($this->isRequired()) {
                 $titleLine .= ' ';
@@ -423,16 +395,15 @@ class Option
             $titleLine .= $color->red('Required.');
         }
 
-        if($titleLine){
+        if ($titleLine) {
             $titleLine .= ' ';
         }
         $description = $titleLine . $this->description;
         if (!empty($description)) {
             $descriptionArray = explode(PHP_EOL, trim($description));
-            foreach($descriptionArray as $descriptionLine){
+            foreach ($descriptionArray as $descriptionLine) {
                 $help .= Terminal::wrap($descriptionLine, 5, 1) . PHP_EOL;
             }
-
         }
 
         return $help;
@@ -441,8 +412,8 @@ class Option
     /**
      * @return string
      */
-    public function __toString()
-    {
+    public function __toString() {
         return $this->getHelp();
     }
+
 }
