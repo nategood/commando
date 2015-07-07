@@ -454,8 +454,8 @@ class Command implements \ArrayAccess, \Iterator
                         if ($type == self::OPTION_TYPE_VERBOSE_EQUALS) {
                             $token = $this->extractEqualsOptionValue($token);
                         } else {
-                        // the next token MUST be an "argument" and not another flag/option
-                        $token = array_shift($tokens);
+                            // the next token MUST be an "argument" and not another flag/option
+                            $token = array_shift($tokens);
                         }
 
                         list($val, $type) = $this->_parseOption($token);
