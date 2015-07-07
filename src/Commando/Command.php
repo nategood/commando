@@ -394,6 +394,13 @@ class Command implements \ArrayAccess, \Iterator
         $this->parse();
     }
 
+    /**
+     * Extracts the value of an equals option
+     * E.g. The argument --option=value given to this method will return "value"
+     * @param type $cli_argument
+     * @return String or NULL
+     * @throws Exception
+     */
     private function extractEqualsOptionValue($cli_argument) {
         if (strpos($cli_argument, "=") === FALSE) {
             throw new Exception("Expected an equals character");
@@ -419,16 +426,16 @@ class Command implements \ArrayAccess, \Iterator
             $this->name = array_shift($tokens);
 
             $keyvals = array();
-            $count = 0; // standalone argument count
-
+            $count = 0; // standalone argument count            
+            
             while (!empty($tokens)) {
                 $token = array_shift($tokens);
 
-                list($name, $type) = $this->_parseOption($token);
+                list($arg_name, $arg_type) = $this->_parseOption($token);
 
-                if ($type === self::OPTION_TYPE_ARGUMENT) {
+                if ($arg_type === self::OPTION_TYPE_ARGUMENT) {
                     // its an argument, use an int as the index
-                    $keyvals[$count] = $name;
+                    $keyvals[$count] = $arg_name;
 
                     // We allow for "dynamic" annonymous arguments, so we
                     // add an option for any annonymous arguments that
@@ -440,28 +447,38 @@ class Command implements \ArrayAccess, \Iterator
                     $count++;
                 } else {
                     // Short circuit if the help flag was set and we're using default help
-                    if ($this->use_default_help === true && $name === 'help') {
+                    if ($this->use_default_help === true && $arg_name === 'help') {
                         $this->printHelp();
                         exit;
                     }
 
-                    $option = $this->getOption($name);
+                    $option = $this->getOption($arg_name);
 
                     if ($option->isBoolean()) {
-                        $keyvals[$name] = !$option->getDefault(); // inverse of the default, as expected
-                    } else {
-
-                        if ($type == self::OPTION_TYPE_VERBOSE_EQUALS) {
-                            $token = $this->extractEqualsOptionValue($token);
+                        $keyvals[$arg_name] = !$option->getDefault(); // inverse of the default, as expected
+                    } else {                        
+                        if ($arg_type == self::OPTION_TYPE_VERBOSE_EQUALS) {
+                            //If the option is of the --option=value type
+                            //the option value is contained within the token - so we extract it here
+                            $argument_value = $this->extractEqualsOptionValue($token);
                         } else {
-                            // the next token MUST be an "argument" and not another flag/option
-                            $token = array_shift($tokens);
+                            // If the argument is of a --option value type
+                            // the next token in the tokens array MUST be an "argument" and not another flag/option
+                            $argument_value = array_shift($tokens);
                         }
 
-                        list($val, $type) = $this->_parseOption($token);
-                        if ($type !== self::OPTION_TYPE_ARGUMENT)
-                            throw new \Exception(sprintf('Unable to parse option %s: Expected an argument', $token));
-                        $keyvals[$name] = $val;
+                        
+                        //If the argument_value is not clean (more or less if it contains
+                        //a hyphen and so is actually another hyphenated option) - fail.  
+                        //Isn't this a misuse of _parseOption?
+                        //Should there be a method called _parseArgumentValue for this?
+                        list($val, $value_type) = $this->_parseOption($argument_value);                        
+                        if ($value_type === self::OPTION_TYPE_ARGUMENT){
+                            $keyvals[$arg_name] = $val;
+                        }else{
+                            throw new \Exception(sprintf('Unable to parse option %s: Expected an argument', $argument_value));
+                        }
+                        
                     }
                 }
             }
@@ -478,7 +495,6 @@ class Command implements \ArrayAccess, \Iterator
             
             // Set values (validates and performs map when applicable)
             foreach ($keyvals as $key => $value) {
-
                 $this->getOption($key)->setValue($value);
             }
 
@@ -569,7 +585,7 @@ class Command implements \ArrayAccess, \Iterator
                         $name = str_replace("=", "", $name);
                     } else {
                         $type = self::OPTION_TYPE_VERBOSE;
-        }
+                    }
                     break;
             }
 
