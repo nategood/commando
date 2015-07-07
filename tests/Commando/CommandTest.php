@@ -24,20 +24,25 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         $cmd = new Command($tokens);
         $cmd->option('f');
         $this->assertEquals($tokens[2], $cmd['f']);
+        $this->assertEquals($tokens[4], $cmd['path']);
+
 
         // Single alias
         $tokens = array('filename', '--foo', 'val');
         $cmd = new Command($tokens);
         $cmd->option('f')->alias('foo');
+	
         $this->assertEquals($tokens[2], $cmd['f']);
         $this->assertEquals($tokens[2], $cmd['foo']);
 
         // Multiple flags
-        $tokens = array('filename', '-f', 'val', '-g', 'val2');
+        $tokens = array('filename', '-f', 'val', '-g', 'val2','--path=testpath');
         $cmd = new Command($tokens);
-        $cmd->option('f')->option('g');
+        $cmd->option('f')->option('g')->option('path');
         $this->assertEquals($tokens[2], $cmd['f']);
         $this->assertEquals($tokens[4], $cmd['g']);
+        $this->assertEquals("testpath", $cmd['path']);
+
 
         // Single flag with anonnymous argument
         $tokens = array('filename', '-f', 'val', 'arg1');
@@ -59,6 +64,14 @@ class CommandTest extends \PHPUnit_Framework_TestCase
             ->argument();
         $this->assertEquals($tokens[3], $cmd[0]);
         $this->assertEquals($tokens[2], $cmd['f']);
+
+	// Verbose equals named argument
+        $tokens = array('r','--filename=testfilename');
+        $cmd = new Command($tokens);
+        $cmd->option('filename');
+        $this->assertEquals("testfilename", $cmd['filename']);
+
+
     }
 
     public function testImplicitAndExplicitParse()
