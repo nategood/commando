@@ -467,13 +467,16 @@ class Command implements \ArrayAccess, \Iterator
                 }
             }
 
-            // See if our options have what they require
-            foreach ($this->options as $option) {
-                $needs = $option->hasNeeds($this->options);
-                if ($needs !== true) {
-                    throw new \InvalidArgumentException(
-                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
-                    );
+              // See if our options have what they require
+            foreach ($keyvals as $key => $value) {
+                $option = $this->getOption($key);
+                if(!is_null($option->getValue()) || $option->isRequired()){
+                    $needs = $option->hasNeeds($this->options);
+                    if ($needs !== true) {
+                        throw new \InvalidArgumentException(
+                            'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
+                        );
+                    }
                 }
             }
             

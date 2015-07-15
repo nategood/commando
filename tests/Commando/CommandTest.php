@@ -175,19 +175,52 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($cmd['a'], 'v1');
     }
 
+    
+    /**
+     * Ensure that requirements are resolved correctly when 0 is an argument
+     */
+    public function testRequirementsOnOptionsValidZero()
+    {
+        $tokens = array('filename', '-a', '0', '-b', '0');
+        $cmd = new Command($tokens);
+
+        $cmd->option('b');
+        $cmd->option('a')
+            ->needs('b');
+
+        $this->assertEquals($cmd['a'], '0');
+    }
+    
     /**
      * Test that an exception is thrown when an option isn't set
      * @expectedException \InvalidArgumentException
      */
     public function testRequirementsOnOptionsMissing()
     {
-        $tokens = array('filename', '-a', 'v1');
+        $tokens = array('filename', '-a', 'v1',);
+        
         $cmd = new Command($tokens);
         $cmd->trapErrors(false)
-           ->beepOnError(false);
+           ->beepOnError(false);        
         $cmd->option('a')
         ->needs('b');
+                
     }
 
-
+/**
+     * Test that an exception is thrown when an option isn't set
+     * @expectedException \InvalidArgumentException
+     */
+    public function testRequirementsOnOptionsUndefined()
+    {
+        $tokens = array('filename', '-a', 'v1');
+        
+        $cmd = new Command($tokens);
+        $cmd->trapErrors(false)
+           ->beepOnError(false);        
+        $cmd->option('a')
+        ->needs('b');
+                
+    }
+    
 }

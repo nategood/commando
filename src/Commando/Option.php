@@ -316,12 +316,12 @@ class Option {
 
         $definedOptions = array_keys($optionsList);
         $notFound = array();
+        
         foreach ($needs as $need) {
-//var_Dump($need,$definedOptions);
             if (!in_array($need, $definedOptions, true)) {
                 // The needed option has not been defined as a valid flag.
                 $notFound[] = $need;
-            } elseif (!$optionsList[$need]->getValue()) {
+            } elseif (is_null($optionsList[$need]->getValue())) {
                 // The needed option has been defined as a valid flag, but was
                 // not pased in by the user.
                 $notFound[] = $need;
