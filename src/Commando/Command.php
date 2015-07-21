@@ -1,6 +1,19 @@
 <?php
 /**
  * @author Nate Good <me@nategood.com>
+ * @method \Commando\Command option (string $name)
+ * @method \Commando\Command flag (string $name)
+ * @method \Commando\Command argument (int $index)
+ * @method \Commando\Command boolean (bool $boolean=true)
+ * @method \Commando\Command require(bool $require=true)
+ * @method \Commando\Command alias(string $alias)
+ * @method \Commando\Command title(string $title)
+ * @method \Commando\Command describe(string $description)
+ * @method \Commando\Command map(callable $callback)
+ * @method \Commando\Command must(callable $callback)
+ * @method \Commando\Command needs(string $name)
+ * @method \Commando\Command file(bool $require_exists=true,bool $allow_globbing=false)
+ * @method \Commando\Command default($value)
  */
 
 namespace Commando;
