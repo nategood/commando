@@ -84,8 +84,8 @@ Running it:
 Things to note:
 
  - Commando implements ArrayAccess so it acts much like an array when you want to retrieve values for it
- - For "annonymous" (i.e. not a named flag) arguments, we access them based on their numeric index
- - We can access option values in an array via a flags name OR it's alias
+ - For "anonymous" (i.e. not a named flag) arguments, we access them based on their numeric index
+ - We can access option values in an array via a flags name OR its alias
  - We can use closures to perform validation and map operations right as part of our option definition
 
 ## Baked in Help
@@ -96,17 +96,17 @@ Commando has automatic `--help` support built in.  Calling your script with this
 
 ## Error Messaging
 
-By default, Commando will catch Exceptions that occur during the parsing process.  Instead Commando prints a formatted, user-friendly error message to standard error and exits with a code of 1.  If you wish to have Commando throw Exceptions in these cases, call the `doNotTrapErrors` method on your Command instance.
+By default, Commando will catch Exceptions that occur during the parsing process. Instead, Commando prints a formatted, user-friendly error message to standard error and exits with a code of 1. If you wish to have Commando throw Exceptions in these cases, call the `doNotTrapErrors` method on your Command instance.
 
 ![error screenshot](http://f.cl.ly/items/150H2d3x0l3O3J0s3i1G/Screen%20Shot%202012-08-19%20at%209.58.21%20PM.png)
 
 ## Command Methods
 
-These options work on the "command" level
+These options work on the "command" level.
 
 ### `useDefaultHelp (bool help)`
 
-The default behavior of Commando is to provide a --help option that spits out a useful help page generated off of your option definitions.  Disable this feature by calling `useDefaultHelp(false)`
+The default behavior of Commando is to provide a `--help` option that spits out a useful help page generated off of your option definitions.  Disable this feature by calling `useDefaultHelp(false)`
 
 ### `setHelp (string help)`
 
