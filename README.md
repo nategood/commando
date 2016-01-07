@@ -236,6 +236,10 @@ Released under MIT license.
 
 ## Change Log
 
+### v0.2.8
+
+ - Bug fix for #34
+
 ### v0.2.7
 
  - `getOptions` added (along with some better documentation)
