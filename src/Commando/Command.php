@@ -441,16 +441,6 @@ class Command implements \ArrayAccess, \Iterator
                 }
             }
 
-            // See if our options have what they require
-            foreach ($this->options as $option) {
-                $needs = $option->hasNeeds($this->options);
-                if ($needs !== true) {
-                    throw new \InvalidArgumentException(
-                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
-                    );
-                }
-            }
-
             // Set values (validates and performs map when applicable)
             foreach ($keyvals as $key => $value) {
 
@@ -481,6 +471,16 @@ class Command implements \ArrayAccess, \Iterator
             // Used in the \Iterator implementation
             $this->sorted_keys = array_keys($this->options);
             natsort($this->sorted_keys);
+
+            // See if our options have what they require
+            foreach ($this->options as $option) {
+                $needs = $option->hasNeeds($keyvals);
+                if ($needs !== true) {
+                    throw new \InvalidArgumentException(
+                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
+                    );
+                }
+            }
         } catch(\Exception $e) {
             $this->error($e);
         }
