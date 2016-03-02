@@ -17,6 +17,14 @@ class OptionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($name, $option->getName());
     }
 
+    public function testGetDescription()
+    {
+        $description = "I'm cool";
+        $option = new Option("f");
+        $option->setDescription($description);
+        $this->assertEquals($description, $option->getDescription());
+    }
+
     public function testAnnonymousOption()
     {
         $option = new Option(0);
