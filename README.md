@@ -90,7 +90,7 @@ Running it:
     > php hello.php -c -t Mr 'nate good'
     Hello, Mr. Nate Good!
     
-    > php hello.php -cee -t Mr 'nate good'
+    > php hello.php -ceet Mr 'nate good'
     Hello, Mr. Nate Good esq!
 
 Things to note:
