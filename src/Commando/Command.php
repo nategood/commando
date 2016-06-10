@@ -103,6 +103,9 @@ class Command implements \ArrayAccess, \Iterator
         
         'increment' => 'increment',
         'repeatable' => 'increment',
+        'repeats' => 'increment',
+        'count' => 'increment',
+        'i' => 'increment',
 
         'must' => 'must',
         // mustBeNumeric
