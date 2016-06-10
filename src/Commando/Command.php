@@ -311,6 +311,16 @@ class Command implements \ArrayAccess, \Iterator
     {
         return $option->setMap($callback);
     }
+    
+    /**
+     * @param Option $option
+     * @param integer $max
+     * @return Option
+     */
+    private function _incrment(Option $option, $max = 0)
+    {
+        return $option->setIncrement($max);
+    }
 
     /**
      * @return Option
