@@ -317,7 +317,7 @@ class Command implements \ArrayAccess, \Iterator
      * @param integer $max
      * @return Option
      */
-    private function _incrment(Option $option, $max = 0)
+    private function _increment(Option $option, $max = 0)
     {
         return $option->setIncrement($max);
     }
@@ -391,8 +391,14 @@ class Command implements \ArrayAccess, \Iterator
                 
                 // We allow short groups
                 if (strlen($name) > 1 && $type === self::OPTION_TYPE_SHORT) {
+                    
+                    $group = str_split($name);
+                    // correct option name
+                    $name = array_shift($group);
+                    
                     // Iterate in reverse order to keep the option order correct
-                    foreach(array_reverse(str_split($name)) as $nextShort) {
+                    // options that don't require an argument can be mixed.
+                    foreach(array_reverse($group) as $nextShort) {
                         // put it back into $tokens for another loop
                         array_unshift($tokens, "-{$nextShort}");
                     }

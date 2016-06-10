@@ -139,6 +139,30 @@ class CommandTest extends \PHPUnit_Framework_TestCase
             ->boolean();
         $this->assertTrue($cmd['b']);
     }
+    
+    public function testIncrementOption()
+    {
+        $tokens = array('filename', '-vvvv');
+        $cmd = new Command($tokens);
+        $cmd
+            ->flag('v')
+            ->aka('verbosity')
+            ->increment();
+        
+        $this->assertEquals(4, $cmd['verbosity']);
+    }
+    
+    public function testIncrementOptionMaxValue()
+    {
+        $tokens = array('filename', '-vvvv');
+        $cmd = new Command($tokens);
+        $cmd
+            ->flag('v')
+            ->aka('verbosity')
+            ->increment(3);
+            
+        $this->assertEquals(3, $cmd['verbosity']);
+    }
 
     public function testGetValues()
     {
