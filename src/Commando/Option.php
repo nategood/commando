@@ -51,6 +51,8 @@ class Option
         $type = 0, /* int see constants */
         $rule, /* closure */
         $map, /* closure */
+        $increment = false, /* bool */
+        $max_value = 0, /* int max value for increment */
         $default, /* mixed default value for this option when no value is specified */
         $file = false, /* bool */
         $file_require_exists, /* bool require that the file path is valid */
@@ -113,6 +115,20 @@ class Option
             $this->setDefault(false);
         }
         $this->boolean = $bool;
+        return $this;
+    }
+    
+    /**
+     * @param int $max
+     * @return Option
+     */
+    public function setIncrement($max = 0)
+    {
+        if($this->default === null) {
+            $this->setDefault(0);
+        }
+        $this->increment = true;
+        $this->max_value = $max;
         return $this;
     }
 
@@ -313,6 +329,14 @@ class Option
         // $this->value = false; // ?
         return $this->boolean;
     }
+    
+    /**
+     * @return bool is this option an incremental option
+     */
+    public function isIncrement()
+    {
+        return $this->increment;
+    }
 
     /**
      * @return bool is this option a boolean
@@ -367,6 +391,14 @@ class Option
         }
         if (!$this->validate($value)) {
             throw new \Exception(sprintf('Invalid value, %s, for option %s', $value, $this->name));
+        }
+        if ($this->isIncrement()) {
+            if (!is_int($value)) {
+                throw new \Exception(sprintf('Integer expected as value for %s, received %s instead', $this->name, $value));
+            }
+            if ($value > $this->max_value && $this->max_value > 0) {
+                $value = $this->max_value;
+            }
         }
         if ($this->isFile()) {
             $file_path = $this->parseFilePath($value);

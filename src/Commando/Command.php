@@ -388,6 +388,15 @@ class Command implements \ArrayAccess, \Iterator
                 $token = array_shift($tokens);
 
                 list($name, $type) = $this->_parseOption($token);
+                
+                // We allow short groups
+                if (strlen($name) > 1 && $type === self::OPTION_TYPE_SHORT) {
+                    // Iterate in reverse order to keep the option order correct
+                    foreach(array_reverse(str_split($name)) as $nextShort) {
+                        // put it back into $tokens for another loop
+                        array_unshift($tokens, "-{$nextShort}");
+                    }
+                }
 
                 if ($type === self::OPTION_TYPE_ARGUMENT) {
                     // its an argument, use an int as the index
@@ -411,6 +420,12 @@ class Command implements \ArrayAccess, \Iterator
                     $option = $this->getOption($name);
                     if ($option->isBoolean()) {
                         $keyvals[$name] = !$option->getDefault();// inverse of the default, as expected
+                    } elseif ($option->isIncrement()) {
+                        if (!isset($keyvals[$name])) {
+                            $keyvals[$name] = $option->getDefault() + 1;
+                        } else {
+                            $keyvals[$name]++;
+                        }
                     } else {
                         // the next token MUST be an "argument" and not another flag/option
                         $token = array_shift($tokens);
