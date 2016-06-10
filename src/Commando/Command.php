@@ -100,6 +100,9 @@ class Command implements \ArrayAccess, \Iterator
         'mapTo' => 'map',
         'cast' => 'map',
         'castWith' => 'map',
+        
+        'increment' => 'increment',
+        'repeatable' => 'increment',
 
         'must' => 'must',
         // mustBeNumeric
