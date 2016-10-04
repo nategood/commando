@@ -7,7 +7,7 @@ Commando is a PHP command line interface library that beautifies and simplifies 
 
 ## Why?
 
-PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) isn't all that much better, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling CLI input, all while providing a clean and readable interface.
+PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) isn't all that much better, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling cli input, all while providing a clean and readable interface.
 
 ## Installation
 
@@ -96,17 +96,17 @@ Commando has automatic `--help` support built in.  Calling your script with this
 
 ## Error Messaging
 
-By default, Commando will catch Exceptions that occur during the parsing process.  Instead Commando prints a formatted, user-friendly error message to standard error and exits with a code of 1.  If you wish to have Commando throw Exceptions in these cases, call the `doNotTrapErrors` method on your Command instance.
+By default, Commando will catch Exceptions that occur during the parsing process. Instead, Commando prints a formatted, user-friendly error message to standard error and exits with a code of 1. If you wish to have Commando throw Exceptions in these cases, call the `doNotTrapErrors` method on your Command instance.
 
 ![error screenshot](http://f.cl.ly/items/150H2d3x0l3O3J0s3i1G/Screen%20Shot%202012-08-19%20at%209.58.21%20PM.png)
 
 ## Command Methods
 
-These options work on the "command" level
+These options work on the "command" level.
 
 ### `useDefaultHelp (bool help)`
 
-The default behavior of Commando is to provide a --help option that spits out a useful help page generated off of your option definitions.  Disable this feature by calling `useDefaultHelp(false)`
+The default behavior of Commando is to provide a `--help` option that spits out a useful help page generated off of your option definitions.  Disable this feature by calling `useDefaultHelp(false)`
 
 ### `setHelp (string help)`
 
@@ -119,11 +119,11 @@ When an error occurs, print character to make the terminal "beep".
 
 ### `getOptions`
 
-Return an array of `Options` for each options provided to the command.
+Return an array of `Option`s for each options provided to the command.
 
 ### `getFlags`
 
-Return an array of `Options` for only the flags provided to the command.
+Return an array of `Option`s for only the flags provided to the command.
 
 ### `getArguments`
 
@@ -145,7 +145,7 @@ These options work on the "option" level, even though they are chained to a `Com
 
 Aliases: `o`
 
-Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an anonymous argument and is referenced in the future by its position.
+Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an annonymous argument and is referenced in the future by it's position.
 
 ### `flag (string $name)`
 
@@ -195,7 +195,7 @@ Perform a map operation on the value for this option.  Takes function that accep
 
 Aliases: `title`, `referredToAs`
 
-Add a name to refer to an argument option by.  Makes the help docs a little cleaner for anonymous "argument" options.
+Add a name to refer to an argument option by.  Makes the help docs a little cleaner for annonymous "argument" options.
 
 ### `boolean ()`
 
@@ -215,7 +215,7 @@ In the case of `boolean()` type flags, when the flag is present, the value of th
 
 Aliases: `expectsFile`
 
-The value specified for this option must be a valid file path. When used relative paths will be converted into fully quantify file paths and globbing is also optionally supported.  See the file.php example.
+The value specified for this option must be a valid file path. When used relative paths will be converted into fully quatified file paths and globbing is also optionally supported.  See the file.php example.
 
 ## Contributing
 
@@ -235,6 +235,10 @@ Commando highly encourages sending in pull requests.  When submitting a pull req
 Released under MIT license.
 
 ## Change Log
+
+### v0.2.8
+
+ - Bug fix for #34
 
 ### v0.2.7
 
@@ -296,4 +300,6 @@ php command.php -f value1 --long value2 value3 value4 value5
 ### v0.1.2
  - Terminal updated to use tput correctly
 
+
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/nategood/commando/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
