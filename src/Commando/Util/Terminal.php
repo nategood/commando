@@ -50,6 +50,10 @@ class Terminal
      */
     private static function tput($default, $param = 'cols')
     {
+        if ((($os = getenv('OS')) !== null) && strpos($os, 'Windows_NT') !== false) {
+            return $default;
+        }
+
         $test = exec('tput ' . $param . ' 2>/dev/null');
         if (empty($test))
             return $default;
