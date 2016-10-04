@@ -241,6 +241,14 @@ class Option
     }
 
     /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
      * @return int type (see OPTION_TYPE_CONST)
      */
     public function getType()
