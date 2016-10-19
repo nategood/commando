@@ -112,6 +112,9 @@ The default behavior of Commando is to provide a `--help` option that spits out 
 
 Text to prepend to the help page.  Use this to describe the command at a high level and maybe some examples usages of the command.
 
+### `printHelp()`
+
+Print the default help for the command. Useful if you want to output help if no arguments are passed.
 
 ### `beepOnError (bool beep=true)`
 
