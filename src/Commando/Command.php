@@ -22,30 +22,30 @@ namespace Commando;
  * @method Command option($name = null)
  * @method Command o($name = null)
  *
- * @method Command flag(string $name = null)
+ * @method Command flag(\string $name = null)
  *
- * @method Command argument(int $index = null)
+ * @method Command argument(\int $index = null)
  *
- * @method Command boolean(bool $boolean = true)
- * @method Command bool(bool $boolean = true)
- * @method Command b(bool $boolean = true)
+ * @method Command boolean(\bool $boolean = true)
+ * @method Command bool(\bool $boolean = true)
+ * @method Command b(\bool $boolean = true)
  *
- * @method Command require(bool $require = true)
- * @method Command required(bool $require = true)
- * @method Command r(bool $require = true)
+ * @method Command require(\bool $require = true)
+ * @method Command required(\bool $require = true)
+ * @method Command r(\bool $require = true)
  *
- * @method Command alias(string $alias)
- * @method Command aka(string $alias)
- * @method Command a(string $alias)
+ * @method Command alias(\string $alias)
+ * @method Command aka(\string $alias)
+ * @method Command a(\string $alias)
  *
- * @method Command title(string $title)
- * @method Command referToAs(string $title)
- * @method Command referredToAs(string $title)
+ * @method Command title(\string $title)
+ * @method Command referToAs(\string $title)
+ * @method Command referredToAs(\string $title)
  *
- * @method Command describe(string $description)
- * @method Command d(string $description)
- * @method Command describedAs(string $description)
- * @method Command description(string $description)
+ * @method Command describe(\string $description)
+ * @method Command d(\string $description)
+ * @method Command describedAs(\string $description)
+ * @method Command description(\string $description)
  *
  * @method Command map(\Closure $callback)
  * @method Command mapTo(\Closure $callback)
@@ -54,10 +54,10 @@ namespace Commando;
  *
  * @method Command must(\Closure $callback)
  *
- * @method Command needs(string $name)
+ * @method Command needs(\string $name)
  *
- * @method Command file(bool $require_exists = true, bool $allow_globbing = false)
- * @method Command expectsFile(bool $require_exists = true, bool $allow_globbing = false)
+ * @method Command file(\bool $require_exists = true, \bool $allow_globbing = false)
+ * @method Command expectsFile(\bool $require_exists = true, \bool $allow_globbing = false)
  *
  * @method Command default($value)
  * @method Command defaultsTo($value)
@@ -156,6 +156,12 @@ class Command implements \ArrayAccess, \Iterator
         }
 
         $this->setTokens($tokens);
+    }
+
+    public function run(){
+      if (!$this->parsed) {
+          $this->parse();
+      }
     }
 
     public function __destruct()
@@ -509,15 +515,17 @@ class Command implements \ArrayAccess, \Iterator
         if ($this->beep_on_error === true) {
             \Commando\Util\Terminal::beep();
         }
-
         if ($this->trap_errors !== true) {
             throw $e;
         }
-
-        $color = new \Colors\Color();
-        $error = sprintf('ERROR: %s ', $e->getMessage());
-        echo $color($error)->bg('red')->bold()->white() . PHP_EOL;
+        echo $this->createTerminalError($e->getMessage()) . PHP_EOL;
         exit(1);
+    }
+    
+    public function createTerminalError($msg){
+      $color = new \Colors\Color();
+      $error = sprintf('ERROR: %s ', $msg);
+      return $color($error)->bg('red')->bold()->white();
     }
 
     /**
