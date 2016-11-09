@@ -126,7 +126,6 @@ class Command implements \ArrayAccess, \Iterator
         'repeatable' => 'increment',
         'repeats' => 'increment',
         'count' => 'increment',
-        'i' => 'increment',
 
         'must' => 'must',
         // mustBeNumeric
@@ -522,15 +521,15 @@ class Command implements \ArrayAccess, \Iterator
             $this->sorted_keys = array_keys($this->options);
             natsort($this->sorted_keys);
 
-            // See if our options have what they require
-            foreach ($this->options as $option) {
-                $needs = $option->hasNeeds($keyvals);
-                if ($needs !== true) {
-                    throw new \InvalidArgumentException(
-                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
-                    );
-                }
-            }
+            // // See if our options have what they require
+            // foreach ($this->options as $option) {
+            //     $needs = $option->hasNeeds($keyvals);
+            //     if ($needs !== true) {
+            //         throw new \InvalidArgumentException(
+            //             'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
+            //         );
+            //     }
+            // }
         } catch(\Exception $e) {
             $this->error($e);
         }
