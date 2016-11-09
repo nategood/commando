@@ -241,6 +241,14 @@ class Option
     }
 
     /**
+     * @return string description of the option
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
      * @return int type (see OPTION_TYPE_CONST)
      */
     public function getType()
