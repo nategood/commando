@@ -7,7 +7,7 @@ Commando is a PHP command line interface library that beautifies and simplifies 
 
 ## Why?
 
-PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) isn't all that much better, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling cli input, all while providing a clean and readable interface.
+PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) isn't all that much better, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling CLI input, all while providing a clean and readable interface.
 
 ## Installation
 
@@ -65,9 +65,18 @@ $hello_cmd->option('c')
     ->describedAs('Always capitalize the words in a name')
     ->boolean();
 
+// Define an incremental flag "-e" aka "--educate"
+$hello_cmd->option('e')
+    ->aka('educate')
+    ->map(function($value) {
+        $postfix = array('', 'Jr', 'esq', 'PhD');
+        return $postfix[$value] === '' ? '' : " {$postfix[$value]}";
+    })
+    ->count(4);
+
 $name = $hello_cmd['capitalize'] ? ucwords($hello_cmd[0]) : $hello_cmd[0];
 
-echo "Hello {$hello_cmd['title']}$name!", PHP_EOL;
+echo "Hello {$hello_cmd['title']}$name{$hello_cmd['educate']}!", PHP_EOL;
 ```
 
 Running it:
@@ -80,6 +89,9 @@ Running it:
 
     > php hello.php -c -t Mr 'nate good'
     Hello, Mr. Nate Good!
+
+    > php hello.php -ceet Mr 'nate good'
+    Hello, Mr. Nate Good esq!
 
 Things to note:
 
@@ -122,11 +134,11 @@ When an error occurs, print character to make the terminal "beep".
 
 ### `getOptions`
 
-Return an array of `Option`s for each options provided to the command.
+Return an array of `Options` for each options provided to the command.
 
 ### `getFlags`
 
-Return an array of `Option`s for only the flags provided to the command.
+Return an array of `Options` for only the flags provided to the command.
 
 ### `getArguments`
 
@@ -148,7 +160,7 @@ These options work on the "option" level, even though they are chained to a `Com
 
 Aliases: `o`
 
-Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an annonymous argument and is referenced in the future by it's position.
+Define a new option.  When `name` is set, the option will be a named "flag" option.  Can be a short form option (e.g. `f` for option `-f`) or long form (e.g. `foo` for option --foo).  When no `name` is defined, the option is an anonymous argument and is referenced in the future by its position.
 
 ### `flag (string $name)`
 
@@ -198,7 +210,33 @@ Perform a map operation on the value for this option.  Takes function that accep
 
 Aliases: `title`, `referredToAs`
 
-Add a name to refer to an argument option by.  Makes the help docs a little cleaner for annonymous "argument" options.
+Add a name to refer to an argument option by.  Makes the help docs a little cleaner for anonymous "argument" options.
+
+### `boolean ()`
+
+Aliases: _N/A_
+
+Specifices that the flag is a boolean type flag.
+
+### `increment (int $max)`
+
+Aliases: `i`, `count`, `repeats`, `repeatable`
+
+Specifies that the flag is a counter type flag. The value of the flag will be incremented up to the value of `$max` for each time the flag is used in the command. Options that are set to `increment` or `boolean` types can be grouped together.
+
+### `default (mixed $defaultValue)`
+
+Aliases: `defaultsTo`
+
+If the value is not specified, default to `$defaultValue`.
+
+In the case of `boolean()` type flags, when the flag is present, the value of this option the negation of `$defaultValue`. That is to say, if you have a flag -b with a default of `true`, when -b is present as a command line flag, the value of the option will be `false`.
+
+### `file ()`
+
+Aliases: `expectsFile`
+
+The value specified for this option must be a valid file path. When used relative paths will be converted into fully quantify file paths and globbing is also optionally supported.  See the file.php example.
 
 ### `boolean ()`
 
@@ -238,6 +276,11 @@ Commando highly encourages sending in pull requests.  When submitting a pull req
 Released under MIT license.
 
 ## Change Log
+
+### v0.2.9
+
+ - PR #63 FEATURE incremental flags
+ - PR #60 MINOR getDescription method
 
 ### v0.2.8
 
@@ -303,6 +346,4 @@ php command.php -f value1 --long value2 value3 value4 value5
 ### v0.1.2
  - Terminal updated to use tput correctly
 
-
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/nategood/commando/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-

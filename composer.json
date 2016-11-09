@@ -12,10 +12,10 @@
     ],
     "require": {
         "php": ">=5.3",
-        "kevinlebrun/colors.php": "0.2.*"
+        "kevinlebrun/colors.php": "~0.2"
 
     },
-    "version": "0.2.8",
+    "version": "0.2.9",
     "autoload": {
         "psr-0": {"Commando": "src/"}
     }

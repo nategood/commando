@@ -19,49 +19,40 @@
 namespace Commando;
 
 /**
- * @method Command option($name = null)
- * @method Command o($name = null)
+ * Here are all the methods available through __call.  For accurate method documentation, see the actual method.
  *
- * @method Command flag(string $name = null)
+ * This is merely for intellisense purposes!
  *
- * @method Command argument(int $index = null)
+ * @method \Commando\Command option (mixed $name = null)
+ * @method \Commando\Command o (mixed $name = null)
+ * @method \Commando\Command flag (string $name)
+ * @method \Commando\Command argument (mixed $option = null)
+ * @method \Commando\Command alias (string $alias)
+ * @method \Commando\Command a (string $alias)
+ * @method \Commando\Command aka (string $alias)
+ * @method \Commando\Command description (string $description)
+ * @method \Commando\Command d (string $description)
+ * @method \Commando\Command describe (string $description)
+ * @method \Commando\Command describedAs (string $description)
+ * @method \Commando\Command require (bool $require = true)
+ * @method \Commando\Command r (bool $require = true)
+ * @method \Commando\Command required (bool $require = true)
+ * @method \Commando\Command needs (mixed $options)
+ * @method \Commando\Command must (\Closure $rule)
+ * @method \Commando\Command map (\Closure $map)
+ * @method \Commando\Command cast (\Closure $map)
+ * @method \Commando\Command castTo (\Closure $map)
+ * @method \Commando\Command referToAs (string $name)
+ * @method \Commando\Command title (string $name)
+ * @method \Commando\Command referredToAs (string $name)
+ * @method \Commando\Command boolean ()
+ * @method \Commando\Command default (mixed $defaultValue)
+ * @method \Commando\Command defaultsTo (mixed $defaultValue)
+ * @method \Commando\Command file ()
+ * @method \Commando\Command expectsFile ()
  *
- * @method Command boolean(bool $boolean = true)
- * @method Command bool(bool $boolean = true)
- * @method Command b(bool $boolean = true)
- *
- * @method Command require(bool $require = true)
- * @method Command required(bool $require = true)
- * @method Command r(bool $require = true)
- *
- * @method Command alias(string $alias)
- * @method Command aka(string $alias)
- * @method Command a(string $alias)
- *
- * @method Command title(string $title)
- * @method Command referToAs(string $title)
- * @method Command referredToAs(string $title)
- *
- * @method Command describe(string $description)
- * @method Command d(string $description)
- * @method Command describedAs(string $description)
- * @method Command description(string $description)
- *
- * @method Command map(\Closure $callback)
- * @method Command mapTo(\Closure $callback)
- * @method Command cast(\Closure $callback)
- * @method Command castWith(\Closure $callback)
- *
- * @method Command must(\Closure $callback)
- *
- * @method Command needs(string $name)
- *
- * @method Command file(bool $require_exists = true, bool $allow_globbing = false)
- * @method Command expectsFile(bool $require_exists = true, bool $allow_globbing = false)
- *
- * @method Command default($value)
- * @method Command defaultsTo($value)
  */
+
 class Command implements \ArrayAccess, \Iterator
 {
     const OPTION_TYPE_ARGUMENT  = 1; // e.g. foo
@@ -130,6 +121,12 @@ class Command implements \ArrayAccess, \Iterator
         'mapTo' => 'map',
         'cast' => 'map',
         'castWith' => 'map',
+
+        'increment' => 'increment',
+        'repeatable' => 'increment',
+        'repeats' => 'increment',
+        'count' => 'increment',
+        'i' => 'increment',
 
         'must' => 'must',
         // mustBeNumeric
@@ -212,7 +209,7 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param Option|null $option
-     * @param string|int name
+     * @param string|int $name
      * @return Option
      */
     private function _option($option, $name = null)
@@ -232,9 +229,9 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param Option|null $option
-     * @param string      $name
-     *
-     * @return Option Like _option but only for named flags
+     * @param string $name
+     * @return Option
+     * @throws \Exception
      *
      * Like _option but only for named flags
      * @throws \Exception
@@ -248,12 +245,11 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param Option|null $option
-     * @param int         $index [optional] only used when referencing an existing option
-     *
-     * @return Option Like _option but only for annonymous arguments
-     *
-     * Like _option but only for annonymous arguments
+     * @param int $index [optional] only used when referencing an existing option
+     * @return Option
      * @throws \Exception
+     *
+     * Like _option but only for anonymous arguments
      */
     private function _argument($option, $index = null)
     {
@@ -264,8 +260,7 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param Option $option
-     * @param bool   $boolean
-     *
+     * @param bool $boolean [optional]
      * @return Option
      */
     private function _boolean(Option $option, $boolean = true)
@@ -275,8 +270,7 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param Option $option
-     * @param bool   $require
-     *
+     * @param bool $require [optional]
      * @return Option
      */
     private function _require(Option $option, $require = true)
@@ -348,6 +342,16 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
+     * @param Option $option
+     * @param integer $max
+     * @return Option
+     */
+    private function _increment(Option $option, $max = 0)
+    {
+        return $option->setIncrement($max);
+    }
+
+    /**
      * @param $option Option
      * @param mixed $value
      * @return Option
@@ -392,6 +396,7 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @throws \Exception
+     * @return void
      */
     private function parseIfNotParsed()
     {
@@ -403,6 +408,7 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @throws \Exception
+     * @return void
      */
     public function parse()
     {
@@ -421,12 +427,27 @@ class Command implements \ArrayAccess, \Iterator
 
                 list($name, $type) = $this->_parseOption($token);
 
+                // We allow short groups
+                if (strlen($name) > 1 && $type === self::OPTION_TYPE_SHORT) {
+
+                    $group = str_split($name);
+                    // correct option name
+                    $name = array_shift($group);
+
+                    // Iterate in reverse order to keep the option order correct
+                    // options that don't require an argument can be mixed.
+                    foreach(array_reverse($group) as $nextShort) {
+                        // put it back into $tokens for another loop
+                        array_unshift($tokens, "-{$nextShort}");
+                    }
+                }
+
                 if ($type === self::OPTION_TYPE_ARGUMENT) {
                     // its an argument, use an int as the index
                     $keyvals[$count] = $name;
 
-                    // We allow for "dynamic" annonymous arguments, so we
-                    // add an option for any annonymous arguments that
+                    // We allow for "dynamic" anonymous arguments, so we
+                    // add an option for any anonymous arguments that
                     // weren't predefined
                     if (!$this->hasOption($count)) {
                         $this->options[$count] = new Option($count);
@@ -443,6 +464,12 @@ class Command implements \ArrayAccess, \Iterator
                     $option = $this->getOption($name);
                     if ($option->isBoolean()) {
                         $keyvals[$name] = !$option->getDefault();// inverse of the default, as expected
+                    } elseif ($option->isIncrement()) {
+                        if (!isset($keyvals[$name])) {
+                            $keyvals[$name] = $option->getDefault() + 1;
+                        } else {
+                            $keyvals[$name]++;
+                        }
                     } else {
                         // the next token MUST be an "argument" and not another flag/option
                         $token = array_shift($tokens);
@@ -466,6 +493,16 @@ class Command implements \ArrayAccess, \Iterator
                     throw new \Exception(sprintf('Required %s %s must be specified',
                         $option->getType() & Option::TYPE_NAMED ?
                             'option' : 'argument', $option->getName()));
+                }
+            }
+
+            // See if our options have what they require
+            foreach ($this->options as $option) {
+                $needs = $option->hasNeeds($this->options);
+                if ($needs !== true) {
+                    throw new \InvalidArgumentException(
+                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
+                    );
                 }
             }
 
@@ -640,7 +677,7 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
-     * @param string $option name (named option) or index (annonymous option)
+     * @param string $option name (named option) or index (anonymous option)
      * @return boolean
      */
     public function hasOption($option)
@@ -773,7 +810,7 @@ class Command implements \ArrayAccess, \Iterator
      * @param string $offset
      *
      * @see \ArrayAccess
-     * @return mixed|null
+     * @return mixed
      */
     public function offsetGet($offset)
     {

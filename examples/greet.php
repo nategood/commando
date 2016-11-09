@@ -15,15 +15,18 @@
  * > php green.php -c 'nate good'
  * Hello Nate Good!
  *
- * > php greet.php -c -s Mr 'nate good'
+ * > php greet.php -cs Mr 'nate good'
  * Hello Mr. Nate Good!
  *
- * > php greet.php -c -s Mister 'nate good'
+ * > php greet.php -cs Mister 'nate good'
  * Hello Mr. Nate Good!
+ * 
+ * php greet.php -ceet Mr 'nate good'
+ * Hello Mr. Nate Good esq!
  *
  * > php greet.php
  * # Throws an Exception because the command requires at least one
- * # annonymous option
+ * # anonymous option
  */
 
 require dirname(__DIR__) . '/vendor/autoload.php';
@@ -57,8 +60,16 @@ $hello_cmd
     ->aka('capitalize')
     ->aka('cap')
     ->describedAs('Always capitalize the words in a name')
-    ->boolean();
+    ->boolean()
+    
+  ->option('e')
+    ->aka('educate')
+    ->map(function($value) {
+        $postfix = array('', 'Jr', 'esq', 'PhD');
+        return $postfix[$value] === '' ? '' : " {$postfix[$value]}";
+    })
+    ->count(4);
 
 $name = $hello_cmd['capitalize'] ? ucwords($hello_cmd[0]) : $hello_cmd[0];
 
-echo "Hello {$hello_cmd['title']}$name!", PHP_EOL;
+echo "Hello {$hello_cmd['title']}$name{$hello_cmd['educate']}!", PHP_EOL;

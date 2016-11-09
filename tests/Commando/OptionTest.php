@@ -157,11 +157,31 @@ class OptionTest extends \PHPUnit_Framework_TestCase
     {
         $option = new Option('f');
         $option->setNeeds('foo');
+        $neededOption = new Option('foo');
+        $neededOption->setValue(true);
         $optionSet = array(
-            'foo' => new Option('foo')
+            'foo' => $neededOption,
         );
 
         $this->assertTrue($option->hasNeeds($optionSet));
+    }
+
+    /**
+     * Test hasNeeds when requirements are not met.
+     * @test
+     */
+    public function testOptionRequiresNotMet()
+    {
+        $option = new Option('f');
+        $option->setNeeds('foo');
+        $optionSet = array(
+            'foo' => new Option('foo'),
+        );
+
+        $expected = array(
+            'foo',
+        );
+        $this->assertEquals($expected, $option->hasNeeds($optionSet));
     }
 
     // Providers

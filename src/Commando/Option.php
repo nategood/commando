@@ -2,6 +2,41 @@
 
 namespace Commando;
 use \Commando\Util\Terminal;
+
+/**
+ * Here are all the methods available through __call.  For accurate method documentation, see the actual method.
+ *
+ * This is merely for intellisense purposes!
+ *
+ * @method Option option (mixed $name = null)
+ * @method Option o (mixed $name = null)
+ * @method Option flag (string $name)
+ * @method Option argument (mixed $option = null)
+ * @method Option alias (string $alias)
+ * @method Option a (string $alias)
+ * @method Option aka (string $alias)
+ * @method Option description (string $description)
+ * @method Option d (string $description)
+ * @method Option describe (string $description)
+ * @method Option describedAs (string $description)
+ * @method Option require (bool $require = true)
+ * @method Option r (bool $require = true)
+ * @method Option required (bool $require = true)
+ * @method Option needs (mixed $options)
+ * @method Option must (\Closure $rule)
+ * @method Option cast (\Closure $map)
+ * @method Option castTo (\Closure $map)
+ * @method Option referToAs (string $name)
+ * @method Option title (string $name)
+ * @method Option referredToAs (string $name)
+ * @method Option boolean ()
+ * @method Option default (mixed $defaultValue)
+ * @method Option defaultsTo (mixed $defaultValue)
+ * @method Option file ()
+ * @method Option expectsFile ()
+ *
+ */
+
 class Option
 {
     private
@@ -16,6 +51,8 @@ class Option
         $type = 0, /* int see constants */
         $rule, /* closure */
         $map, /* closure */
+        $increment = false, /* bool */
+        $max_value = 0, /* int max value for increment */
         $default, /* mixed default value for this option when no value is specified */
         $file = false, /* bool */
         $file_require_exists, /* bool require that the file path is valid */
@@ -28,7 +65,7 @@ class Option
 
     /**
      * @param string|int $name single char name or int index for this option
-     *
+     * @return Option
      * @throws \Exception
      */
     public function __construct($name)
@@ -82,6 +119,20 @@ class Option
     }
 
     /**
+     * @param int $max
+     * @return Option
+     */
+    public function setIncrement($max = 0)
+    {
+        if($this->default === null) {
+            $this->setDefault(0);
+        }
+        $this->increment = true;
+        $this->max_value = $max;
+        return $this;
+    }
+
+    /**
      * Require that the argument is a file.  This will
      * make sure the argument is a valid file, will expand
      * the file path provided to a full path (e.g. map relative
@@ -125,8 +176,7 @@ class Option
      * Set an option as required
      *
      * @param string $option Option name
-     *
-     * @return $this
+     * @return Option
      */
     public function setNeeds($option)
     {
@@ -170,7 +220,6 @@ class Option
 
     /**
      * @param \Closure $map
-     *
      * @return Option
      */
     public function setMap(\Closure $map)
@@ -197,8 +246,7 @@ class Option
 
     /**
      * @param mixed $value
-     *
-     * @return mixed|bool
+     * @return bool
      */
     public function validate($value)
     {
@@ -291,6 +339,14 @@ class Option
     }
 
     /**
+     * @return bool is this option an incremental option
+     */
+    public function isIncrement()
+    {
+        return $this->increment;
+    }
+
+    /**
      * @return bool is this option a boolean
      */
     public function isFile()
@@ -320,6 +376,11 @@ class Option
         $notFound = array();
         foreach ($needs as $need) {
             if (!in_array($need, $definedOptions)) {
+                // The needed option has not been defined as a valid flag.
+                $notFound[] = $need;
+            } elseif (!$optionsList[$need]->getValue()) {
+                // The needed option has been defined as a valid flag, but was
+                // not pased in by the user.
                 $notFound[] = $need;
             }
         }
@@ -329,7 +390,6 @@ class Option
 
     /**
      * @param mixed $value for this option (set on the command line)
-     *
      * @throws \Exception
      */
     public function setValue($value)
@@ -339,6 +399,14 @@ class Option
         }
         if (!$this->validate($value)) {
             throw new \Exception(sprintf('Invalid value, %s, for option %s', $value, $this->name));
+        }
+        if ($this->isIncrement()) {
+            if (!is_int($value)) {
+                throw new \Exception(sprintf('Integer expected as value for %s, received %s instead', $this->name, $value));
+            }
+            if ($value > $this->max_value && $this->max_value > 0) {
+                $value = $this->max_value;
+            }
         }
         if ($this->isFile()) {
             $file_path = $this->parseFilePath($value);
