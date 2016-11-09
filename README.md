@@ -64,10 +64,19 @@ $hello_cmd->option('c')
     ->aka('cap')
     ->describedAs('Always capitalize the words in a name')
     ->boolean();
+    
+// Define an incremental flag "-e" aka "--educate"
+$hello_cmd->option('e')
+    ->aka('educate')
+    ->map(function($value) {
+        $postfix = array('', 'Jr', 'esq', 'PhD');
+        return $postfix[$value] === '' ? '' : " {$postfix[$value]}";
+    })
+    ->count(4);
 
 $name = $hello_cmd['capitalize'] ? ucwords($hello_cmd[0]) : $hello_cmd[0];
 
-echo "Hello {$hello_cmd['title']}$name!", PHP_EOL;
+echo "Hello {$hello_cmd['title']}$name{$hello_cmd['educate']}!", PHP_EOL;
 ```
 
 Running it:
@@ -80,6 +89,9 @@ Running it:
 
     > php hello.php -c -t Mr 'nate good'
     Hello, Mr. Nate Good!
+    
+    > php hello.php -ceet Mr 'nate good'
+    Hello, Mr. Nate Good esq!
 
 Things to note:
 
@@ -202,6 +214,12 @@ Add a name to refer to an argument option by.  Makes the help docs a little clea
 Aliases: _N/A_
 
 Specifices that the flag is a boolean type flag.
+
+### `increment (int $max)`
+
+Aliases: `i`, `count`, `repeats`, `repeatable`
+
+Specifies that the flag is a counter type flag. The value of the flag will be incremented up to the value of `$max` for each time the flag is used in the command. Options that are set to `increment` or `boolean` types can be grouped together.
 
 ### `default (mixed $defaultValue)`
 

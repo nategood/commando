@@ -100,6 +100,12 @@ class Command implements \ArrayAccess, \Iterator
         'mapTo' => 'map',
         'cast' => 'map',
         'castWith' => 'map',
+        
+        'increment' => 'increment',
+        'repeatable' => 'increment',
+        'repeats' => 'increment',
+        'count' => 'increment',
+        'i' => 'increment',
 
         'must' => 'must',
         // mustBeNumeric
@@ -308,6 +314,16 @@ class Command implements \ArrayAccess, \Iterator
     {
         return $option->setMap($callback);
     }
+    
+    /**
+     * @param Option $option
+     * @param integer $max
+     * @return Option
+     */
+    private function _increment(Option $option, $max = 0)
+    {
+        return $option->setIncrement($max);
+    }
 
     /**
      * @return Option
@@ -375,6 +391,21 @@ class Command implements \ArrayAccess, \Iterator
                 $token = array_shift($tokens);
 
                 list($name, $type) = $this->_parseOption($token);
+                
+                // We allow short groups
+                if (strlen($name) > 1 && $type === self::OPTION_TYPE_SHORT) {
+                    
+                    $group = str_split($name);
+                    // correct option name
+                    $name = array_shift($group);
+                    
+                    // Iterate in reverse order to keep the option order correct
+                    // options that don't require an argument can be mixed.
+                    foreach(array_reverse($group) as $nextShort) {
+                        // put it back into $tokens for another loop
+                        array_unshift($tokens, "-{$nextShort}");
+                    }
+                }
 
                 if ($type === self::OPTION_TYPE_ARGUMENT) {
                     // its an argument, use an int as the index
@@ -398,6 +429,12 @@ class Command implements \ArrayAccess, \Iterator
                     $option = $this->getOption($name);
                     if ($option->isBoolean()) {
                         $keyvals[$name] = !$option->getDefault();// inverse of the default, as expected
+                    } elseif ($option->isIncrement()) {
+                        if (!isset($keyvals[$name])) {
+                            $keyvals[$name] = $option->getDefault() + 1;
+                        } else {
+                            $keyvals[$name]++;
+                        }
                     } else {
                         // the next token MUST be an "argument" and not another flag/option
                         $token = array_shift($tokens);
