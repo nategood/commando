@@ -2,41 +2,6 @@
 
 namespace Commando;
 use \Commando\Util\Terminal;
-
-/**
- * Here are all the methods available through __call.  For accurate method documentation, see the actual method.
- *
- * This is merely for intellisense purposes!
- *
- * @method Option option (mixed $name = null)
- * @method Option o (mixed $name = null)
- * @method Option flag (string $name)
- * @method Option argument (mixed $option = null)
- * @method Option alias (string $alias)
- * @method Option a (string $alias)
- * @method Option aka (string $alias)
- * @method Option description (string $description)
- * @method Option d (string $description)
- * @method Option describe (string $description)
- * @method Option describedAs (string $description)
- * @method Option require (bool $require = true)
- * @method Option r (bool $require = true)
- * @method Option required (bool $require = true)
- * @method Option needs (mixed $options)
- * @method Option must (\Closure $rule)
- * @method Option cast (\Closure $map)
- * @method Option castTo (\Closure $map)
- * @method Option referToAs (string $name)
- * @method Option title (string $name)
- * @method Option referredToAs (string $name)
- * @method Option boolean ()
- * @method Option default (mixed $defaultValue)
- * @method Option defaultsTo (mixed $defaultValue)
- * @method Option file ()
- * @method Option expectsFile ()
- *
- */
-
 class Option
 {
     private
@@ -65,7 +30,7 @@ class Option
 
     /**
      * @param string|int $name single char name or int index for this option
-     * @return Option
+     *
      * @throws \Exception
      */
     public function __construct($name)
@@ -140,9 +105,9 @@ class Option
      * supports file globbing and returns an array of matching
      * files.
      *
-     * @return string|array of full file path|paths
      * @param bool $require_exists
      * @param bool $allow_globbing
+     * @return void
      * @throws \Exception if the file does not exists
      */
     public function setFileRequirements($require_exists = true, $allow_globbing = true)
@@ -176,7 +141,8 @@ class Option
      * Set an option as required
      *
      * @param string $option Option name
-     * @return Option
+     *
+     * @return $this
      */
     public function setNeeds($option)
     {
@@ -219,7 +185,8 @@ class Option
     }
 
     /**
-     * @param \Closure
+     * @param \Closure $map
+     *
      * @return Option
      */
     public function setMap(\Closure $map)
@@ -246,7 +213,8 @@ class Option
 
     /**
      * @param mixed $value
-     * @return bool
+     *
+     * @return mixed|bool
      */
     public function validate($value)
     {
@@ -289,6 +257,14 @@ class Option
     }
 
     /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
      * @return int type (see OPTION_TYPE_CONST)
      */
     public function getType()
@@ -305,7 +281,7 @@ class Option
     }
 
     /**
-     * @return array list of aliases
+     * @return string[] list of aliases
      */
     public function getAliases()
     {
@@ -314,7 +290,7 @@ class Option
 
     /**
      * Get the current set of this option's requirements
-     * @return array List of required options
+     * @return string[] List of required options
      */
     public function getNeeds()
     {
@@ -368,11 +344,6 @@ class Option
         $notFound = array();
         foreach ($needs as $need) {
             if (!in_array($need, $definedOptions)) {
-                // The needed option has not been defined as a valid flag.
-                $notFound[] = $need;
-            } elseif (!$optionsList[$need]->getValue()) {
-                // The needed option has been defined as a valid flag, but was
-                // not pased in by the user.
                 $notFound[] = $need;
             }
         }
@@ -382,6 +353,7 @@ class Option
 
     /**
      * @param mixed $value for this option (set on the command line)
+     *
      * @throws \Exception
      */
     public function setValue($value)

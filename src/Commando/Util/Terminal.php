@@ -50,6 +50,10 @@ class Terminal
      */
     private static function tput($default, $param = 'cols')
     {
+        if ((($os = getenv('OS')) !== null) && strpos($os, 'Windows_NT') !== false) {
+            return $default;
+        }
+
         $test = exec('tput ' . $param . ' 2>/dev/null');
         if (empty($test))
             return $default;
@@ -91,6 +95,12 @@ class Terminal
 
     /**
      * A UT8 compatible string pad
+     *
+     * @param string $text
+     * @param int    $width
+     * @param string $pad
+     * @param int    $mode
+     *
      * @return string
      */
     public static function pad($text, $width, $pad = ' ', $mode = STR_PAD_RIGHT)
