@@ -50,6 +50,11 @@ class Terminal
      */
     private static function tput($default, $param = 'cols')
     {
+    	if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
+    		return $default;
+    	$path = trim(shell_exec('which tput'));
+    	if (empty($path))
+    		return $default;
         $test = exec('tput ' . $param . ' 2>/dev/null');
         if (empty($test))
             return $default;
