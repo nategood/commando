@@ -145,7 +145,7 @@ class Command implements \ArrayAccess, \Iterator
      */
     public static function define($tokens = null)
     {
-        return new Command($tokens);
+        return new static($tokens);
     }
 
     /**
