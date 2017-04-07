@@ -218,7 +218,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testDefineFromSubclass()
     {
-        $cmd = AnotherCommand::define([]);
+        $cmd = AnotherCommand::define(['filename']);
 
         $this->assertInstanceOf('Commando\Test\AnotherCommand', $cmd);
     }
