@@ -7,7 +7,7 @@ require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 use Commando\Option;
 use Commando\Command;
 
-class CommandTest extends \PHPUnit_Framework_TestCase
+class CommandTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testCommandoAnon()
