@@ -196,7 +196,7 @@ class OptionTest extends \PHPUnit_Framework_TestCase
     {
         $option = new Option('conflicts');
         $option->setConflicts('other');
-        $optionsList = [];
+        $optionsList = array();
 
         $this->assertFalse($option->hasConflicts($optionsList));
     }
@@ -211,9 +211,9 @@ class OptionTest extends \PHPUnit_Framework_TestCase
         $option->setConflicts('other')->setValue(true);
         $conflict = new Option('other');
         $conflict->setValue(true);
-        $optionsList = [
+        $optionsList = array(
             'other' => $conflict,
-        ];
+        );
 
         $this->assertNotEmpty($option->hasConflicts($optionsList));
     }
