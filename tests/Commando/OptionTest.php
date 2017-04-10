@@ -176,6 +176,48 @@ class OptionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $option->hasNeeds($optionSet));
     }
 
+    /**
+     * Test setting a conflicting option.
+     * @test
+     */
+    public function testOptionConflicts()
+    {
+        $option = new Option('conflict');
+        $option->setConflicts('other');
+
+        $this->assertTrue(in_array('other', $option->getConflicts()));
+    }
+
+    /**
+     * Test hasConflicts when option does not have any conflicting options.
+     * @test
+     */
+    public function testOptionNoConflicts()
+    {
+        $option = new Option('conflicts');
+        $option->setConflicts('other');
+        $optionsList = array();
+
+        $this->assertFalse($option->hasConflicts($optionsList));
+    }
+
+    /**
+     * Test hasConflicts when option has a conflicting option.
+     * @test
+     */
+    public function testOptionHasConflicts()
+    {
+        $option = new Option('conflicts');
+        $option->setConflicts('other')->setValue(true);
+        $conflict = new Option('other');
+        $conflict->setValue(true);
+        $optionsList = array(
+            'other' => $conflict,
+        );
+
+        $this->assertNotEmpty($option->hasConflicts($optionsList));
+    }
+
     // Providers
 
     public function values()

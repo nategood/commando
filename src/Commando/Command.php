@@ -100,7 +100,7 @@ class Command implements \ArrayAccess, \Iterator
         'mapTo' => 'map',
         'cast' => 'map',
         'castWith' => 'map',
-        
+
         'increment' => 'increment',
         'repeatable' => 'increment',
         'repeats' => 'increment',
@@ -112,6 +112,7 @@ class Command implements \ArrayAccess, \Iterator
         // mustBeInt
         // mustBeFloat
         'needs' => 'needs',
+        'conflicts' => 'conflicts',
 
         'file' => 'file',
         'expectsFile' => 'file',
@@ -265,6 +266,16 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
+     * Set a conflict for an option.
+     * @param \Commando\Option $option Current option.
+     * @param string $name Name of conflicting option
+     * @return \Commando\Option instance
+     */
+    private function _conflicts(Option $option, $name) {
+        return $option->setConflicts($name);
+    }
+
+    /**
      * @param Option $option
      * @param string $alias
      * @return Option
@@ -314,7 +325,7 @@ class Command implements \ArrayAccess, \Iterator
     {
         return $option->setMap($callback);
     }
-    
+
     /**
      * @param Option $option
      * @param integer $max
@@ -391,14 +402,14 @@ class Command implements \ArrayAccess, \Iterator
                 $token = array_shift($tokens);
 
                 list($name, $type) = $this->_parseOption($token);
-                
+
                 // We allow short groups
                 if (strlen($name) > 1 && $type === self::OPTION_TYPE_SHORT) {
-                    
+
                     $group = str_split($name);
                     // correct option name
                     $name = array_shift($group);
-                    
+
                     // Iterate in reverse order to keep the option order correct
                     // options that don't require an argument can be mixed.
                     foreach(array_reverse($group) as $nextShort) {
@@ -467,6 +478,16 @@ class Command implements \ArrayAccess, \Iterator
                 if ($needs !== true) {
                     throw new \InvalidArgumentException(
                         'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
+                    );
+                }
+            }
+
+            // See if our options conflict with each other
+            foreach ($this->options as $option) {
+                $conflicts = $option->hasConflicts($this->options);
+                if (false !== $conflicts) {
+                    throw new \InvalidArgumentException(
+                        'Option "' . $option->getName() . '" conflicts with options(s): ' . implode(', ', $conflicts)
                     );
                 }
             }
