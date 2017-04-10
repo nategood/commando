@@ -7,7 +7,7 @@ require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 use Commando\Option;
 use Commando\Command;
 
-class CommandTest extends \PHPUnit_Framework_TestCase
+class CommandTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testCommandoAnon()
@@ -139,7 +139,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
             ->boolean();
         $this->assertTrue($cmd['b']);
     }
-    
+
     public function testIncrementOption()
     {
         $tokens = array('filename', '-vvvv');
@@ -148,10 +148,10 @@ class CommandTest extends \PHPUnit_Framework_TestCase
             ->flag('v')
             ->aka('verbosity')
             ->increment();
-        
+
         $this->assertEquals(4, $cmd['verbosity']);
     }
-    
+
     public function testIncrementOptionMaxValue()
     {
         $tokens = array('filename', '-vvvv');
@@ -160,7 +160,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
             ->flag('v')
             ->aka('verbosity')
             ->increment(3);
-            
+
         $this->assertEquals(3, $cmd['verbosity']);
     }
 
