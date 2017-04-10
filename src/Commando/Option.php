@@ -117,7 +117,7 @@ class Option
         $this->boolean = $bool;
         return $this;
     }
-    
+
     /**
      * @param int $max
      * @return Option
@@ -329,7 +329,7 @@ class Option
         // $this->value = false; // ?
         return $this->boolean;
     }
-    
+
     /**
      * @return bool is this option an incremental option
      */
