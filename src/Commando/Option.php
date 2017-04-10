@@ -372,7 +372,7 @@ class Option
                 $notFound[] = $need;
             } elseif (!$optionsList[$need]->getValue()) {
                 // The needed option has been defined as a valid flag, but was
-                // not pased in by the user.
+                // not passed in by the user.
                 $notFound[] = $need;
             }
         }
