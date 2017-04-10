@@ -112,6 +112,7 @@ class Command implements \ArrayAccess, \Iterator
         // mustBeInt
         // mustBeFloat
         'needs' => 'needs',
+        'conflicts' => 'conflicts',
 
         'file' => 'file',
         'expectsFile' => 'file',
@@ -262,6 +263,16 @@ class Command implements \ArrayAccess, \Iterator
     private function _needs(Option $option, $name)
     {
         return $option->setNeeds($name);
+    }
+
+    /**
+     * Set a conflict for an option.
+     * @param \Commando\Option $option Current option.
+     * @param string $name Name of conflicting option
+     * @return \Commando\Option instance
+     */
+    private function _conflicts(Option $option, $name) {
+        return $option->setConflicts($name);
     }
 
     /**
@@ -467,6 +478,16 @@ class Command implements \ArrayAccess, \Iterator
                 if ($needs !== true) {
                     throw new \InvalidArgumentException(
                         'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
+                    );
+                }
+            }
+
+            // See if our options conflict with each other
+            foreach ($this->options as $option) {
+                $conflicts = $option->hasConflicts($this->options);
+                if (false !== $conflicts) {
+                    throw new \InvalidArgumentException(
+                        'Option "' . $option->getName() . '" conflicts with options(s): ' . implode(', ', $conflicts)
                     );
                 }
             }

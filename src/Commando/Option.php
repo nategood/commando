@@ -47,6 +47,7 @@ class Option
         $description, /* string */
         $required = false, /* bool */
         $needs = array(), /* set of other required options for this option */
+        $conflicts = array(), /* set of options this option conflicts with */
         $boolean = false, /* bool */
         $type = 0, /* int see constants */
         $rule, /* closure */
@@ -190,6 +191,23 @@ class Option
     }
 
     /**
+     * Set an option as conflicting
+     *
+     * @param string $option Option name
+     * @return Option
+     */
+    public function setConflicts($option)
+    {
+        if (!is_array($option)) {
+            $option = array($option);
+        }
+        foreach ($option as $opt) {
+            $this->conflicts[] = $opt;
+        }
+        return $this;
+    }
+
+    /**
      * @param mixed $value default value
      * @return Option
      */
@@ -322,6 +340,15 @@ class Option
     }
 
     /**
+     * Get the current set of this option's conflicts
+     * @return array List of conflicting options
+     */
+    public function getConflicts()
+    {
+        return $this->conflicts;
+    }
+
+    /**
      * @return bool is this option a boolean
      */
     public function isBoolean()
@@ -377,7 +404,36 @@ class Option
             }
         }
         return (empty($notFound)) ? true : $notFound;
+    }
 
+    /**
+     * Check to see if any conflicting options are set
+     *
+     * @param array $optionsList Set of current options defined
+     * @return boolean|array Array of conflicts, false if none
+     */
+    public function hasConflicts($optionsList)
+    {
+        if (!$this->getValue()) {
+            // If this option isn't set, it can't conflict with anything.
+            return false;
+        }
+
+        $conflicts = $this->getConflicts();
+        $found = array();
+
+        foreach ($conflicts as $conflict) {
+            if (isset($optionsList[$conflict]) && $optionsList[$conflict]->getValue()) {
+                // A conflicting option is found.
+                $found[] = $conflict;
+            }
+        }
+
+        if (empty($found)) {
+            // No conflicts found.
+            return false;
+        }
+        return $found;
     }
 
     /**

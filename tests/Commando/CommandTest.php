@@ -206,4 +206,37 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         ->needs('b');
     }
 
+    /**
+     * Test that conflicting options are resolved correctly.
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Option "a" conflicts with options(s): b, c
+     * @test
+     */
+    public function testConflictsErrorWhenPresent() {
+        $tokens = array('filename', '-a', '1', '-b', '2', '-c', '2');
+        $cmd = new Command($tokens);
+        $cmd->trapErrors(false)
+            ->beepOnError(false);
+        $cmd->option('a')->conflicts('b');
+        $cmd->option('a')->conflicts('c');
+        $cmd->option('b')->conflicts('a');
+        $cmd->option('c')->conflicts('a');
+    }
+
+    /**
+     * Test that conflicting options resolve when not conflicting.
+     * @test
+     */
+    public function testConflictsDontErrorWhenNotPresent() {
+        $tokens = array('filename', '-a', '1');
+        $cmd = new Command($tokens);
+        $cmd->trapErrors(false)
+            ->beepOnError(false);
+        $cmd->option('a')->conflicts('b');
+        $cmd->option('a')->conflicts('c');
+        $cmd->option('b')->conflicts('a');
+        $cmd->option('c')->conflicts('a');
+
+        $this->assertEquals($cmd['a'], '1');
+    }
 }

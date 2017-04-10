@@ -191,6 +191,12 @@ Aliases: none
 
 Require that other $options be set for this option to be used.
 
+### `conflicts (string|array $options)`
+
+Aliases: none
+
+Require that other $options *not* be set for this option to be used.
+
 ### `must (Closure $rule)`
 
 Aliases: _N/A_
