@@ -100,7 +100,7 @@ class Command implements \ArrayAccess, \Iterator
         'mapTo' => 'map',
         'cast' => 'map',
         'castWith' => 'map',
-        
+
         'increment' => 'increment',
         'repeatable' => 'increment',
         'repeats' => 'increment',
@@ -314,7 +314,7 @@ class Command implements \ArrayAccess, \Iterator
     {
         return $option->setMap($callback);
     }
-    
+
     /**
      * @param Option $option
      * @param integer $max
@@ -391,14 +391,14 @@ class Command implements \ArrayAccess, \Iterator
                 $token = array_shift($tokens);
 
                 list($name, $type) = $this->_parseOption($token);
-                
+
                 // We allow short groups
                 if (strlen($name) > 1 && $type === self::OPTION_TYPE_SHORT) {
-                    
+
                     $group = str_split($name);
                     // correct option name
                     $name = array_shift($group);
-                    
+
                     // Iterate in reverse order to keep the option order correct
                     // options that don't require an argument can be mixed.
                     foreach(array_reverse($group) as $nextShort) {

@@ -64,7 +64,7 @@ $hello_cmd->option('c')
     ->aka('cap')
     ->describedAs('Always capitalize the words in a name')
     ->boolean();
-    
+
 // Define an incremental flag "-e" aka "--educate"
 $hello_cmd->option('e')
     ->aka('educate')
@@ -89,7 +89,7 @@ Running it:
 
     > php hello.php -c -t Mr 'nate good'
     Hello, Mr. Nate Good!
-    
+
     > php hello.php -ceet Mr 'nate good'
     Hello, Mr. Nate Good esq!
 
