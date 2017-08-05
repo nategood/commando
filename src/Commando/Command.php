@@ -640,9 +640,17 @@ class Command implements \ArrayAccess, \Iterator
     public function getArgumentValues()
     {
         $this->parseIfNotParsed();
+
+        $arguments = $this->arguments;
+        $arguments = array_filter($arguments, function(Option $argument){
+            $argumentValue = $argument->getValue();
+            return isset($argumentValue);
+        });
+
+
         return array_map(function(Option $argument) {
             return $argument->getValue();
-        }, $this->arguments);
+        }, $arguments);
     }
 
     /**
