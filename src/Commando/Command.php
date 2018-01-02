@@ -207,7 +207,9 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     public function getTokens() {
-        $this->parseIfNotParsed();
+        if (empty($this->tokens)){
+            return array();
+        }
         return $this->tokens;
     }
 
