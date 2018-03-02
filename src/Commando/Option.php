@@ -440,7 +440,7 @@ class Option
                         '/-' : '/--') . $alias;
                 }
             }
-            if (!$this->isBoolean()) {
+            if (!$this->isBoolean() && !$this->isIncrement()) {
                 $help .= ' ' . $color->underline('<argument>');
             }
             $help .= PHP_EOL;
