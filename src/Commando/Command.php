@@ -439,9 +439,14 @@ class Command implements \ArrayAccess, \Iterator
                         // the next token MUST be an "argument" and not another flag/option
                         $token = array_shift($tokens);
                         list($val, $type) = $this->_parseOption($token);
-                        if ($type !== self::OPTION_TYPE_ARGUMENT)
-                            throw new \Exception(sprintf('Unable to parse option %s: Expected an argument', $token));
-                        $keyvals[$name] = $val;
+
+                        if ($type !== self::OPTION_TYPE_ARGUMENT && $option->getDefault() === null) {
+                            throw new \Exception(sprintf('Unable to parse option %s: Expected an argument or default', $token));
+                        }
+
+                        $keyvals[$name] = ($type !== self::OPTION_TYPE_ARGUMENT)
+                            ? $option->getDefault()
+                            : $val;
                     }
                 }
             }
