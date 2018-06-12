@@ -1,4 +1,8 @@
 # Commando
+
+## Disclaimer
+This repository is a fork of https://github.com/nategood/commando. I created this fork since I needed some minor modifications and since the original repository seemed not be maintened anymore.
+
 ## An Elegant PHP CLI Library
 
 [![Build Status](https://secure.travis-ci.org/nategood/commando.png?branch=master)](http://travis-ci.org/nategood/commando)
