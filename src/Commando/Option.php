@@ -321,6 +321,14 @@ class Option
     }
 
     /**
+     * @return string title of the option
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
      * Get the current set of this option's requirements
      * @return string[] List of required options
      */
