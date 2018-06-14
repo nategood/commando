@@ -455,7 +455,7 @@ class Command implements \ArrayAccess, \Iterator
                     $count++;
                 } else {
                     // Short circuit if the help flag was set and we're using default help
-                    if ($this->use_default_help === true && $name === 'help') {
+                    if ($this->use_default_help === true && ($name === 'help' || $name === 'h')) {
                         $this->printHelp();
                         exit;
                     }
@@ -489,9 +489,16 @@ class Command implements \ArrayAccess, \Iterator
             // todo protect against duplicates caused by aliases
             foreach ($this->options as $option) {
                 if (is_null($option->getValue()) && $option->isRequired()) {
-                    throw new \Exception(sprintf('Required %s %s must be specified',
-                        $option->getType() & Option::TYPE_NAMED ?
-                            'option' : 'argument', $option->getName()));
+                    $name = $option->getName();
+                    if ($option->getType() & Option::TYPE_NAMED) {
+                        $nature = 'option';
+                    } else {
+                        $nature = 'argument';
+                        if ($title = $option->getTitle()) {
+                            $name = $title;
+                        }
+                    }
+                    throw new \Exception(sprintf('Required %s %s must be specified', $nature, $name));
                 }
             }
 
@@ -500,7 +507,7 @@ class Command implements \ArrayAccess, \Iterator
                 $needs = $option->hasNeeds($this->options);
                 if ($needs !== true) {
                     throw new \InvalidArgumentException(
-                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
+                        'Option "' . $option->getName() . '" does not have required option(s): ' . implode(', ', $needs)
                     );
                 }
             }
@@ -790,6 +797,7 @@ class Command implements \ArrayAccess, \Iterator
     {
         // Add in a default help method
         $this->option('help')
+            ->alias('h')
             ->describe('Show the help page for this command.')
             ->boolean();
     }
