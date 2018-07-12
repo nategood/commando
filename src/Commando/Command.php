@@ -122,6 +122,11 @@ class Command implements \ArrayAccess, \Iterator
         'cast' => 'map',
         'castWith' => 'map',
 
+        'reduce' => 'reduce',
+        'each' => 'reduce',
+        'every' => 'reduce',
+        'list' => 'reduce',
+
         'increment' => 'increment',
         'repeatable' => 'increment',
         'repeats' => 'increment',
@@ -342,6 +347,16 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param Option $option
+     * @param \Closure $callback
+     * @return Option
+     */
+    private function _reduce(Option $option, \Closure $callback)
+    {
+        return $option->setReducer($callback);
+    }
+
+    /**
+     * @param Option $option
      * @param integer $max
      * @return Option
      */
@@ -461,6 +476,13 @@ class Command implements \ArrayAccess, \Iterator
                     }
 
                     $option = $this->getOption($name);
+                    if ($option->hasReducer()) {
+                        if (!isset($keyvals[$name])) {
+                            $acc = $option->getDefault();
+                        } else {
+                            $acc = $keyvals[$name];
+                        }
+                    }
                     if ($option->isBoolean()) {
                         $keyvals[$name] = !$option->getDefault();// inverse of the default, as expected
                     } elseif ($option->isIncrement()) {
@@ -475,14 +497,17 @@ class Command implements \ArrayAccess, \Iterator
                         list($val, $type) = $this->_parseOption($token);
                         if ($type !== self::OPTION_TYPE_ARGUMENT)
                             throw new \Exception(sprintf('Unable to parse option %s: Expected an argument', $token));
-                        $keyvals[$name] = $val;
+                        if (!$option->hasReducer()) {
+                            $keyvals[$name] = $val;
+                        } else {
+                            $keyvals[$name] = $option->reduce($acc, $option->map($val));
+                        }
                     }
                 }
             }
 
             // Set values (validates and performs map when applicable)
             foreach ($keyvals as $key => $value) {
-
                 $this->getOption($key)->setValue($value);
             }
 

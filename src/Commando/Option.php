@@ -34,6 +34,7 @@ use \Commando\Util\Terminal;
  * @method Option defaultsTo (mixed $defaultValue)
  * @method Option file ()
  * @method Option expectsFile ()
+ * @method Option reduce (\Closure $reducer)
  *
  */
 
@@ -51,6 +52,7 @@ class Option
         $type = 0, /* int see constants */
         $rule, /* closure */
         $map, /* closure */
+        $reducer, /* closure */
         $increment = false, /* bool */
         $max_value = 0, /* int max value for increment */
         $default, /* mixed default value for this option when no value is specified */
@@ -129,6 +131,15 @@ class Option
         }
         $this->increment = true;
         $this->max_value = $max;
+        return $this;
+    }
+
+    /**
+     * @param Callable $reducer
+     * @return Option
+     */
+    public function setReducer(Callable $reducer) {
+        $this->reducer = $reducer;
         return $this;
     }
 
@@ -241,6 +252,19 @@ class Option
 
         // todo double check syntax
         return call_user_func($this->map, $value);
+    }
+
+    /**
+     * @param mixed $value
+     * @return Option
+     */
+    public function reduce($accumulator, $value)
+    {
+        if (!is_callable($this->reducer)) {
+            return $value;
+        }
+
+        return call_user_func($this->reducer, $accumulator, $value);
     }
 
 
@@ -389,6 +413,14 @@ class Option
     }
 
     /**
+     * @return boolean True if reducer is set
+     */
+    public function hasReducer()
+    {
+        return is_callable($this->reducer);
+    }
+
+    /**
      * @param mixed $value for this option (set on the command line)
      * @throws \Exception
      */
@@ -418,7 +450,11 @@ class Option
                 $value = $file_path;
             }
         }
-        $this->value = $this->map($value);
+        if ($this->hasReducer()) {
+            $this->value = $value;
+        } else {
+            $this->value = $this->map($value);
+        }
     }
 
     /**

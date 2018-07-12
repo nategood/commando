@@ -206,6 +206,18 @@ Aliases: `cast`, `castTo`
 
 Perform a map operation on the value for this option.  Takes function that accepts a string $value and return mixed (you can map to whatever you wish).
 
+### `reduce (Closure $reducer)`
+
+Aliases: `list`, `each`, `every`
+
+Execute an accumulator/reducer function on every instance of the option in the command. Takes an accumulator function, and returns mixed (you can return any value). If you also supply a map for the option the map will execute on every value before it is passed to the accumulator function.
+
+Signature: `function(mixed $accumulated, mixed $value) : mixed`
+
+ - `$accumulated`: null|Option::default|mixed (the last value returned from the function, the option default value, or null.)
+ - `$value`: mixed (the value that comes after the option. if map is supplied, the value returned from the map function.)
+ - `return`: mixed (anything you want. The last value returned becomes the value of the Option after parsing.)
+
 ### `referToAs (string $name)`
 
 Aliases: `title`, `referredToAs`

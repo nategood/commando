@@ -18,5 +18,7 @@
     "version": "0.2.9",
     "autoload": {
         "psr-0": {"Commando": "src/"}
+    },
+    "require-dev": {
     }
 }
