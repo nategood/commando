@@ -176,7 +176,7 @@ class OptionTest extends \PHPUnit_Framework_TestCase
             return ($isCalled);
         });
 
-        $this->assertTrue($this->reduce(null, null));
+        $this->assertTrue($option->reduce(null, null));
         $this->assertTrue($isCalled);
     }
 
