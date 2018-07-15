@@ -500,7 +500,7 @@ class Command implements \ArrayAccess, \Iterator
                 $needs = $option->hasNeeds($this->options);
                 if ($needs !== true) {
                     throw new \InvalidArgumentException(
-                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
+                        'Option "' . $option->getName() . '" does not have required option(s): ' . implode(', ', $needs)
                     );
                 }
             }
