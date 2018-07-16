@@ -350,8 +350,13 @@ class Command implements \ArrayAccess, \Iterator
      * @param \Closure $callback
      * @return Option
      */
-    private function _reduce(Option $option, \Closure $callback)
+    private function _reduce(Option $option, \Closure $callback, $seed = null)
     {
+        if (isset($seed))
+        {
+            $option->setDefault($seed);
+        }
+        
         return $option->setReducer($callback);
     }
 
