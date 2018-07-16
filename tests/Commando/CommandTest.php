@@ -210,4 +210,12 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         ->needs('b');
     }
 
+    public function testGetTokensPassedToCommand()
+    {
+        $tokens = array('-a');
+        $cmd = new Command($tokens);
+        $retrievedTokens = $cmd->getTokens();
+        $this->assertEquals($tokens, $retrievedTokens);
+    }
+
 }

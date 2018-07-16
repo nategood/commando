@@ -206,6 +206,13 @@ class Command implements \ArrayAccess, \Iterator
         return $this;
     }
 
+    public function getTokens() {
+        if (empty($this->tokens)){
+            return array();
+        }
+        return $this->tokens;
+    }
+
     /**
      * @param Option|null $option
      * @param string|int $name
