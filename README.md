@@ -206,11 +206,11 @@ Aliases: `cast`, `castTo`
 
 Perform a map operation on the value for this option.  Takes function that accepts a string $value and return mixed (you can map to whatever you wish).
 
-### `reduce (Closure $reducer)`
+### `reduce (Closure $reducer [, mixed $seed])`
 
 Aliases: `list`, `each`, `every`
 
-Execute an accumulator/reducer function on every instance of the option in the command. Takes an accumulator function, and returns mixed (you can return any value). If you also supply a map for the option the map will execute on every value before it is passed to the accumulator function.
+Execute an accumulator/reducer function on every instance of the option in the command. Takes an accumulator function, and returns mixed (you can return any value). If you also supply a map for the option the map will execute on every value before it is passed to the accumulator function. If `$seed` value is supplied, this will be used as the default value.
 
 Signature: `function(mixed $accumulated, mixed $value) : mixed`
 
