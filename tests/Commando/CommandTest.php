@@ -4,6 +4,10 @@ namespace Commando\Test;
 
 require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
+// PHPUnit version hack https://stackoverflow.com/questions/6065730/why-fatal-error-class-phpunit-framework-testcase-not-found-in
+if (!class_exists('\PHPUnit_Framework_TestCase') && class_exists('\PHPUnit\Framework\TestCase'))
+    class_alias('\PHPUnit\Framework\TestCase', '\PHPUnit_Framework_TestCase');
+
 use Commando\Option;
 use Commando\Command;
 
@@ -154,7 +158,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, count($cmd['exclude']));
         $this->assertEquals(array('name1', 'name2'), $cmd['exclude']);
     }
-    
+
     public function testIncrementOption()
     {
         $tokens = array('filename', '-vvvv');
@@ -163,10 +167,10 @@ class CommandTest extends \PHPUnit_Framework_TestCase
             ->flag('v')
             ->aka('verbosity')
             ->increment();
-        
+
         $this->assertEquals(4, $cmd['verbosity']);
     }
-    
+
     public function testIncrementOptionMaxValue()
     {
         $tokens = array('filename', '-vvvv');
@@ -175,7 +179,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
             ->flag('v')
             ->aka('verbosity')
             ->increment(3);
-            
+
         $this->assertEquals(3, $cmd['verbosity']);
     }
 
