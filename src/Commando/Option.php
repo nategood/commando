@@ -2,6 +2,7 @@
 
 namespace Commando;
 use \Commando\Util\Terminal;
+use \Commando\Option\TypeEnum;
 
 /**
  * Here are all the methods available through __call.  For accurate method documentation, see the actual method.
@@ -48,7 +49,7 @@ class Option
         $required = false, /* bool */
         $needs = array(), /* set of other required options for this option */
         $boolean = false, /* bool */
-        $type = 0, /* int see constants */
+        $type = 0, /* TypeEnum(int) */
         $rule, /* closure */
         $map, /* closure */
         $increment = false, /* bool */
@@ -58,10 +59,10 @@ class Option
         $file_require_exists, /* bool require that the file path is valid */
         $file_allow_globbing; /* bool allow globbing for files */
 
-    const TYPE_SHORT        = 1;
-    const TYPE_VERBOSE      = 2;
-    const TYPE_NAMED        = 3; // 1|2
-    const TYPE_ANONYMOUS    = 4;
+    const TYPE_SHORT        = TypeEnum::SHORT;
+    const TYPE_VERBOSE      = TypeEnum::LONG;
+    const TYPE_NAMED        = (TypeEnum::SHORT | TypeEnum::LONG); // 1|2
+    const TYPE_ANONYMOUS    = TypeEnum::ARGUMENT;
 
     /**
      * @param string|int $name single char name or int index for this option
@@ -75,10 +76,9 @@ class Option
         }
 
         if (!is_int($name)) {
-            $this->type = mb_strlen($name, 'UTF-8') === 1 ?
-                self::TYPE_SHORT : self::TYPE_VERBOSE;
+            $this->type = new TypeEnum(mb_strlen($name, 'UTF-8') > 1 ? TypeEnum::LONG : TypeEnum::SHORT);
         } else {
-            $this->type = self::TYPE_ANONYMOUS;
+            $this->type = new TypeEnum(TypeEnum::ARGUMENT);
         }
 
         $this->name = $name;
@@ -301,7 +301,7 @@ class Option
      */
     public function getType()
     {
-        return $this->type;
+        return $this->type->value;
     }
 
     /**
@@ -429,15 +429,13 @@ class Option
         $color = new \Colors\Color();
         $help = '';
 
-        $isNamed = ($this->type & self::TYPE_NAMED);
+        $isNamed = $this->type->isNamed();
 
         if ($isNamed) {
-            $help .=  PHP_EOL . (mb_strlen($this->name, 'UTF-8') === 1 ?
-                '-' : '--') . $this->name;
+            $help .=  PHP_EOL . ($this->type->isType(TypeEnum::SHORT) ? '-' : '--') . $this->name;
             if (!empty($this->aliases)) {
                 foreach($this->aliases as $alias) {
-                    $help .= (mb_strlen($alias, 'UTF-8') === 1 ?
-                        '/-' : '/--') . $alias;
+                    $help .= (mb_strlen($alias, 'UTF-8') === 1 ? '/-' : '/--') . $alias;
                 }
             }
             if (!$this->isBoolean()) {
