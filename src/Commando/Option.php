@@ -61,7 +61,7 @@ class Option
 
     const TYPE_SHORT        = TypeEnum::SHORT;
     const TYPE_VERBOSE      = TypeEnum::LONG;
-    const TYPE_NAMED        = (TypeEnum::SHORT | TypeEnum::LONG); // 1|2
+    const TYPE_NAMED        = 3; // 1|2
     const TYPE_ANONYMOUS    = TypeEnum::ARGUMENT;
 
     /**

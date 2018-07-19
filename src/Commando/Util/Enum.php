@@ -48,8 +48,8 @@ trait EnumUtilitiesTrait
    */
   public static function isValueType($value, $type)
   {
-    $realValue = (int) is_subclass_of($value, self::class) ? static::extractValueFrom($value) : $value;
-    $realType = (int) is_a($type, self::class) ? static::extractValueFrom($type) : $type;
+    $realValue = (int) is_subclass_of($value, \get_class(self)) ? static::extractValueFrom($value) : $value;
+    $realType = (int) is_subclass_of($type, \get_class(self)) ? static::extractValueFrom($type) : $type;
 
     return (bool) ($realValue & $realType);
   }
