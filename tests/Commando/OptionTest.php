@@ -188,6 +188,15 @@ class OptionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $option->hasNeeds($optionSet));
     }
 
+    public function testGetHelpNotReturnNoSuchFileOnWindows() {
+      $option = new Option('some-option');
+      $option->setDescription('Some content for description for some-option');
+
+      $result = $option->getHelp();
+
+      $this->assertNotNull($result);
+    }
+
     // Providers
 
     public function values()
