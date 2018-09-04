@@ -116,19 +116,19 @@ class Terminal
                strpos($os, 'Windows_NT') === false;
     }
 
-  /**
-   * @param $commandName
-   * @param $param
-   * @return string
-   */
-  private static function isCommandFound ($commandName, $param)
-  {
-      $trashPlace = 'nil';
-      if (self::isALinuxMachine()) {
-        $trashPlace = '/dev/null';
-      }
+    /**
+     * @param $commandName
+     * @param $param
+     * @return string
+     */
+    private static function isCommandFound ($commandName, $param)
+    {
+        $trashPlace = 'nil';
+        if (self::isALinuxMachine()) {
+          $trashPlace = '/dev/null';
+        }
 
-      $test = exec("$commandName $param 2>$trashPlace");
-      return !empty($test);
-  }
+        $test = exec("$commandName $param 2>$trashPlace");
+        return !empty($test);
+    }
 }
