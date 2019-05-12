@@ -29,7 +29,7 @@ class OptionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($description, $option->getDescription());
     }
 
-    public function testAnnonymousOption()
+    public function testAnonymousOption()
     {
         $option = new Option(0);
 
@@ -41,6 +41,15 @@ class OptionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $option->getName());
         $this->assertEquals($name, $named_option->getName());
         $this->assertEquals(1, $anon_option->getName());
+    }
+
+    public function testAnonymousOptionWithTitle()
+    {
+        $expected = 'test';
+        $option = new Option(0);
+        $option->setTitle($expected);
+
+        $this->assertEquals($expected, $option->getName());
     }
 
     public function testAddAlias()

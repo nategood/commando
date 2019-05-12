@@ -285,7 +285,7 @@ class Option
      */
     public function getName()
     {
-        return $this->name;
+        return ($this->title && is_numeric($this->name)) ? $this->title : $this->name;
     }
 
     /**

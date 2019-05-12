@@ -252,12 +252,6 @@ If the value is not specified, default to `$defaultValue`.
 
 In the case of `boolean()` type flags, when the flag is present, the value of this option the negation of `$defaultValue`. That is to say, if you have a flag -b with a default of `true`, when -b is present as a command line flag, the value of the option will be `false`.
 
-### `file ()`
-
-Aliases: `expectsFile`
-
-The value specified for this option must be a valid file path. When used relative paths will be converted into fully quatified file paths and globbing is also optionally supported.  See the file.php example.
-
 ## Contributing
 
 Commando highly encourages sending in pull requests.  When submitting a pull request please:
