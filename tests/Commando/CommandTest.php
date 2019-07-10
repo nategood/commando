@@ -11,6 +11,13 @@ if (!class_exists('\PHPUnit_Framework_TestCase') && class_exists('\PHPUnit\Frame
 use Commando\Option;
 use Commando\Command;
 
+/**
+ * Subclass of Command which is used by the sub class instanciation tests
+ * @class AnotherCommand
+ */
+class AnotherCommand extends Command {
+}
+
 class CommandTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -225,4 +232,13 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         ->needs('b');
     }
 
+    /**
+     * Test that define returned the instance of sub class when invoked from sub class
+     */
+    public function testDefineFromSubclass()
+    {
+        $cmd = AnotherCommand::define(array('filename'));
+
+        $this->assertInstanceOf('Commando\Test\AnotherCommand', $cmd);
+    }
 }
