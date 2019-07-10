@@ -144,6 +144,21 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($cmd['b']);
     }
 
+    public function testReduceOption() {
+        $tokens = array('filename', '--exclude', 'name1', '--exclude', 'name2');
+        $cmd = new Command($tokens);
+        $cmd
+            ->option('exclude')
+            ->reduce(function ($acc, $next) {
+                array_push($acc, $next);
+                return $acc;
+            })
+            ->default([]);
+
+        $this->assertEquals(2, count($cmd['exclude']));
+        $this->assertEquals(array('name1', 'name2'), $cmd['exclude']);
+    }
+
     public function testIncrementOption()
     {
         $tokens = array('filename', '-vvvv');

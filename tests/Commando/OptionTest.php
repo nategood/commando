@@ -155,6 +155,36 @@ class OptionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test that the reducer gets set
+     */
+    public function testSetReducer()
+    {
+        $option = new Option('f');
+
+        $this->assertTrue(!$option->hasReducer());
+
+        $option->setReducer(function() {});
+        
+        $this->assertTrue($option->hasReducer());
+    }
+
+    /**
+     * Test that reducer is called
+     */
+    public function testReduce()
+    {
+        $option = new Option('f');
+        $isCalled = false;
+        $option->setReducer(function () use (&$isCalled) {
+            $isCalled = true;
+            return ($isCalled);
+        });
+
+        $this->assertTrue($option->reduce(null, null));
+        $this->assertTrue($isCalled);
+    }
+
+    /**
      * Test that the needed requirements are met
      */
     public function testOptionRequirementsMet()
