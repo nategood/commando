@@ -525,10 +525,11 @@ class Command implements \ArrayAccess, \Iterator
                 }
             }
 
-            // See if our options have what they require
+            // See if our options have what they require.
+            // But only do so if the option is actually used
             foreach ($this->options as $option) {
                 $needs = $option->hasNeeds($this->options);
-                if ($needs !== true) {
+                if ($needs !== true && array_key_exists($option->getName(), $keyvals)) {
                     throw new \InvalidArgumentException(
                         'Option "' . $option->getName() . '" does not have required option(s): ' . implode(', ', $needs)
                     );
