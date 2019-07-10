@@ -7,11 +7,11 @@ Commando is a PHP command line interface library that beautifies and simplifies 
 
 ## Why?
 
-PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) isn't all that much better, and most other PHP CLI libraries are far too OOP bloated.  Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling CLI input, all while providing a clean and readable interface.
+PHP's `$argv` magic variable and global `$_SERVER['argv']` make me cringe, [`getopt`](http://php.net/manual/en/function.getopt.php) isn't all that much better, and most other PHP CLI libraries are far too bloated for many cases. Commando gets down to business without a ton of overhead, removes the common boilerplate stuff when it comes to handling CLI input, all while providing a clean and readable interface.
 
 ## Installation
 
-*Commando requires that you are running PHP 5.3 or higher.*
+*Commando requires that you are running PHP 5.6 or higher.*
 
 Commando is [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) compliant and can be installed using [Composer](http://getcomposer.org/).  Add `nategood/commando` to your `composer.json`
 
@@ -289,6 +289,18 @@ Released under MIT license.
 
 ## Change Log
 
+### v0.4.0
+
+ - Dropping support for 5.4 and 5.5, bumping minor version number
+ - [PR #93](https://github.com/nategood/commando/pull/93) FEATURE Add `reducer` option
+ - [PR #95](https://github.com/nategood/commando/pull/95) FIX Remove tput call on Windows OS
+ - [PR #101](https://github.com/nategood/commando/pull/101) FIX Only evaluate 'needs' constraints of an option if that option is actually used
+ - [PR #76](https://github.com/nategood/commando/pull/76/) FIX Fix non-empty getArgumentValues array when using anonymous args
+
+### v0.3.0
+
+ - Dropped PHP 5.3
+
 ### v0.2.9
 
  - PR #63 FEATURE incremental flags
@@ -358,4 +370,3 @@ php command.php -f value1 --long value2 value3 value4 value5
 ### v0.1.2
  - Terminal updated to use tput correctly
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/nategood/commando/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
