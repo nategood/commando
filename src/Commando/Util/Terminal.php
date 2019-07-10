@@ -50,9 +50,11 @@ class Terminal
      */
     private static function tput($default, $param = 'cols')
     {
-        $test = exec('tput ' . $param . ' 2>/dev/null');
-        if (empty($test))
-            return $default;
+        if (!self::isCommandFound('tput', $param))
+        {
+          return $default;
+        }
+
         $result = intval(exec('tput ' . $param));
         return empty($result) ? $default : $result;
     }
@@ -103,5 +105,30 @@ class Terminal
     {
         $width = strlen($text) - mb_strlen($text, 'UTF-8') + $width;
         return str_pad($text, $width, $pad, $mode);
+    }
+
+    /**
+     * @return bool
+     */
+    private static function isALinuxMachine ()
+    {
+        return (($os = getenv('OS')) === null) ||
+               strpos($os, 'Windows_NT') === false;
+    }
+
+    /**
+     * @param $commandName
+     * @param $param
+     * @return string
+     */
+    private static function isCommandFound ($commandName, $param)
+    {
+        $trashPlace = 'nil';
+        if (self::isALinuxMachine()) {
+          $trashPlace = '/dev/null';
+        }
+
+        $test = exec("$commandName $param 2>$trashPlace");
+        return !empty($test);
     }
 }
