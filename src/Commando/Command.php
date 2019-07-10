@@ -122,6 +122,11 @@ class Command implements \ArrayAccess, \Iterator
         'cast' => 'map',
         'castWith' => 'map',
 
+        'reduce' => 'reduce',
+        'each' => 'reduce',
+        'every' => 'reduce',
+        'list' => 'reduce',
+
         'increment' => 'increment',
         'repeatable' => 'increment',
         'repeats' => 'increment',
@@ -168,7 +173,7 @@ class Command implements \ArrayAccess, \Iterator
      */
     public static function define($tokens = null)
     {
-        return new Command($tokens);
+        return new static($tokens);
     }
 
     /**
@@ -342,6 +347,21 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param Option $option
+     * @param \Closure $callback
+     * @return Option
+     */
+    private function _reduce(Option $option, \Closure $callback, $seed = null)
+    {
+        if (isset($seed))
+        {
+            $option->setDefault($seed);
+        }
+        
+        return $option->setReducer($callback);
+    }
+
+    /**
+     * @param Option $option
      * @param integer $max
      * @return Option
      */
@@ -461,6 +481,13 @@ class Command implements \ArrayAccess, \Iterator
                     }
 
                     $option = $this->getOption($name);
+                    if ($option->hasReducer()) {
+                        if (!isset($keyvals[$name])) {
+                            $acc = $option->getDefault();
+                        } else {
+                            $acc = $keyvals[$name];
+                        }
+                    }
                     if ($option->isBoolean()) {
                         $keyvals[$name] = !$option->getDefault();// inverse of the default, as expected
                     } elseif ($option->isIncrement()) {
@@ -475,14 +502,17 @@ class Command implements \ArrayAccess, \Iterator
                         list($val, $type) = $this->_parseOption($token);
                         if ($type !== self::OPTION_TYPE_ARGUMENT)
                             throw new \Exception(sprintf('Unable to parse option %s: Expected an argument', $token));
-                        $keyvals[$name] = $val;
+                        if (!$option->hasReducer()) {
+                            $keyvals[$name] = $val;
+                        } else {
+                            $keyvals[$name] = $option->reduce($acc, $option->map($val));
+                        }
                     }
                 }
             }
 
             // Set values (validates and performs map when applicable)
             foreach ($keyvals as $key => $value) {
-
                 $this->getOption($key)->setValue($value);
             }
 
@@ -495,12 +525,13 @@ class Command implements \ArrayAccess, \Iterator
                 }
             }
 
-            // See if our options have what they require
+            // See if our options have what they require.
+            // But only do so if the option is actually used
             foreach ($this->options as $option) {
                 $needs = $option->hasNeeds($this->options);
-                if ($needs !== true) {
+                if ($needs !== true && array_key_exists($option->getName(), $keyvals)) {
                     throw new \InvalidArgumentException(
-                        'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
+                        'Option "' . $option->getName() . '" does not have required option(s): ' . implode(', ', $needs)
                     );
                 }
             }

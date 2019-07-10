@@ -4,6 +4,10 @@ namespace Commando\Test;
 
 require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
+// PHPUnit version hack https://stackoverflow.com/questions/6065730/why-fatal-error-class-phpunit-framework-testcase-not-found-in
+if (!class_exists('\PHPUnit_Framework_TestCase') && class_exists('\PHPUnit\Framework\TestCase'))
+    class_alias('\PHPUnit\Framework\TestCase', '\PHPUnit_Framework_TestCase');
+
 use Commando\Option;
 use Commando\Commando;
 
@@ -151,6 +155,36 @@ class OptionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test that the reducer gets set
+     */
+    public function testSetReducer()
+    {
+        $option = new Option('f');
+
+        $this->assertTrue(!$option->hasReducer());
+
+        $option->setReducer(function() {});
+        
+        $this->assertTrue($option->hasReducer());
+    }
+
+    /**
+     * Test that reducer is called
+     */
+    public function testReduce()
+    {
+        $option = new Option('f');
+        $isCalled = false;
+        $option->setReducer(function () use (&$isCalled) {
+            $isCalled = true;
+            return ($isCalled);
+        });
+
+        $this->assertTrue($option->reduce(null, null));
+        $this->assertTrue($isCalled);
+    }
+
+    /**
      * Test that the needed requirements are met
      */
     public function testOptionRequirementsMet()
@@ -182,6 +216,15 @@ class OptionTest extends \PHPUnit_Framework_TestCase
             'foo',
         );
         $this->assertEquals($expected, $option->hasNeeds($optionSet));
+    }
+
+    public function testGetHelpNotReturnNoSuchFileOnWindows() {
+      $option = new Option('some-option');
+      $option->setDescription('Some content for description for some-option');
+
+      $result = $option->getHelp();
+
+      $this->assertNotNull($result);
     }
 
     // Providers
