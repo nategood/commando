@@ -475,7 +475,9 @@ class Command implements \ArrayAccess, \Iterator
                     $count++;
                 } else {
                     // Short circuit if the help flag was set and we're using default help
-                    if ($this->use_default_help === true && $name === 'help') {
+                    if ($this->use_default_help === true
+                        && ($name === 'help' || $name === 'h')
+                    ) {
                         $this->printHelp();
                         exit;
                     }
@@ -828,7 +830,8 @@ class Command implements \ArrayAccess, \Iterator
     private function attachHelp()
     {
         // Add in a default help method
-        $this->option('help')
+        $this->option('h')
+            ->aka('help')
             ->describe('Show the help page for this command.')
             ->boolean();
     }
