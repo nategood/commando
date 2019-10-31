@@ -18,6 +18,8 @@
 
 namespace Commando;
 
+use Commando\Option\TypeEnum;
+
 /**
  * Here are all the methods available through __call.  For accurate method documentation, see the actual method.
  *
@@ -55,9 +57,9 @@ namespace Commando;
 
 class Command implements \ArrayAccess, \Iterator
 {
-    const OPTION_TYPE_ARGUMENT  = 1; // e.g. foo
-    const OPTION_TYPE_SHORT     = 2; // e.g. -u
-    const OPTION_TYPE_VERBOSE   = 4; // e.g. --username
+    const OPTION_TYPE_ARGUMENT  = TypeEnum::ARGUMENT; // e.g. foo
+    const OPTION_TYPE_SHORT     = TypeEnum::SHORT; // e.g. -u
+    const OPTION_TYPE_VERBOSE   = TypeEnum::LONG; // e.g. --username
 
     private
         $current_option             = null,
@@ -447,7 +449,7 @@ class Command implements \ArrayAccess, \Iterator
                 list($name, $type) = $this->_parseOption($token);
 
                 // We allow short groups
-                if (strlen($name) > 1 && $type === self::OPTION_TYPE_SHORT) {
+                if (strlen($name) > 1 && $type === TypeEnum::SHORT) {
 
                     $group = str_split($name);
                     // correct option name
@@ -461,7 +463,7 @@ class Command implements \ArrayAccess, \Iterator
                     }
                 }
 
-                if ($type === self::OPTION_TYPE_ARGUMENT) {
+                if ($type === TypeEnum::ARGUMENT) {
                     // its an argument, use an int as the index
                     $keyvals[$count] = $name;
 
@@ -500,7 +502,7 @@ class Command implements \ArrayAccess, \Iterator
                         // the next token MUST be an "argument" and not another flag/option
                         $token = array_shift($tokens);
                         list($val, $type) = $this->_parseOption($token);
-                        if ($type !== self::OPTION_TYPE_ARGUMENT)
+                        if ($type !== TypeEnum::ARGUMENT)
                             throw new \Exception(sprintf('Unable to parse option %s: Expected an argument', $token));
                         if (!$option->hasReducer()) {
                             $keyvals[$name] = $val;
@@ -520,8 +522,8 @@ class Command implements \ArrayAccess, \Iterator
             foreach ($this->options as $option) {
                 if (is_null($option->getValue()) && $option->isRequired()) {
                     throw new \Exception(sprintf('Required %s %s must be specified',
-                        $option->getType() & Option::TYPE_NAMED ?
-                            'option' : 'argument', $option->getName()));
+                        $option->getType() === TypeEnum::ARGUMENT ?
+                            'argument' : 'option', $option->getName()));
                 }
             }
 
@@ -552,15 +554,6 @@ class Command implements \ArrayAccess, \Iterator
             $this->sorted_keys = array_keys($this->options);
             natsort($this->sorted_keys);
 
-            // // See if our options have what they require
-            // foreach ($this->options as $option) {
-            //     $needs = $option->hasNeeds($keyvals);
-            //     if ($needs !== true) {
-            //         throw new \InvalidArgumentException(
-            //             'Option "'.$option->getName().'" does not have required option(s): '.implode(', ', $needs)
-            //         );
-            //     }
-            // }
         } catch(\Exception $e) {
             $this->error($e);
         }
@@ -612,12 +605,12 @@ class Command implements \ArrayAccess, \Iterator
 
         if (!empty($matches['hyphen'])) {
             $type = (strlen($matches['hyphen']) === 1) ?
-                self::OPTION_TYPE_SHORT:
-                self::OPTION_TYPE_VERBOSE;
+                TypeEnum::SHORT:
+                TypeEnum::LONG;
             return array($matches['name'], $type);
         }
 
-        return array($token, self::OPTION_TYPE_ARGUMENT);
+        return array($token, TypeEnum::ARGUMENT);
     }
 
 

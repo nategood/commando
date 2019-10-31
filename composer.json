@@ -12,7 +12,8 @@
     ],
     "require": {
         "php": ">=5.4",
-        "kevinlebrun/colors.php": "~0.2"
+        "kevinlebrun/colors.php": "~0.2",
+        "ducks-project/spl-types": "^1.0"
 
     },
     "version": "0.3.0",
