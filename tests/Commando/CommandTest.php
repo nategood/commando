@@ -248,4 +248,29 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Commando\Test\AnotherCommand', $cmd);
     }
+
+    public function testIterator()
+    {
+        $tokens = array('filename', '-vvvv', '-f', 'v1', '--long', 'v2', 'arg1', 'arg2');
+        $cmd = new Command($tokens);
+        $cmd->option('v')
+            ->aka('verbosity')
+            ->increment(3);
+        $cmd->flag('f');
+        $cmd->option('long');
+        $cmd->option('d')
+            ->default(12345);
+        $cmd->parse();
+
+        $expected = [
+            'arg1',
+            'arg2',
+            'd' => 12345,
+            'f' => 'v1',
+            'long' => 'v2',
+            'v' => 3,
+            'verbosity' => 3,
+        ];
+        $this->assertEquals($expected, \iterator_to_array($cmd));
+    }
 }

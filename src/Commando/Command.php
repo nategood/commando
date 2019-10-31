@@ -898,12 +898,12 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
-     * @return int
+     * @return mixed current key
      * @see \Iterator
      */
     public function key()
     {
-        return $this->position;
+        return $this->sorted_keys[$this->position];
     }
 
     /**
