@@ -226,7 +226,6 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test that an exception is thrown when an option isn't set
-     * @expectedException \InvalidArgumentException
      */
     public function testRequirementsOnOptionsMissing()
     {
@@ -235,8 +234,10 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 
         $cmd->trapErrors(false)
             ->beepOnError(false);
+
+        $this->expectException(\InvalidArgumentException::class);
         $cmd->option('a')
-        ->needs('b');
+            ->needs('b');
     }
 
     /**
