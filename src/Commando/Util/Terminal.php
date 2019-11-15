@@ -55,7 +55,7 @@ class Terminal
           return $default;
         }
 
-        $result = intval(exec('tput ' . $param));
+        $result = \intval(\exec('tput ' . $param));
         return empty($result) ? $default : $result;
     }
 
@@ -73,9 +73,9 @@ class Terminal
         if (empty($width)) {
             $width = self::getWidth();
         }
-        $width = $width - abs($left_margin) - abs($right_margin);
-        $margin = str_repeat(' ', $left_margin);
-        return $margin . wordwrap($text, $width, PHP_EOL . $margin);
+        $width = $width - \abs($left_margin) - \abs($right_margin);
+        $margin = \str_repeat(' ', $left_margin);
+        return $margin . \wordwrap($text, $width, PHP_EOL . $margin);
     }
 
     /**
@@ -103,8 +103,8 @@ class Terminal
      */
     public static function pad($text, $width, $pad = ' ', $mode = STR_PAD_RIGHT)
     {
-        $width = strlen($text) - mb_strlen($text, 'UTF-8') + $width;
-        return str_pad($text, $width, $pad, $mode);
+        $width = \strlen($text) - \mb_strlen($text, 'UTF-8') + $width;
+        return \str_pad($text, $width, $pad, $mode);
     }
 
     /**
@@ -112,8 +112,8 @@ class Terminal
      */
     private static function isALinuxMachine ()
     {
-        return (($os = getenv('OS')) === null) ||
-               strpos($os, 'Windows_NT') === false;
+        return (($os = \getenv('OS')) === null) ||
+               \strpos($os, 'Windows_NT') === false;
     }
 
     /**
@@ -128,7 +128,7 @@ class Terminal
           $trashPlace = '/dev/null';
         }
 
-        $test = exec("$commandName $param 2>$trashPlace");
+        $test = \exec("$commandName $param 2>$trashPlace");
         return !empty($test);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 // Clearer definition of Arguments vs. Flags
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require \dirname(__DIR__) . '/vendor/autoload.php';
 
 // v0.2.0 started to add a clearer definition between "flag" type options
 // and "argument" type options for those that may prefer it.
@@ -22,8 +22,8 @@ $cmd
     ->argument()
     ->argument();
 
-var_dump($cmd->getArgumentValues());
-var_dump($cmd->getFlagValues());
+\var_dump($cmd->getArgumentValues());
+\var_dump($cmd->getFlagValues());
 
 // This is equivalent to...
 

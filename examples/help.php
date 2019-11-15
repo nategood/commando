@@ -5,7 +5,7 @@
 // production.  Typically the user would initiate this via
 // the user specifying the --help option
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require \dirname(__DIR__) . '/vendor/autoload.php';
 
 use Commando\Command;
 

@@ -2,11 +2,11 @@
 
 namespace Commando\Test;
 
-require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+require \dirname(\dirname(__DIR__)) . '/vendor/autoload.php';
 
 // PHPUnit version hack https://stackoverflow.com/questions/6065730/why-fatal-error-class-phpunit-framework-testcase-not-found-in
-if (!class_exists('\PHPUnit_Framework_TestCase') && class_exists('\PHPUnit\Framework\TestCase'))
-    class_alias('\PHPUnit\Framework\TestCase', '\PHPUnit_Framework_TestCase');
+if (!\class_exists('\PHPUnit_Framework_TestCase') && \class_exists('\PHPUnit\Framework\TestCase'))
+    \class_alias('\PHPUnit\Framework\TestCase', '\PHPUnit_Framework_TestCase');
 
 use Commando\Option;
 use Commando\Command;
@@ -157,12 +157,12 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         $cmd
             ->option('exclude')
             ->reduce(function ($acc, $next) {
-                array_push($acc, $next);
+                \array_push($acc, $next);
                 return $acc;
             })
             ->default([]);
 
-        $this->assertEquals(2, count($cmd['exclude']));
+        $this->assertEquals(2, \count($cmd['exclude']));
         $this->assertEquals(array('name1', 'name2'), $cmd['exclude']);
     }
 

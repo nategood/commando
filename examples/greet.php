@@ -29,7 +29,7 @@
  * # anonymous option
  */
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require \dirname(__DIR__) . '/vendor/autoload.php';
 
 use Commando\Command;
 
@@ -47,11 +47,11 @@ $hello_cmd
     ->describedAs('When set, use this title to address the person')
     ->must(function($title) {
         $titles = array('Mister', 'Mr', 'Misses', 'Mrs', 'Miss', 'Ms');
-        return in_array($title, $titles);
+        return \in_array($title, $titles);
     })
     ->map(function($title) {
         $titles = array('Mister' => 'Mr', 'Misses' => 'Mrs', 'Miss' => 'Ms');
-        if (array_key_exists($title, $titles))
+        if (\array_key_exists($title, $titles))
             $title = $titles[$title];
         return "$title. ";
     })
@@ -70,6 +70,6 @@ $hello_cmd
     })
     ->count(4);
 
-$name = $hello_cmd['capitalize'] ? ucwords($hello_cmd[0]) : $hello_cmd[0];
+$name = $hello_cmd['capitalize'] ? \ucwords($hello_cmd[0]) : $hello_cmd[0];
 
 echo "Hello {$hello_cmd['title']}$name{$hello_cmd['educate']}!", PHP_EOL;

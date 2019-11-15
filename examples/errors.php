@@ -3,7 +3,7 @@
 // Run this and forget the required -r flag.
 // > php errors.php
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require \dirname(__DIR__) . '/vendor/autoload.php';
 
 $cmd = new Commando\Command();
 $cmd->beepOnError();

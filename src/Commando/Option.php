@@ -72,12 +72,12 @@ class Option
      */
     public function __construct($name)
     {
-        if (!is_int($name) && empty($name)) {
-            throw new \Exception(sprintf('Invalid option name %s: Must be identified by a single character or an integer', $name));
+        if (!\is_int($name) && empty($name)) {
+            throw new \Exception(\sprintf('Invalid option name %s: Must be identified by a single character or an integer', $name));
         }
 
-        if (!is_int($name)) {
-            $this->type = mb_strlen($name, 'UTF-8') === 1 ?
+        if (!\is_int($name)) {
+            $this->type = \mb_strlen($name, 'UTF-8') === 1 ?
                 self::TYPE_SHORT : self::TYPE_VERBOSE;
         } else {
             $this->type = self::TYPE_ANONYMOUS;
@@ -191,7 +191,7 @@ class Option
      */
     public function setNeeds($option)
     {
-        if (!is_array($option)) {
+        if (!\is_array($option)) {
             $option = array($option);
         }
         foreach ($option as $opt) {
@@ -245,13 +245,13 @@ class Option
      */
     public function map($value)
     {
-        if (!is_callable($this->map))
+        if (!\is_callable($this->map))
             return $value;
 
         // todo add int, float and regex special case
 
         // todo double check syntax
-        return call_user_func($this->map, $value);
+        return \call_user_func($this->map, $value);
     }
 
     /**
@@ -260,11 +260,11 @@ class Option
      */
     public function reduce($accumulator, $value)
     {
-        if (!is_callable($this->reducer)) {
+        if (!\is_callable($this->reducer)) {
             return $value;
         }
 
-        return call_user_func($this->reducer, $accumulator, $value);
+        return \call_user_func($this->reducer, $accumulator, $value);
     }
 
 
@@ -274,13 +274,13 @@ class Option
      */
     public function validate($value)
     {
-        if (!is_callable($this->rule))
+        if (!\is_callable($this->rule))
             return true;
 
         // todo add int, float and regex special case
 
         // todo double check syntax
-        return call_user_func($this->rule, $value);
+        return \call_user_func($this->rule, $value);
     }
 
     /**
@@ -290,14 +290,14 @@ class Option
      */
     public function parseFilePath($file_path)
     {
-        $path = realpath($file_path);
+        $path = \realpath($file_path);
         if ($this->file_allow_globbing) {
-            $files = glob($file_path);
+            $files = \glob($file_path);
             if (empty($files)) {
                 return $files;
             }
-            return array_map(function($file) {
-                return realpath($file);
+            return \array_map(function($file) {
+                return \realpath($file);
             }, $files);
         }
 
@@ -396,10 +396,10 @@ class Option
     {
         $needs = $this->getNeeds();
 
-        $definedOptions = array_keys($optionsList);
+        $definedOptions = \array_keys($optionsList);
         $notFound = array();
         foreach ($needs as $need) {
-            if (!in_array($need, $definedOptions)) {
+            if (!\in_array($need, $definedOptions)) {
                 // The needed option has not been defined as a valid flag.
                 $notFound[] = $need;
             } elseif (!$optionsList[$need]->getValue()) {
@@ -417,7 +417,7 @@ class Option
      */
     public function hasReducer()
     {
-        return is_callable($this->reducer);
+        return \is_callable($this->reducer);
     }
 
     /**
@@ -426,15 +426,15 @@ class Option
      */
     public function setValue($value)
     {
-        if ($this->isBoolean() && !is_bool($value)) {
-            throw new \Exception(sprintf('Boolean option expected for option %s, received %s value instead', $this->name, $value));
+        if ($this->isBoolean() && !\is_bool($value)) {
+            throw new \Exception(\sprintf('Boolean option expected for option %s, received %s value instead', $this->name, $value));
         }
         if (!$this->validate($value)) {
-            throw new \Exception(sprintf('Invalid value, %s, for option %s', $value, $this->name));
+            throw new \Exception(\sprintf('Invalid value, %s, for option %s', $value, $this->name));
         }
         if ($this->isIncrement()) {
-            if (!is_int($value)) {
-                throw new \Exception(sprintf('Integer expected as value for %s, received %s instead', $this->name, $value));
+            if (!\is_int($value)) {
+                throw new \Exception(\sprintf('Integer expected as value for %s, received %s instead', $this->name, $value));
             }
             if ($value > $this->max_value && $this->max_value > 0) {
                 $value = $this->max_value;
@@ -444,7 +444,7 @@ class Option
             $file_path = $this->parseFilePath($value);
             if (empty($file_path)) {
                 if ($this->file_require_exists) {
-                    throw new \Exception(sprintf('Expected %s to be a valid file', $value, $this->name));
+                    throw new \Exception(\sprintf('Expected %s to be a valid file', $value, $this->name));
                 }
             } else {
                 $value = $file_path;
@@ -468,11 +468,11 @@ class Option
         $isNamed = ($this->type & self::TYPE_NAMED);
 
         if ($isNamed) {
-            $help .=  PHP_EOL . (mb_strlen($this->name, 'UTF-8') === 1 ?
+            $help .=  PHP_EOL . (\mb_strlen($this->name, 'UTF-8') === 1 ?
                 '-' : '--') . $this->name;
             if (!empty($this->aliases)) {
                 foreach($this->aliases as $alias) {
-                    $help .= (mb_strlen($alias, 'UTF-8') === 1 ?
+                    $help .= (\mb_strlen($alias, 'UTF-8') === 1 ?
                         '/-' : '/--') . $alias;
                 }
             }
@@ -504,7 +504,7 @@ class Option
         }
         $description = $titleLine . $this->description;
         if (!empty($description)) {
-            $descriptionArray = explode(PHP_EOL, trim($description));
+            $descriptionArray = \explode(PHP_EOL, \trim($description));
             foreach($descriptionArray as $descriptionLine){
                 $help .= Terminal::wrap($descriptionLine, 5, 1) . PHP_EOL;
             }

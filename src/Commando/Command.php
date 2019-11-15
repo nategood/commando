@@ -193,7 +193,7 @@ class Command implements \ArrayAccess, \Iterator
     public function __call($name, $arguments)
     {
         if (empty(self::$methods[$name])) {
-            throw new \Exception(sprintf('Unknown function, %s, called', $name));
+            throw new \Exception(\sprintf('Unknown function, %s, called', $name));
         }
 
         // use the fully quantified name, e.g. "option" when "o"
@@ -202,11 +202,11 @@ class Command implements \ArrayAccess, \Iterator
         // set the option we'll be acting on
         if (empty($this->current_option) && $name !== 'option' &&
                 $name !== 'flag' && $name !== 'argument') {
-            throw new \Exception(sprintf('Invalid Option Chain: Attempting to call %s before an "option" declaration', $name));
+            throw new \Exception(\sprintf('Invalid Option Chain: Attempting to call %s before an "option" declaration', $name));
         }
 
-        array_unshift($arguments, $this->current_option);
-        $option = call_user_func_array(array($this, "_$name"), $arguments);
+        \array_unshift($arguments, $this->current_option);
+        $option = \call_user_func_array(array($this, "_$name"), $arguments);
 
         return $this;
     }
@@ -242,7 +242,7 @@ class Command implements \ArrayAccess, \Iterator
      */
     private function _flag($option, $name)
     {
-        if (isset($name) && is_numeric($name))
+        if (isset($name) && \is_numeric($name))
             throw new \Exception('Attempted to reference flag with a numeric index');
         return $this->_option($option, $name);
     }
@@ -257,7 +257,7 @@ class Command implements \ArrayAccess, \Iterator
      */
     private function _argument($option, $index = null)
     {
-        if (isset($index) && !is_numeric($index))
+        if (isset($index) && !\is_numeric($index))
             throw new \Exception('Attempted to reference argument with a string name');
         return $this->_option($option, $index);
     }
@@ -436,28 +436,28 @@ class Command implements \ArrayAccess, \Iterator
         try {
             $tokens = $this->tokens;
             // the executed filename
-            $this->name = array_shift($tokens);
+            $this->name = \array_shift($tokens);
 
             $keyvals = array();
             $count = 0; // standalone argument count
 
             while (!empty($tokens)) {
-                $token = array_shift($tokens);
+                $token = \array_shift($tokens);
 
                 list($name, $type) = $this->_parseOption($token);
 
                 // We allow short groups
-                if (strlen($name) > 1 && $type === self::OPTION_TYPE_SHORT) {
+                if (\strlen($name) > 1 && $type === self::OPTION_TYPE_SHORT) {
 
-                    $group = str_split($name);
+                    $group = \str_split($name);
                     // correct option name
-                    $name = array_shift($group);
+                    $name = \array_shift($group);
 
                     // Iterate in reverse order to keep the option order correct
                     // options that don't require an argument can be mixed.
-                    foreach(array_reverse($group) as $nextShort) {
+                    foreach(\array_reverse($group) as $nextShort) {
                         // put it back into $tokens for another loop
-                        array_unshift($tokens, "-{$nextShort}");
+                        \array_unshift($tokens, "-{$nextShort}");
                     }
                 }
 
@@ -498,10 +498,10 @@ class Command implements \ArrayAccess, \Iterator
                         }
                     } else {
                         // the next token MUST be an "argument" and not another flag/option
-                        $token = array_shift($tokens);
+                        $token = \array_shift($tokens);
                         list($val, $type) = $this->_parseOption($token);
                         if ($type !== self::OPTION_TYPE_ARGUMENT)
-                            throw new \Exception(sprintf('Unable to parse option %s: Expected an argument', $token));
+                            throw new \Exception(\sprintf('Unable to parse option %s: Expected an argument', $token));
                         if (!$option->hasReducer()) {
                             $keyvals[$name] = $val;
                         } else {
@@ -518,8 +518,8 @@ class Command implements \ArrayAccess, \Iterator
 
             // todo protect against duplicates caused by aliases
             foreach ($this->options as $option) {
-                if (is_null($option->getValue()) && $option->isRequired()) {
-                    throw new \Exception(sprintf('Required %s %s must be specified',
+                if (\is_null($option->getValue()) && $option->isRequired()) {
+                    throw new \Exception(\sprintf('Required %s %s must be specified',
                         $option->getType() & Option::TYPE_NAMED ?
                             'option' : 'argument', $option->getName()));
                 }
@@ -529,9 +529,9 @@ class Command implements \ArrayAccess, \Iterator
             // But only do so if the option is actually used
             foreach ($this->options as $option) {
                 $needs = $option->hasNeeds($this->options);
-                if ($needs !== true && array_key_exists($option->getName(), $keyvals)) {
+                if ($needs !== true && \array_key_exists($option->getName(), $keyvals)) {
                     throw new \InvalidArgumentException(
-                        'Option "' . $option->getName() . '" does not have required option(s): ' . implode(', ', $needs)
+                        'Option "' . $option->getName() . '" does not have required option(s): ' . \implode(', ', $needs)
                     );
                 }
             }
@@ -541,7 +541,7 @@ class Command implements \ArrayAccess, \Iterator
             // at run time.  okay because option values are
             // not mutable after parsing.
             foreach($this->options as $k => $v) {
-                if (is_numeric($k)) {
+                if (\is_numeric($k)) {
                     $this->arguments[$k] = $v;
                 } else {
                     $this->flags[$k] = $v;
@@ -549,8 +549,8 @@ class Command implements \ArrayAccess, \Iterator
             }
 
             // Used in the \Iterator implementation
-            $this->sorted_keys = array_keys($this->options);
-            natsort($this->sorted_keys);
+            $this->sorted_keys = \array_keys($this->options);
+            \natsort($this->sorted_keys);
 
             // // See if our options have what they require
             // foreach ($this->options as $option) {
@@ -582,7 +582,7 @@ class Command implements \ArrayAccess, \Iterator
         }
 
         $color = new \Colors\Color();
-        $error = sprintf('ERROR: %s ', $e->getMessage());
+        $error = \sprintf('ERROR: %s ', $e->getMessage());
         echo $color($error)->bg('red')->bold()->white() . PHP_EOL;
         exit(1);
     }
@@ -606,12 +606,12 @@ class Command implements \ArrayAccess, \Iterator
     {
         $matches = array();
 
-        if (substr($token, 0, 1) === '-' && !preg_match('/(?P<hyphen>\-{1,2})(?P<name>[a-z][a-z0-9_-]*)/i', $token, $matches)) {
-            throw new \Exception(sprintf('Unable to parse option %s: Invalid syntax', $token));
+        if (\substr($token, 0, 1) === '-' && !\preg_match('/(?P<hyphen>\-{1,2})(?P<name>[a-z][a-z0-9_-]*)/i', $token, $matches)) {
+            throw new \Exception(\sprintf('Unable to parse option %s: Invalid syntax', $token));
         }
 
         if (!empty($matches['hyphen'])) {
-            $type = (strlen($matches['hyphen']) === 1) ?
+            $type = (\strlen($matches['hyphen']) === 1) ?
                 self::OPTION_TYPE_SHORT:
                 self::OPTION_TYPE_VERBOSE;
             return array($matches['name'], $type);
@@ -629,7 +629,7 @@ class Command implements \ArrayAccess, \Iterator
     public function getOption($option)
     {
         if (!$this->hasOption($option)) {
-            throw new \Exception(sprintf('Unknown option, %s, specified', $option));
+            throw new \Exception(\sprintf('Unknown option, %s, specified', $option));
         }
 
         return $this->options[$option];
@@ -673,13 +673,13 @@ class Command implements \ArrayAccess, \Iterator
         $this->parseIfNotParsed();
 
         $arguments = $this->arguments;
-        $arguments = array_filter($arguments, function(Option $argument){
+        $arguments = \array_filter($arguments, function(Option $argument){
             $argumentValue = $argument->getValue();
             return isset($argumentValue);
         });
 
 
-        return array_map(function(Option $argument) {
+        return \array_map(function(Option $argument) {
             return $argument->getValue();
         }, $arguments);
     }
@@ -693,7 +693,7 @@ class Command implements \ArrayAccess, \Iterator
     public function getFlagValues()
     {
         $this->parseIfNotParsed();
-        return array_map(function(Option $flag) {
+        return \array_map(function(Option $flag) {
             return $flag->getValue();
         }, $this->dedupeFlags());
     }
@@ -737,7 +737,7 @@ class Command implements \ArrayAccess, \Iterator
      */
     public function getSize()
     {
-        return count($this->options);
+        return \count($this->options);
     }
 
     /**
@@ -806,11 +806,11 @@ class Command implements \ArrayAccess, \Iterator
         $help .= PHP_EOL;
 
         $seen = array();
-        $keys = array_keys($this->options);
-        natsort($keys);
+        $keys = \array_keys($this->options);
+        \natsort($keys);
         foreach ($keys as $key) {
             $option = $this->getOption($key);
-            if (in_array($option, $seen)) {
+            if (\in_array($option, $seen)) {
                 continue;
             }
             $help .= $option->getHelp() . PHP_EOL;

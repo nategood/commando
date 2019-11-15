@@ -2,11 +2,11 @@
 
 namespace Commando\Test;
 
-require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+require \dirname(\dirname(__DIR__)) . '/vendor/autoload.php';
 
 // PHPUnit version hack https://stackoverflow.com/questions/6065730/why-fatal-error-class-phpunit-framework-testcase-not-found-in
-if (!class_exists('\PHPUnit_Framework_TestCase') && class_exists('\PHPUnit\Framework\TestCase'))
-    class_alias('\PHPUnit\Framework\TestCase', '\PHPUnit_Framework_TestCase');
+if (!\class_exists('\PHPUnit_Framework_TestCase') && \class_exists('\PHPUnit\Framework\TestCase'))
+    \class_alias('\PHPUnit\Framework\TestCase', '\PHPUnit_Framework_TestCase');
 
 use Commando\Option;
 use Commando\Commando;
@@ -84,7 +84,7 @@ class OptionTest extends \PHPUnit_Framework_TestCase
     {
         $option = new Option('f');
         $option->setRule(function($value) {
-            return is_numeric($value);
+            return \is_numeric($value);
         });
 
         $this->assertFalse($option->validate('a'));
@@ -107,7 +107,7 @@ class OptionTest extends \PHPUnit_Framework_TestCase
 
     public function testFile()
     {
-        $file = dirname(__FILE__) . '/assets/example.txt';
+        $file = \dirname(__FILE__) . '/assets/example.txt';
         $option = new Option(0);
         $option->setFileRequirements(true, false);
         $option->setValue($file);
@@ -118,19 +118,19 @@ class OptionTest extends \PHPUnit_Framework_TestCase
 
     public function testFileGlob()
     {
-        $file = dirname(__FILE__) . '/assets/*.txt';
+        $file = \dirname(__FILE__) . '/assets/*.txt';
         $option = new Option(0);
         $option->setFileRequirements(true, true);
         $option->setValue($file);
 
-        $file1 = dirname(__FILE__) . '/assets/example.txt';
-        $file2 = dirname(__FILE__) . '/assets/another.txt';
+        $file1 = \dirname(__FILE__) . '/assets/example.txt';
+        $file2 = \dirname(__FILE__) . '/assets/another.txt';
 
         $values = $option->getValue();
         $this->assertTrue($option->isFile());
         $this->assertCount(2, $values);
-        $this->assertTrue(in_array($file1, $values));
-        $this->assertTrue(in_array($file2, $values));
+        $this->assertTrue(\in_array($file1, $values));
+        $this->assertTrue(\in_array($file2, $values));
     }
 
     /**
@@ -151,7 +151,7 @@ class OptionTest extends \PHPUnit_Framework_TestCase
         $option = new Option('f');
         $option->setNeeds('foo');
 
-        $this->assertTrue(in_array('foo', $option->getNeeds()));
+        $this->assertTrue(\in_array('foo', $option->getNeeds()));
     }
 
     /**
