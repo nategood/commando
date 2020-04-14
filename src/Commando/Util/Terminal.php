@@ -123,7 +123,7 @@ class Terminal
      */
     private static function isCommandFound ($commandName, $param)
     {
-        $trashPlace = 'nil';
+        $trashPlace = 'nul';
         if (self::isALinuxMachine()) {
           $trashPlace = '/dev/null';
         }
