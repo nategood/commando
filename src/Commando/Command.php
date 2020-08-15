@@ -68,6 +68,7 @@ class Command implements \ArrayAccess, \Iterator
         $help                       = null,
         $parsed                     = false,
         $use_default_help           = true,
+        $exit_after_help            = true,
         $trap_errors                = true,
         $beep_on_error              = true,
         $position                   = 0,
@@ -394,10 +395,25 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param bool $help
+     * @return Command
      */
     public function useDefaultHelp($help = true)
     {
         $this->use_default_help = $help;
+        return $this;
+    }
+
+    /**
+     * Allows to bypass the default behavior of exit()ing after
+     * displaying the default help screen.
+     *
+     * @param bool $exit
+     * @return Command
+     */
+    public function exitAfterHelp($exit)
+    {
+        $this->exit_after_help = $exit;
+        return $this;
     }
 
     /**
@@ -477,7 +493,9 @@ class Command implements \ArrayAccess, \Iterator
                     // Short circuit if the help flag was set and we're using default help
                     if ($this->use_default_help === true && $name === 'help') {
                         $this->printHelp();
-                        exit;
+                        if ($this->exit_after_help) {
+                            exit;
+                        }
                     }
 
                     $option = $this->getOption($name);
