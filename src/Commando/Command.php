@@ -395,10 +395,12 @@ class Command implements \ArrayAccess, \Iterator
 
     /**
      * @param bool $help
+     * @return Command
      */
     public function useDefaultHelp($help = true)
     {
         $this->use_default_help = $help;
+        return $this;
     }
 
     /**
