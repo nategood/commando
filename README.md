@@ -170,45 +170,45 @@ Same as `option` except that it can only be used to define "flag" type options (
 
 Same as `option` except that it can only be used to define "argument" type options (a.k.a those options that are specified WITHOUT a -flag on the command line).
 
-### `alias (string $alias)`
+### `boolean ()`
 
-Aliases: `a`, `aka`
+Aliases: `bool`, `b`
 
-Add an alias for a named option.  This method can be called multiple times to add multiple aliases.
-
-### `description (string $description)`
-
-Aliases: `d`, `describe`, `describedAs`
-
-Text to describe this option.  This text will be used to build the "help" page and as such, it is end user facing.
+Specifices that the flag is a boolean type flag.
 
 ### `require (bool $require)`
 
-Aliases: `r`, `required`
+Aliases: `required`, `r`
 
 Require that this flag is specified
 
-### `needs (string|array $options)`
+### `alias (string $alias)`
 
-Aliases: none
+Aliases: `aka`, `a`
 
-Require that other $options be set for this option to be used.
+Add an alias for a named option.  This method can be called multiple times to add multiple aliases.
 
-### `must (Closure $rule)`
+### `title (string $name)`
 
-Aliases: _N/A_
+Aliases: `referToAs`, `referredToAs`
 
-Define a rule to validate input against.  Takes function that accepts a string $value and returns a boolean as to whether or not $value is valid.
+Add a name to refer to an argument option by.  Makes the help docs a little cleaner for anonymous "argument" options.
+
+### `description (string $description)`
+
+Aliases: `d`, `describe`, `describeAs`, `describedAs`
+
+Text to describe this option.  This text will be used to build the "help" page and as such, it is end user facing.
 
 ### `map (Closure $map)`
 
-Aliases: `cast`, `castTo`
+Aliases: `mapTo`, `cast`, `castWith`
 
 Perform a map operation on the value for this option.  Takes function that accepts a string $value and return mixed (you can map to whatever you wish).
 
 ### `reduce (Closure $reducer [, mixed $seed])`
 
-Aliases: `list`, `each`, `every`
+Aliases: `each`, `every`, `list`
 
 Execute an accumulator/reducer function on every instance of the option in the command. Takes an accumulator function, and returns mixed (you can return any value). If you also supply a map for the option the map will execute on every value before it is passed to the accumulator function. If `$seed` value is supplied, this will be used as the default value.
 
@@ -218,31 +218,23 @@ Signature: `function(mixed $accumulated, mixed $value) : mixed`
  - `$value`: mixed (the value that comes after the option. if map is supplied, the value returned from the map function.)
  - `return`: mixed (anything you want. The last value returned becomes the value of the Option after parsing.)
 
-### `referToAs (string $name)`
-
-Aliases: `title`, `referredToAs`
-
-Add a name to refer to an argument option by.  Makes the help docs a little cleaner for anonymous "argument" options.
-
-### `boolean ()`
-
-Aliases: _N/A_
-
-Specifices that the flag is a boolean type flag.
-
 ### `increment (int $max)`
 
-Aliases: `i`, `count`, `repeats`, `repeatable`
+Aliases: `repeatable`, `repeats`, `count`
 
 Specifies that the flag is a counter type flag. The value of the flag will be incremented up to the value of `$max` for each time the flag is used in the command. Options that are set to `increment` or `boolean` types can be grouped together.
 
-### `default (mixed $defaultValue)`
+### `must (Closure $rule)`
 
-Aliases: `defaultsTo`
+Aliases: _N/A_
 
-If the value is not specified, default to `$defaultValue`.
+Define a rule to validate input against.  Takes function that accepts a string $value and returns a boolean as to whether or not $value is valid.
 
-In the case of `boolean()` type flags, when the flag is present, the value of this option the negation of `$defaultValue`. That is to say, if you have a flag -b with a default of `true`, when -b is present as a command line flag, the value of the option will be `false`.
+### `needs (string|array $options)`
+
+Aliases: none
+
+Require that other $options be set for this option to be used.
 
 ### `file ()`
 
@@ -250,12 +242,6 @@ Aliases: `expectsFile`
 
 The value specified for this option must be a valid file path. When used relative paths will be converted into fully quantify file paths and globbing is also optionally supported.  See the file.php example.
 
-### `boolean ()`
-
-Aliases: _N/A_
-
-Specifices that the flag is a boolean type flag.
-
 ### `default (mixed $defaultValue)`
 
 Aliases: `defaultsTo`
@@ -263,12 +249,6 @@ Aliases: `defaultsTo`
 If the value is not specified, default to `$defaultValue`.
 
 In the case of `boolean()` type flags, when the flag is present, the value of this option the negation of `$defaultValue`. That is to say, if you have a flag -b with a default of `true`, when -b is present as a command line flag, the value of the option will be `false`.
-
-### `file ()`
-
-Aliases: `expectsFile`
-
-The value specified for this option must be a valid file path. When used relative paths will be converted into fully quatified file paths and globbing is also optionally supported.  See the file.php example.
 
 ## Contributing
 
