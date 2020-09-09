@@ -5,15 +5,17 @@
  * @method \Commando\Command flag (string $name)
  * @method \Commando\Command argument (int $index)
  * @method \Commando\Command boolean (bool $boolean=true)
- * @method \Commando\Command require(bool $require=true)
- * @method \Commando\Command alias(string $alias)
- * @method \Commando\Command title(string $title)
- * @method \Commando\Command describe(string $description)
- * @method \Commando\Command map(callable $callback)
- * @method \Commando\Command must(callable $callback)
- * @method \Commando\Command needs(string $name)
- * @method \Commando\Command file(bool $require_exists=true,bool $allow_globbing=false)
- * @method \Commando\Command default($value)
+ * @method \Commando\Command require (bool $require=true)
+ * @method \Commando\Command alias (string $alias)
+ * @method \Commando\Command title (string $title)
+ * @method \Commando\Command describe (string $description)
+ * @method \Commando\Command map (callable $callback)
+ * @method \Commando\Command reduce (callable $callback)
+ * @method \Commando\Command increment (int $max)
+ * @method \Commando\Command must (callable $callback)
+ * @method \Commando\Command needs (string $name)
+ * @method \Commando\Command file (bool $require_exists=true, bool $allow_globbing=false)
+ * @method \Commando\Command default ($value)
  */
 
 namespace Commando;
@@ -27,29 +29,41 @@ namespace Commando;
  * @method \Commando\Command o (mixed $name = null)
  * @method \Commando\Command flag (string $name)
  * @method \Commando\Command argument (mixed $option = null)
- * @method \Commando\Command alias (string $alias)
- * @method \Commando\Command a (string $alias)
- * @method \Commando\Command aka (string $alias)
- * @method \Commando\Command description (string $description)
- * @method \Commando\Command d (string $description)
- * @method \Commando\Command describe (string $description)
- * @method \Commando\Command describedAs (string $description)
- * @method \Commando\Command require (bool $require = true)
- * @method \Commando\Command r (bool $require = true)
- * @method \Commando\Command required (bool $require = true)
- * @method \Commando\Command needs (mixed $options)
- * @method \Commando\Command must (\Closure $rule)
- * @method \Commando\Command map (\Closure $map)
- * @method \Commando\Command cast (\Closure $map)
- * @method \Commando\Command castTo (\Closure $map)
- * @method \Commando\Command referToAs (string $name)
- * @method \Commando\Command title (string $name)
- * @method \Commando\Command referredToAs (string $name)
  * @method \Commando\Command boolean ()
- * @method \Commando\Command default (mixed $defaultValue)
- * @method \Commando\Command defaultsTo (mixed $defaultValue)
+ * @method \Commando\Command bool ()
+ * @method \Commando\Command b ()
+ * @method \Commando\Command require (bool $require = true)
+ * @method \Commando\Command required (bool $require = true)
+ * @method \Commando\Command r (bool $require = true)
+ * @method \Commando\Command alias (string $alias)
+ * @method \Commando\Command aka (string $alias)* 
+ * @method \Commando\Command a (string $alias)
+ * @method \Commando\Command title (string $name)
+ * @method \Commando\Command referToAs (string $name)
+ * @method \Commando\Command referredToAs (string $name)
+ * @method \Commando\Command describe (string $description)
+ * @method \Commando\Command d (string $description)
+ * @method \Commando\Command describeAs (string $description)
+ * @method \Commando\Command description (string $description)
+ * @method \Commando\Command describedAs (string $description)
+ * @method \Commando\Command map (\Closure $map)
+ * @method \Commando\Command mapTo (\Closure $map)
+ * @method \Commando\Command cast (\Closure $map)
+ * @method \Commando\Command castWith (\Closure $map)
+ * @method \Commando\Command reduce (\Closure $reducer [, mixed $seed])
+ * @method \Commando\Command each (\Closure $reducer [, mixed $seed])
+ * @method \Commando\Command every (\Closure $reducer [, mixed $seed])
+ * @method \Commando\Command list (\Closure $reducer [, mixed $seed])
+ * @method \Commando\Command increment (int $max)
+ * @method \Commando\Command repeatable (int $max)
+ * @method \Commando\Command repeats (int $max)
+ * @method \Commando\Command count (int $max)
+ * @method \Commando\Command must (\Closure $rule)
+ * @method \Commando\Command needs (mixed $options)
  * @method \Commando\Command file ()
  * @method \Commando\Command expectsFile ()
+ * @method \Commando\Command default (mixed $defaultValue)
+ * @method \Commando\Command defaultsTo (mixed $defaultValue)
  *
  */
 
@@ -92,6 +106,7 @@ class Command implements \ArrayAccess, \Iterator
         'o' => 'option',
 
         'flag' => 'flag',
+
         'argument' => 'argument',
 
         'boolean' => 'boolean',
@@ -136,6 +151,7 @@ class Command implements \ArrayAccess, \Iterator
         // mustBeNumeric
         // mustBeInt
         // mustBeFloat
+        
         'needs' => 'needs',
 
         'file' => 'file',
