@@ -232,7 +232,7 @@ Define a rule to validate input against.  Takes function that accepts a string $
 
 ### `needs (string|array $options)`
 
-Aliases: none
+Aliases: _N/A_
 
 Require that other $options be set for this option to be used.
 
