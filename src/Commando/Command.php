@@ -811,9 +811,6 @@ class Command implements \ArrayAccess, \Iterator
 
         $help = '';
 
-        $help .= $color(\Commando\Util\Terminal::header(' ' . $this->name))
-            ->white()->bg('green')->bold() . PHP_EOL;
-
         if (!empty($this->help)) {
             $help .= PHP_EOL . \Commando\Util\Terminal::wrap($this->help)
                 . PHP_EOL;
