@@ -834,7 +834,7 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
-     * @param string $offset
+     * @param int|string $offset
      *
      * @see \ArrayAccess
      * @return bool
@@ -845,7 +845,7 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
-     * @param string $offset
+     * @param int|string $offset
      *
      * @see \ArrayAccess
      * @return mixed
@@ -861,7 +861,7 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
-     * @param string $offset
+     * @param int|string $offset
      * @param string $value
      * @throws \Exception
      * @see \ArrayAccess
@@ -872,7 +872,7 @@ class Command implements \ArrayAccess, \Iterator
     }
 
     /**
-     * @param string $offset
+     * @param int|string $offset
      * @see \ArrayAccess
      */
     public function offsetUnset($offset)
