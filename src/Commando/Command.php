@@ -726,7 +726,7 @@ class Command implements \ArrayAccess, \Iterator
     /**
      * @return string dump values
      */
-    public function __toString()
+    public function __toString(): string
     {
         // todo return values of set options as map of option name => value
         return $this->getHelp();
@@ -839,7 +839,7 @@ class Command implements \ArrayAccess, \Iterator
      * @see \ArrayAccess
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->options[$offset]);
     }
@@ -850,7 +850,7 @@ class Command implements \ArrayAccess, \Iterator
      * @see \ArrayAccess
      * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         // Support implicit/lazy parsing
         $this->parseIfNotParsed();
@@ -866,7 +866,7 @@ class Command implements \ArrayAccess, \Iterator
      * @throws \Exception
      * @see \ArrayAccess
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new \Exception('Setting an option value via array syntax is not permitted');
     }
@@ -875,7 +875,7 @@ class Command implements \ArrayAccess, \Iterator
      * @param string $offset
      * @see \ArrayAccess
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         $this->options[$offset]->setValue(null);
     }
@@ -883,7 +883,7 @@ class Command implements \ArrayAccess, \Iterator
     /**
      * @see \Iterator
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }
@@ -892,7 +892,7 @@ class Command implements \ArrayAccess, \Iterator
      * @return mixed value of current option
      * @see \Iterator
      */
-    public function current()
+    public function current(): mixed
     {
         return $this->options[$this->sorted_keys[$this->position]]->getValue();
     }
@@ -901,7 +901,7 @@ class Command implements \ArrayAccess, \Iterator
      * @return int
      * @see \Iterator
      */
-    public function key()
+    public function key(): int
     {
         return $this->position;
     }
@@ -909,7 +909,7 @@ class Command implements \ArrayAccess, \Iterator
     /**
      * @see \Iterator
      */
-    public function next()
+    public function next(): void
     {
         ++$this->position;
     }
@@ -918,7 +918,7 @@ class Command implements \ArrayAccess, \Iterator
      * @return bool
      * @see \Iterator
      */
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->sorted_keys[$this->position]);
     }
