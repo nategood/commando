@@ -10,6 +10,7 @@ if (!class_exists('\PHPUnit_Framework_TestCase') && class_exists('\PHPUnit\Frame
 
 use Commando\Option;
 use Commando\Command;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Subclass of Command which is used by the sub class instanciation tests
@@ -18,7 +19,7 @@ use Commando\Command;
 class AnotherCommand extends Command {
 }
 
-class CommandTest extends \PHPUnit_Framework_TestCase
+class CommandTest extends TestCase
 {
 
     public function testCommandoAnon()
@@ -226,10 +227,11 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test that an exception is thrown when an option isn't set
-     * @expectedException \InvalidArgumentException
      */
     public function testRequirementsOnOptionsMissing()
     {
+        $this->expectException('\InvalidArgumentException');
+
         $tokens = array('filename', '-a', 'v1');
         $cmd = new Command($tokens);
 

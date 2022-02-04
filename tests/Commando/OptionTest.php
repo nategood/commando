@@ -10,8 +10,9 @@ if (!class_exists('\PHPUnit_Framework_TestCase') && class_exists('\PHPUnit\Frame
 
 use Commando\Option;
 use Commando\Commando;
+use PHPUnit\Framework\TestCase;
 
-class OptionTest extends \PHPUnit_Framework_TestCase
+class OptionTest extends TestCase
 {
 
     public function testNamedOption()
