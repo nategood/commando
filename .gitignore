@@ -1,3 +1,5 @@
 vendor
 composer.lock
 .c9
+.DS_Store
+.phpunit*
