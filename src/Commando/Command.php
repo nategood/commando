@@ -356,7 +356,7 @@ class Command implements \ArrayAccess, \Iterator
         {
             $option->setDefault($seed);
         }
-        
+
         return $option->setReducer($callback);
     }
 
@@ -606,8 +606,12 @@ class Command implements \ArrayAccess, \Iterator
     {
         $matches = array();
 
-        if (substr($token, 0, 1) === '-' && !preg_match('/(?P<hyphen>\-{1,2})(?P<name>[a-z][a-z0-9_-]*)/i', $token, $matches)) {
-            throw new \Exception(sprintf('Unable to parse option %s: Invalid syntax', $token));
+        if (substr($token, 0, 1) === '-') {
+            if (is_numeric($token)) {
+                return array(floatval($token), self::OPTION_TYPE_ARGUMENT);
+            } elseif (!preg_match('/(?P<hyphen>\-{1,2})(?P<name>[a-z][a-z0-9_-]*)/i', $token, $matches)) {
+                throw new \Exception(sprintf('Unable to parse option %s: Invalid syntax', $token));
+            }
         }
 
         if (!empty($matches['hyphen'])) {

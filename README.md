@@ -290,6 +290,14 @@ Released under MIT license.
 
 ## Change Log
 
+### v1.0.1
+
+- Add support for negative numbers not to be misinterpreted as bad options.
+
+### v1.0.0
+
+- Dropping support for anything before PHP 8.1
+
 ### v0.4.0
 
 - Dropping support for 5.4 and 5.5, bumping minor version number

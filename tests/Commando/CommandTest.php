@@ -226,6 +226,19 @@ class CommandTest extends TestCase
     }
 
     /**
+     * Ensure that negative numbers work
+     */
+    public function testNegativeNumbers()
+    {
+        $tokens = array('filename', '-n', '-123');
+        $cmd = new Command($tokens);
+
+        $cmd->option('n');
+
+        $this->assertEquals($cmd['n'], '-123');
+    }
+
+    /**
      * Test that an exception is thrown when an option isn't set
      */
     public function testRequirementsOnOptionsMissing()
