@@ -1,6 +1,8 @@
 <?php
 
 namespace Commando\Test;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
@@ -57,9 +59,7 @@ class OptionTest extends TestCase
         $this->assertEquals(array($alias, $alias2), $option->getAliases());
     }
 
-    /**
-     * @dataProvider values
-     */
+    #[DataProvider('values')]
     public function testSetValue($val)
     {
         $option = new Option('f');
@@ -67,9 +67,7 @@ class OptionTest extends TestCase
         $this->assertEquals($val, $option->getValue());
     }
 
-    /**
-     * @dataProvider values
-     */
+    #[DataProvider('values')]
     public function testMap($val)
     {
         $option = new Option('f');
@@ -134,9 +132,7 @@ class OptionTest extends TestCase
         $this->assertTrue(in_array($file2, $values));
     }
 
-    /**
-     * @dataProvider values
-     */
+    #[DataProvider('values')]
     public function testDefault($val)
     {
         $option = new Option('f');
@@ -165,7 +161,7 @@ class OptionTest extends TestCase
         $this->assertTrue(!$option->hasReducer());
 
         $option->setReducer(function() {});
-        
+
         $this->assertTrue($option->hasReducer());
     }
 
@@ -203,8 +199,8 @@ class OptionTest extends TestCase
 
     /**
      * Test hasNeeds when requirements are not met.
-     * @test
      */
+    #[Test]
     public function testOptionRequiresNotMet()
     {
         $option = new Option('f');
@@ -230,7 +226,7 @@ class OptionTest extends TestCase
 
     // Providers
 
-    public function values()
+    public static function values()
     {
         return array(
             array('abc'),
